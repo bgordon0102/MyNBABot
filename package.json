@@ -1,0 +1,11 @@
+{
+  "name": "leaguebuddy",
+  "version": "1.0.0",
+  "main": "app.js",
+  "type": "module",
+  "dependencies": {
+    "discord.js": "^14.13.0",
+    "@discordjs/builders": "^1.7.0",
+    "dotenv": "^16.4.5"
+  }
+}
