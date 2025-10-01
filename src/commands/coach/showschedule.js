@@ -21,11 +21,11 @@ export async function execute(interaction) {
     // - Filter by timeframe
     // - Show game results and upcoming games
     // - Include opponent info and game times
-    
+
     const timeframe = interaction.options.getString('timeframe') || 'upcoming';
-    
+
     await interaction.reply({
         content: `📅 Team schedule (${timeframe}) display coming soon!`,
-        ephemeral: true
+        flags: 64 // MessageFlags.Ephemeral
     });
 }

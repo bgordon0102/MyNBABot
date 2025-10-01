@@ -22,12 +22,12 @@ export async function execute(interaction) {
     // - Update scouting database
     // - Show updated recruit information
     // - Deduct points from coach's budget
-    
+
     const recruit = interaction.options.getString('recruit');
     const points = interaction.options.getInteger('points') || 1;
-    
+
     await interaction.reply({
         content: `🔍 Scouting ${recruit} with ${points} points coming soon!`,
-        ephemeral: true
+        flags: 64 // MessageFlags.Ephemeral
     });
 }

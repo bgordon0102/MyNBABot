@@ -15,11 +15,11 @@ export async function execute(interaction) {
     // - Remove access permissions
     // - Notify uninvited coach
     // - Log the uninvitation
-    
+
     const coach = interaction.options.getUser('coach');
-    
+
     await interaction.reply({
         content: `❌ Coach uninvitation for ${coach.username} coming soon!`,
-        ephemeral: true
+        flags: 64 // MessageFlags.Ephemeral
     });
 }

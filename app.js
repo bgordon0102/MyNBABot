@@ -8,12 +8,12 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 // Create Discord client
-const client = new Client({ 
-    intents: [
-        GatewayIntentBits.Guilds,
-        GatewayIntentBits.GuildMessages,
-        GatewayIntentBits.MessageContent
-    ] 
+const client = new Client({
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.MessageContent
+  ]
 });
 
 // Initialize commands collection
@@ -25,82 +25,102 @@ const __dirname = dirname(__filename);
 
 // Function to dynamically load all commands
 async function loadCommands() {
-    const commandFolders = ['staff', 'coach'];
-    
-    for (const folder of commandFolders) {
-        const commandsPath = join(__dirname, 'src', 'commands', folder);
-        const commandFiles = readdirSync(commandsPath).filter(file => file.endsWith('.js'));
-        
-        for (const file of commandFiles) {
-            const filePath = join(commandsPath, file);
-            const fileURL = pathToFileURL(filePath).href;
-            
-            try {
-                const command = await import(fileURL);
-                
-                if ('data' in command && 'execute' in command) {
-                    client.commands.set(command.data.name, command);
-                    console.log(`✅ Loaded ${folder} command: ${command.data.name}`);
-                } else {
-                    console.log(`⚠️  Command at ${filePath} is missing required "data" or "execute" property.`);
-                }
-            } catch (error) {
-                console.error(`❌ Error loading command ${file}:`, error);
-            }
+  const commandFolders = ['staff', 'coach'];
+
+  for (const folder of commandFolders) {
+    const commandsPath = join(__dirname, 'src', 'commands', folder);
+    const commandFiles = readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+
+    for (const file of commandFiles) {
+      const filePath = join(commandsPath, file);
+      const fileURL = pathToFileURL(filePath).href;
+
+      try {
+        const command = await import(fileURL);
+
+        if ('data' in command && 'execute' in command) {
+          client.commands.set(command.data.name, command);
+          console.log(`✅ Loaded ${folder} command: ${command.data.name}`);
+        } else {
+          console.log(`⚠️  Command at ${filePath} is missing required "data" or "execute" property.`);
         }
+      } catch (error) {
+        console.error(`❌ Error loading command ${file}:`, error);
+      }
     }
+  }
 }
 
 // Bot ready event
-client.once('ready', () => {
-    console.log('🏀 LEAGUEbuddy is online!');
-    console.log(`📊 Logged in as ${client.user.tag}`);
-    console.log(`🏟️  Serving ${client.guilds.cache.size} server(s)`);
-    console.log(`⚡ Loaded ${client.commands.size} commands`);
+client.once('ready', (readyClient) => {
+  console.log('🏀 LEAGUEbuddy is online!');
+  console.log(`📊 Logged in as ${readyClient.user.tag}`);
+  console.log(`🏟️  Serving ${readyClient.guilds.cache.size} server(s)`);
+  console.log(`⚡ Loaded ${client.commands.size} commands`);
 });
 
-// Handle slash command interactions
+// Handle interactions (commands and autocomplete)
 client.on('interactionCreate', async interaction => {
-    if (!interaction.isChatInputCommand()) return;
-
+  // Handle autocomplete interactions
+  if (interaction.isAutocomplete()) {
     const command = client.commands.get(interaction.commandName);
-    if (!command) {
-        console.error(`❌ No command matching ${interaction.commandName} was found.`);
-        return;
-    }
+    if (!command || !command.autocomplete) return;
 
     try {
-        await command.execute(interaction);
-        console.log(`✅ ${interaction.user.username} used /${interaction.commandName}`);
+      await command.autocomplete(interaction);
     } catch (error) {
-        console.error(`❌ Error executing ${interaction.commandName}:`, error);
-        
-        const errorMessage = 'There was an error while executing this command!';
-        
-        if (interaction.replied || interaction.deferred) {
-            await interaction.editReply({ content: errorMessage });
-        } else {
-            await interaction.reply({ content: errorMessage, ephemeral: true });
-        }
+      console.error(`❌ Error with autocomplete for ${interaction.commandName}:`, error);
     }
-});
+    return;
+  }
 
-// Handle process termination
+  // Handle slash command interactions
+  if (!interaction.isChatInputCommand()) return;
+
+  const command = client.commands.get(interaction.commandName);
+  if (!command) {
+    console.error(`❌ No command matching ${interaction.commandName} was found.`);
+    return;
+  }
+
+  try {
+    console.log(`🔄 ${interaction.user.username} is using /${interaction.commandName}`);
+    await command.execute(interaction);
+    console.log(`✅ ${interaction.user.username} successfully used /${interaction.commandName}`);
+  } catch (error) {
+    console.error(`❌ Error executing ${interaction.commandName}:`, error);
+
+    const errorMessage = 'There was an error while executing this command!';
+
+    try {
+      if (interaction.replied || interaction.deferred) {
+        await interaction.editReply({ content: errorMessage });
+      } else {
+        await interaction.reply({
+          content: errorMessage,
+          flags: 64 // MessageFlags.Ephemeral
+        });
+      }
+    } catch (replyError) {
+      console.error('❌ Failed to send error message:', replyError);
+    }
+  }
+});// Handle process termination
 process.on('unhandledRejection', error => {
-    console.error('Unhandled promise rejection:', error);
+  console.error('Unhandled promise rejection:', error);
 });
 
 // Load commands and start the bot
 async function startBot() {
-    try {
-        console.log('🔄 Loading LEAGUEbuddy commands...');
-        await loadCommands();
-        console.log('🚀 Starting LEAGUEbuddy bot...');
-        await client.login(process.env.TOKEN);
-    } catch (error) {
-        console.error('❌ Failed to start LEAGUEbuddy:', error);
-        process.exit(1);
-    }
+  try {
+    console.log('🔄 Loading LEAGUEbuddy commands...');
+    await loadCommands();
+    console.log('🚀 Starting LEAGUEbuddy bot...');
+    await client.login(process.env.TOKEN);
+  } catch (error) {
+    console.error('❌ Failed to start LEAGUEbuddy:', error);
+    process.exit(1);
+  }
 }
 
 startBot();

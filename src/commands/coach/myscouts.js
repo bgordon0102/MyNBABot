@@ -12,9 +12,9 @@ export async function execute(interaction) {
     // - Display all scouted recruits
     // - Show detailed scouting reports
     // - Include recruit ratings and notes
-    
+
     await interaction.reply({
         content: '📊 Your scouting reports and budget coming soon!',
-        ephemeral: true
+        flags: 64 // MessageFlags.Ephemeral
     });
 }

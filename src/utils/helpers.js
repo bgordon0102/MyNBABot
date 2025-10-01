@@ -63,7 +63,7 @@ export function formatSchedule(games, teamId) {
         const opponent = isHome ? game.awayTeam : game.homeTeam;
         const venue = isHome ? 'vs' : '@';
         const result = game.result ? ` - ${game.result}` : '';
-        
+
         return `**Week ${game.week}**: ${venue} ${opponent}${result}`;
     }).join('\n');
 }
@@ -76,14 +76,14 @@ export function formatSchedule(games, teamId) {
 export function getUserTeam(member) {
     // TODO: Implement logic to extract team from user's roles
     // This should match against NBA team role names
-    const teamRoles = member.roles.cache.filter(role => 
+    const teamRoles = member.roles.cache.filter(role =>
         // Add logic to identify NBA team roles
-        role.name.includes('Lakers') || 
+        role.name.includes('Lakers') ||
         role.name.includes('Warriors') ||
         role.name.includes('Celtics')
         // Add all NBA teams
     );
-    
+
     return teamRoles.first()?.name || null;
 }
 
@@ -93,7 +93,7 @@ export function getUserTeam(member) {
  * @returns {boolean} Whether user is staff
  */
 export function isStaff(member) {
-    return member.roles.cache.some(role => 
+    return member.roles.cache.some(role =>
         role.name.toLowerCase().includes('staff') ||
         role.name.toLowerCase().includes('admin') ||
         role.name.toLowerCase().includes('commissioner')
@@ -106,7 +106,7 @@ export function isStaff(member) {
  * @returns {boolean} Whether user is a coach
  */
 export function isCoach(member) {
-    return member.roles.cache.some(role => 
+    return member.roles.cache.some(role =>
         role.name.toLowerCase().includes('coach') ||
         getUserTeam(member) !== null
     );

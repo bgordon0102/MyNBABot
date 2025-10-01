@@ -1,0 +1,3577 @@
+{
+  "seasonNo": 1,
+  "currentWeek": 1,
+  "teams": [
+    "Knicks",
+    "Rockets",
+    "Suns",
+    "Pistons",
+    "Kings",
+    "Hawks",
+    "Wizards",
+    "Bucks",
+    "Thunder",
+    "Nets",
+    "Grizzlies",
+    "Pacers",
+    "Jazz",
+    "Clippers",
+    "Timberwolves",
+    "Warriors",
+    "Bulls",
+    "Hornets",
+    "Mavericks",
+    "Celtics",
+    "Trail Blazers",
+    "Nuggets",
+    "Magic",
+    "Heat",
+    "Cavaliers",
+    "76ers",
+    "Spurs",
+    "Raptors",
+    "Lakers",
+    "Pelicans"
+  ],
+  "gameno": 29,
+  "weeks": {
+    "1": [
+      {
+        "teamA": "Knicks",
+        "teamB": "Pelicans",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": "1423041134112014498"
+      },
+      {
+        "teamA": "Rockets",
+        "teamB": "Lakers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": "1423041136603173002"
+      },
+      {
+        "teamA": "Suns",
+        "teamB": "Raptors",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": "1423041137593286777"
+      },
+      {
+        "teamA": "Pistons",
+        "teamB": "Spurs",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": "1423041138796789762"
+      },
+      {
+        "teamA": "Kings",
+        "teamB": "76ers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": "1423041140197687349"
+      },
+      {
+        "teamA": "Hawks",
+        "teamB": "Cavaliers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": "1423041141267235029"
+      },
+      {
+        "teamA": "Wizards",
+        "teamB": "Heat",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": "1423041142315814974"
+      },
+      {
+        "teamA": "Bucks",
+        "teamB": "Magic",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": "1423041143548940399"
+      },
+      {
+        "teamA": "Thunder",
+        "teamB": "Nuggets",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": "1423041144865947648"
+      },
+      {
+        "teamA": "Nets",
+        "teamB": "Trail Blazers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": "1423041146069848085"
+      },
+      {
+        "teamA": "Grizzlies",
+        "teamB": "Celtics",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": "1423041147110031462"
+      },
+      {
+        "teamA": "Pacers",
+        "teamB": "Mavericks",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": "1423041148057817104"
+      },
+      {
+        "teamA": "Jazz",
+        "teamB": "Hornets",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": "1423041149370765464"
+      },
+      {
+        "teamA": "Clippers",
+        "teamB": "Bulls",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": "1423041150167810068"
+      },
+      {
+        "teamA": "Timberwolves",
+        "teamB": "Warriors",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": "1423041151119655085"
+      }
+    ],
+    "2": [
+      {
+        "teamA": "Knicks",
+        "teamB": "Lakers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Pelicans",
+        "teamB": "Raptors",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Rockets",
+        "teamB": "Spurs",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Suns",
+        "teamB": "76ers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Pistons",
+        "teamB": "Cavaliers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Kings",
+        "teamB": "Heat",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Hawks",
+        "teamB": "Magic",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Wizards",
+        "teamB": "Nuggets",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Bucks",
+        "teamB": "Trail Blazers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Thunder",
+        "teamB": "Celtics",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Nets",
+        "teamB": "Mavericks",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Grizzlies",
+        "teamB": "Hornets",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Pacers",
+        "teamB": "Bulls",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Jazz",
+        "teamB": "Warriors",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Clippers",
+        "teamB": "Timberwolves",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      }
+    ],
+    "3": [
+      {
+        "teamA": "Knicks",
+        "teamB": "Raptors",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Lakers",
+        "teamB": "Spurs",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Pelicans",
+        "teamB": "76ers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Rockets",
+        "teamB": "Cavaliers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Suns",
+        "teamB": "Heat",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Pistons",
+        "teamB": "Magic",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Kings",
+        "teamB": "Nuggets",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Hawks",
+        "teamB": "Trail Blazers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Wizards",
+        "teamB": "Celtics",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Bucks",
+        "teamB": "Mavericks",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Thunder",
+        "teamB": "Hornets",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Nets",
+        "teamB": "Bulls",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Grizzlies",
+        "teamB": "Warriors",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Pacers",
+        "teamB": "Timberwolves",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Jazz",
+        "teamB": "Clippers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      }
+    ],
+    "4": [
+      {
+        "teamA": "Knicks",
+        "teamB": "Spurs",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Raptors",
+        "teamB": "76ers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Lakers",
+        "teamB": "Cavaliers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Pelicans",
+        "teamB": "Heat",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Rockets",
+        "teamB": "Magic",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Suns",
+        "teamB": "Nuggets",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Pistons",
+        "teamB": "Trail Blazers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Kings",
+        "teamB": "Celtics",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Hawks",
+        "teamB": "Mavericks",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Wizards",
+        "teamB": "Hornets",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Bucks",
+        "teamB": "Bulls",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Thunder",
+        "teamB": "Warriors",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Nets",
+        "teamB": "Timberwolves",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Grizzlies",
+        "teamB": "Clippers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Pacers",
+        "teamB": "Jazz",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      }
+    ],
+    "5": [
+      {
+        "teamA": "Knicks",
+        "teamB": "76ers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Spurs",
+        "teamB": "Cavaliers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Raptors",
+        "teamB": "Heat",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Lakers",
+        "teamB": "Magic",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Pelicans",
+        "teamB": "Nuggets",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Rockets",
+        "teamB": "Trail Blazers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Suns",
+        "teamB": "Celtics",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Pistons",
+        "teamB": "Mavericks",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Kings",
+        "teamB": "Hornets",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Hawks",
+        "teamB": "Bulls",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Wizards",
+        "teamB": "Warriors",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Bucks",
+        "teamB": "Timberwolves",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Thunder",
+        "teamB": "Clippers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Nets",
+        "teamB": "Jazz",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Grizzlies",
+        "teamB": "Pacers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      }
+    ],
+    "6": [
+      {
+        "teamA": "Knicks",
+        "teamB": "Cavaliers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "76ers",
+        "teamB": "Heat",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Spurs",
+        "teamB": "Magic",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Raptors",
+        "teamB": "Nuggets",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Lakers",
+        "teamB": "Trail Blazers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Pelicans",
+        "teamB": "Celtics",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Rockets",
+        "teamB": "Mavericks",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Suns",
+        "teamB": "Hornets",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Pistons",
+        "teamB": "Bulls",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Kings",
+        "teamB": "Warriors",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Hawks",
+        "teamB": "Timberwolves",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Wizards",
+        "teamB": "Clippers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Bucks",
+        "teamB": "Jazz",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Thunder",
+        "teamB": "Pacers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Nets",
+        "teamB": "Grizzlies",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      }
+    ],
+    "7": [
+      {
+        "teamA": "Knicks",
+        "teamB": "Heat",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Cavaliers",
+        "teamB": "Magic",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "76ers",
+        "teamB": "Nuggets",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Spurs",
+        "teamB": "Trail Blazers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Raptors",
+        "teamB": "Celtics",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Lakers",
+        "teamB": "Mavericks",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Pelicans",
+        "teamB": "Hornets",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Rockets",
+        "teamB": "Bulls",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Suns",
+        "teamB": "Warriors",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Pistons",
+        "teamB": "Timberwolves",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Kings",
+        "teamB": "Clippers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Hawks",
+        "teamB": "Jazz",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Wizards",
+        "teamB": "Pacers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Bucks",
+        "teamB": "Grizzlies",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Thunder",
+        "teamB": "Nets",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      }
+    ],
+    "8": [
+      {
+        "teamA": "Knicks",
+        "teamB": "Magic",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Heat",
+        "teamB": "Nuggets",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Cavaliers",
+        "teamB": "Trail Blazers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "76ers",
+        "teamB": "Celtics",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Spurs",
+        "teamB": "Mavericks",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Raptors",
+        "teamB": "Hornets",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Lakers",
+        "teamB": "Bulls",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Pelicans",
+        "teamB": "Warriors",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Rockets",
+        "teamB": "Timberwolves",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Suns",
+        "teamB": "Clippers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Pistons",
+        "teamB": "Jazz",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Kings",
+        "teamB": "Pacers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Hawks",
+        "teamB": "Grizzlies",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Wizards",
+        "teamB": "Nets",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Bucks",
+        "teamB": "Thunder",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      }
+    ],
+    "9": [
+      {
+        "teamA": "Knicks",
+        "teamB": "Nuggets",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Magic",
+        "teamB": "Trail Blazers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Heat",
+        "teamB": "Celtics",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Cavaliers",
+        "teamB": "Mavericks",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "76ers",
+        "teamB": "Hornets",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Spurs",
+        "teamB": "Bulls",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Raptors",
+        "teamB": "Warriors",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Lakers",
+        "teamB": "Timberwolves",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Pelicans",
+        "teamB": "Clippers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Rockets",
+        "teamB": "Jazz",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Suns",
+        "teamB": "Pacers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Pistons",
+        "teamB": "Grizzlies",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Kings",
+        "teamB": "Nets",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Hawks",
+        "teamB": "Thunder",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Wizards",
+        "teamB": "Bucks",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      }
+    ],
+    "10": [
+      {
+        "teamA": "Knicks",
+        "teamB": "Trail Blazers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Nuggets",
+        "teamB": "Celtics",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Magic",
+        "teamB": "Mavericks",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Heat",
+        "teamB": "Hornets",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Cavaliers",
+        "teamB": "Bulls",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "76ers",
+        "teamB": "Warriors",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Spurs",
+        "teamB": "Timberwolves",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Raptors",
+        "teamB": "Clippers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Lakers",
+        "teamB": "Jazz",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Pelicans",
+        "teamB": "Pacers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Rockets",
+        "teamB": "Grizzlies",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Suns",
+        "teamB": "Nets",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Pistons",
+        "teamB": "Thunder",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Kings",
+        "teamB": "Bucks",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Hawks",
+        "teamB": "Wizards",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      }
+    ],
+    "11": [
+      {
+        "teamA": "Knicks",
+        "teamB": "Celtics",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Trail Blazers",
+        "teamB": "Mavericks",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Nuggets",
+        "teamB": "Hornets",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Magic",
+        "teamB": "Bulls",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Heat",
+        "teamB": "Warriors",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Cavaliers",
+        "teamB": "Timberwolves",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "76ers",
+        "teamB": "Clippers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Spurs",
+        "teamB": "Jazz",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Raptors",
+        "teamB": "Pacers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Lakers",
+        "teamB": "Grizzlies",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Pelicans",
+        "teamB": "Nets",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Rockets",
+        "teamB": "Thunder",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Suns",
+        "teamB": "Bucks",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Pistons",
+        "teamB": "Wizards",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Kings",
+        "teamB": "Hawks",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      }
+    ],
+    "12": [
+      {
+        "teamA": "Knicks",
+        "teamB": "Mavericks",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Celtics",
+        "teamB": "Hornets",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Trail Blazers",
+        "teamB": "Bulls",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Nuggets",
+        "teamB": "Warriors",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Magic",
+        "teamB": "Timberwolves",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Heat",
+        "teamB": "Clippers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Cavaliers",
+        "teamB": "Jazz",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "76ers",
+        "teamB": "Pacers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Spurs",
+        "teamB": "Grizzlies",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Raptors",
+        "teamB": "Nets",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Lakers",
+        "teamB": "Thunder",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Pelicans",
+        "teamB": "Bucks",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Rockets",
+        "teamB": "Wizards",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Suns",
+        "teamB": "Hawks",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Pistons",
+        "teamB": "Kings",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      }
+    ],
+    "13": [
+      {
+        "teamA": "Knicks",
+        "teamB": "Hornets",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Mavericks",
+        "teamB": "Bulls",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Celtics",
+        "teamB": "Warriors",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Trail Blazers",
+        "teamB": "Timberwolves",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Nuggets",
+        "teamB": "Clippers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Magic",
+        "teamB": "Jazz",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Heat",
+        "teamB": "Pacers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Cavaliers",
+        "teamB": "Grizzlies",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "76ers",
+        "teamB": "Nets",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Spurs",
+        "teamB": "Thunder",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Raptors",
+        "teamB": "Bucks",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Lakers",
+        "teamB": "Wizards",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Pelicans",
+        "teamB": "Hawks",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Rockets",
+        "teamB": "Kings",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Suns",
+        "teamB": "Pistons",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      }
+    ],
+    "14": [
+      {
+        "teamA": "Knicks",
+        "teamB": "Bulls",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Hornets",
+        "teamB": "Warriors",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Mavericks",
+        "teamB": "Timberwolves",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Celtics",
+        "teamB": "Clippers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Trail Blazers",
+        "teamB": "Jazz",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Nuggets",
+        "teamB": "Pacers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Magic",
+        "teamB": "Grizzlies",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Heat",
+        "teamB": "Nets",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Cavaliers",
+        "teamB": "Thunder",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "76ers",
+        "teamB": "Bucks",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Spurs",
+        "teamB": "Wizards",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Raptors",
+        "teamB": "Hawks",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Lakers",
+        "teamB": "Kings",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Pelicans",
+        "teamB": "Pistons",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Rockets",
+        "teamB": "Suns",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      }
+    ],
+    "15": [
+      {
+        "teamA": "Knicks",
+        "teamB": "Warriors",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Bulls",
+        "teamB": "Timberwolves",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Hornets",
+        "teamB": "Clippers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Mavericks",
+        "teamB": "Jazz",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Celtics",
+        "teamB": "Pacers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Trail Blazers",
+        "teamB": "Grizzlies",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Nuggets",
+        "teamB": "Nets",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Magic",
+        "teamB": "Thunder",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Heat",
+        "teamB": "Bucks",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Cavaliers",
+        "teamB": "Wizards",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "76ers",
+        "teamB": "Hawks",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Spurs",
+        "teamB": "Kings",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Raptors",
+        "teamB": "Pistons",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Lakers",
+        "teamB": "Suns",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Pelicans",
+        "teamB": "Rockets",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      }
+    ],
+    "16": [
+      {
+        "teamA": "Knicks",
+        "teamB": "Timberwolves",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Warriors",
+        "teamB": "Clippers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Bulls",
+        "teamB": "Jazz",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Hornets",
+        "teamB": "Pacers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Mavericks",
+        "teamB": "Grizzlies",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Celtics",
+        "teamB": "Nets",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Trail Blazers",
+        "teamB": "Thunder",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Nuggets",
+        "teamB": "Bucks",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Magic",
+        "teamB": "Wizards",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Heat",
+        "teamB": "Hawks",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Cavaliers",
+        "teamB": "Kings",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "76ers",
+        "teamB": "Pistons",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Spurs",
+        "teamB": "Suns",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Raptors",
+        "teamB": "Rockets",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Lakers",
+        "teamB": "Pelicans",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      }
+    ],
+    "17": [
+      {
+        "teamA": "Knicks",
+        "teamB": "Clippers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Timberwolves",
+        "teamB": "Jazz",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Warriors",
+        "teamB": "Pacers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Bulls",
+        "teamB": "Grizzlies",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Hornets",
+        "teamB": "Nets",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Mavericks",
+        "teamB": "Thunder",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Celtics",
+        "teamB": "Bucks",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Trail Blazers",
+        "teamB": "Wizards",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Nuggets",
+        "teamB": "Hawks",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Magic",
+        "teamB": "Kings",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Heat",
+        "teamB": "Pistons",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Cavaliers",
+        "teamB": "Suns",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "76ers",
+        "teamB": "Rockets",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Spurs",
+        "teamB": "Pelicans",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Raptors",
+        "teamB": "Lakers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      }
+    ],
+    "18": [
+      {
+        "teamA": "Knicks",
+        "teamB": "Jazz",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Clippers",
+        "teamB": "Pacers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Timberwolves",
+        "teamB": "Grizzlies",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Warriors",
+        "teamB": "Nets",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Bulls",
+        "teamB": "Thunder",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Hornets",
+        "teamB": "Bucks",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Mavericks",
+        "teamB": "Wizards",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Celtics",
+        "teamB": "Hawks",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Trail Blazers",
+        "teamB": "Kings",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Nuggets",
+        "teamB": "Pistons",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Magic",
+        "teamB": "Suns",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Heat",
+        "teamB": "Rockets",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Cavaliers",
+        "teamB": "Pelicans",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "76ers",
+        "teamB": "Lakers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Spurs",
+        "teamB": "Raptors",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      }
+    ],
+    "19": [
+      {
+        "teamA": "Knicks",
+        "teamB": "Pacers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Jazz",
+        "teamB": "Grizzlies",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Clippers",
+        "teamB": "Nets",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Timberwolves",
+        "teamB": "Thunder",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Warriors",
+        "teamB": "Bucks",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Bulls",
+        "teamB": "Wizards",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Hornets",
+        "teamB": "Hawks",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Mavericks",
+        "teamB": "Kings",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Celtics",
+        "teamB": "Pistons",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Trail Blazers",
+        "teamB": "Suns",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Nuggets",
+        "teamB": "Rockets",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Magic",
+        "teamB": "Pelicans",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Heat",
+        "teamB": "Lakers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Cavaliers",
+        "teamB": "Raptors",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "76ers",
+        "teamB": "Spurs",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      }
+    ],
+    "20": [
+      {
+        "teamA": "Knicks",
+        "teamB": "Grizzlies",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Pacers",
+        "teamB": "Nets",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Jazz",
+        "teamB": "Thunder",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Clippers",
+        "teamB": "Bucks",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Timberwolves",
+        "teamB": "Wizards",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Warriors",
+        "teamB": "Hawks",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Bulls",
+        "teamB": "Kings",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Hornets",
+        "teamB": "Pistons",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Mavericks",
+        "teamB": "Suns",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Celtics",
+        "teamB": "Rockets",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Trail Blazers",
+        "teamB": "Pelicans",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Nuggets",
+        "teamB": "Lakers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Magic",
+        "teamB": "Raptors",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Heat",
+        "teamB": "Spurs",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Cavaliers",
+        "teamB": "76ers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      }
+    ],
+    "21": [
+      {
+        "teamA": "Knicks",
+        "teamB": "Nets",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Grizzlies",
+        "teamB": "Thunder",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Pacers",
+        "teamB": "Bucks",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Jazz",
+        "teamB": "Wizards",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Clippers",
+        "teamB": "Hawks",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Timberwolves",
+        "teamB": "Kings",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Warriors",
+        "teamB": "Pistons",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Bulls",
+        "teamB": "Suns",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Hornets",
+        "teamB": "Rockets",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Mavericks",
+        "teamB": "Pelicans",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Celtics",
+        "teamB": "Lakers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Trail Blazers",
+        "teamB": "Raptors",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Nuggets",
+        "teamB": "Spurs",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Magic",
+        "teamB": "76ers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Heat",
+        "teamB": "Cavaliers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      }
+    ],
+    "22": [
+      {
+        "teamA": "Knicks",
+        "teamB": "Thunder",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Nets",
+        "teamB": "Bucks",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Grizzlies",
+        "teamB": "Wizards",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Pacers",
+        "teamB": "Hawks",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Jazz",
+        "teamB": "Kings",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Clippers",
+        "teamB": "Pistons",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Timberwolves",
+        "teamB": "Suns",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Warriors",
+        "teamB": "Rockets",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Bulls",
+        "teamB": "Pelicans",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Hornets",
+        "teamB": "Lakers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Mavericks",
+        "teamB": "Raptors",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Celtics",
+        "teamB": "Spurs",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Trail Blazers",
+        "teamB": "76ers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Nuggets",
+        "teamB": "Cavaliers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Magic",
+        "teamB": "Heat",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      }
+    ],
+    "23": [
+      {
+        "teamA": "Knicks",
+        "teamB": "Bucks",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Thunder",
+        "teamB": "Wizards",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Nets",
+        "teamB": "Hawks",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Grizzlies",
+        "teamB": "Kings",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Pacers",
+        "teamB": "Pistons",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Jazz",
+        "teamB": "Suns",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Clippers",
+        "teamB": "Rockets",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Timberwolves",
+        "teamB": "Pelicans",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Warriors",
+        "teamB": "Lakers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Bulls",
+        "teamB": "Raptors",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Hornets",
+        "teamB": "Spurs",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Mavericks",
+        "teamB": "76ers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Celtics",
+        "teamB": "Cavaliers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Trail Blazers",
+        "teamB": "Heat",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Nuggets",
+        "teamB": "Magic",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      }
+    ],
+    "24": [
+      {
+        "teamA": "Knicks",
+        "teamB": "Wizards",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Bucks",
+        "teamB": "Hawks",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Thunder",
+        "teamB": "Kings",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Nets",
+        "teamB": "Pistons",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Grizzlies",
+        "teamB": "Suns",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Pacers",
+        "teamB": "Rockets",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Jazz",
+        "teamB": "Pelicans",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Clippers",
+        "teamB": "Lakers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Timberwolves",
+        "teamB": "Raptors",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Warriors",
+        "teamB": "Spurs",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Bulls",
+        "teamB": "76ers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Hornets",
+        "teamB": "Cavaliers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Mavericks",
+        "teamB": "Heat",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Celtics",
+        "teamB": "Magic",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Trail Blazers",
+        "teamB": "Nuggets",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      }
+    ],
+    "25": [
+      {
+        "teamA": "Knicks",
+        "teamB": "Hawks",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Wizards",
+        "teamB": "Kings",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Bucks",
+        "teamB": "Pistons",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Thunder",
+        "teamB": "Suns",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Nets",
+        "teamB": "Rockets",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Grizzlies",
+        "teamB": "Pelicans",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Pacers",
+        "teamB": "Lakers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Jazz",
+        "teamB": "Raptors",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Clippers",
+        "teamB": "Spurs",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Timberwolves",
+        "teamB": "76ers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Warriors",
+        "teamB": "Cavaliers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Bulls",
+        "teamB": "Heat",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Hornets",
+        "teamB": "Magic",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Mavericks",
+        "teamB": "Nuggets",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Celtics",
+        "teamB": "Trail Blazers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      }
+    ],
+    "26": [
+      {
+        "teamA": "Knicks",
+        "teamB": "Kings",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Hawks",
+        "teamB": "Pistons",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Wizards",
+        "teamB": "Suns",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Bucks",
+        "teamB": "Rockets",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Thunder",
+        "teamB": "Pelicans",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Nets",
+        "teamB": "Lakers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Grizzlies",
+        "teamB": "Raptors",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Pacers",
+        "teamB": "Spurs",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Jazz",
+        "teamB": "76ers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Clippers",
+        "teamB": "Cavaliers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Timberwolves",
+        "teamB": "Heat",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Warriors",
+        "teamB": "Magic",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Bulls",
+        "teamB": "Nuggets",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Hornets",
+        "teamB": "Trail Blazers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Mavericks",
+        "teamB": "Celtics",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      }
+    ],
+    "27": [
+      {
+        "teamA": "Knicks",
+        "teamB": "Pistons",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Kings",
+        "teamB": "Suns",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Hawks",
+        "teamB": "Rockets",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Wizards",
+        "teamB": "Pelicans",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Bucks",
+        "teamB": "Lakers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Thunder",
+        "teamB": "Raptors",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Nets",
+        "teamB": "Spurs",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Grizzlies",
+        "teamB": "76ers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Pacers",
+        "teamB": "Cavaliers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Jazz",
+        "teamB": "Heat",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Clippers",
+        "teamB": "Magic",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Timberwolves",
+        "teamB": "Nuggets",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Warriors",
+        "teamB": "Trail Blazers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Bulls",
+        "teamB": "Celtics",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Hornets",
+        "teamB": "Mavericks",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      }
+    ],
+    "28": [
+      {
+        "teamA": "Knicks",
+        "teamB": "Suns",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Pistons",
+        "teamB": "Rockets",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Kings",
+        "teamB": "Pelicans",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Hawks",
+        "teamB": "Lakers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Wizards",
+        "teamB": "Raptors",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Bucks",
+        "teamB": "Spurs",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Thunder",
+        "teamB": "76ers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Nets",
+        "teamB": "Cavaliers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Grizzlies",
+        "teamB": "Heat",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Pacers",
+        "teamB": "Magic",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Jazz",
+        "teamB": "Nuggets",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Clippers",
+        "teamB": "Trail Blazers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Timberwolves",
+        "teamB": "Celtics",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Warriors",
+        "teamB": "Mavericks",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Bulls",
+        "teamB": "Hornets",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      }
+    ],
+    "29": [
+      {
+        "teamA": "Knicks",
+        "teamB": "Rockets",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Suns",
+        "teamB": "Pelicans",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Pistons",
+        "teamB": "Lakers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Kings",
+        "teamB": "Raptors",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Hawks",
+        "teamB": "Spurs",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Wizards",
+        "teamB": "76ers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Bucks",
+        "teamB": "Cavaliers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Thunder",
+        "teamB": "Heat",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Nets",
+        "teamB": "Magic",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Grizzlies",
+        "teamB": "Nuggets",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Pacers",
+        "teamB": "Trail Blazers",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Jazz",
+        "teamB": "Celtics",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Clippers",
+        "teamB": "Mavericks",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Timberwolves",
+        "teamB": "Hornets",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      },
+      {
+        "teamA": "Warriors",
+        "teamB": "Bulls",
+        "scoreA": null,
+        "scoreB": null,
+        "approved": false,
+        "channelId": null
+      }
+    ]
+  }
+}

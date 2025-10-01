@@ -20,12 +20,12 @@ export async function execute(interaction) {
     // - Sort by rating, position, etc.
     // - Create paginated embed
     // - Show recruit status (available, committed, etc.)
-    
+
     const filter = interaction.options.getString('filter');
     const page = interaction.options.getInteger('page') || 1;
-    
+
     await interaction.reply({
         content: `🎯 Recruiting board (Page ${page}${filter ? `, Filter: ${filter}` : ''}) coming soon!`,
-        ephemeral: true
+        flags: 64 // MessageFlags.Ephemeral
     });
 }

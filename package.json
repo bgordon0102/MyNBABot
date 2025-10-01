@@ -9,7 +9,14 @@
     "deploy": "node deploy-commands.js",
     "dev": "node --watch app.js"
   },
-  "keywords": ["discord", "bot", "nba", "2k", "league", "basketball"],
+  "keywords": [
+    "discord",
+    "bot",
+    "nba",
+    "2k",
+    "league",
+    "basketball"
+  ],
   "author": "bgordon0102",
   "license": "ISC",
   "dependencies": {

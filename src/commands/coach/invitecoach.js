@@ -24,12 +24,12 @@ export async function execute(interaction) {
     // - Create temporary access permissions
     // - Send invitation notification
     // - Log the invitation
-    
+
     const coach = interaction.options.getUser('coach');
     const permissions = interaction.options.getString('permissions') || 'view';
-    
+
     await interaction.reply({
         content: `🤝 Coach invitation for ${coach.username} (${permissions} access) coming soon!`,
-        ephemeral: true
+        flags: 64 // MessageFlags.Ephemeral
     });
 }

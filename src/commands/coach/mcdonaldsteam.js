@@ -11,9 +11,9 @@ export async function execute(interaction) {
     // - Show player stats and ratings
     // - Include commitment status
     // - Format as prestigious embed
-    
+
     await interaction.reply({
         content: '🏆 McDonald\'s All-American team display coming soon!',
-        ephemeral: true
+        flags: 64 // MessageFlags.Ephemeral
     });
 }

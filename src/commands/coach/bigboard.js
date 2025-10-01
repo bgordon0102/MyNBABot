@@ -20,11 +20,11 @@ export async function execute(interaction) {
     // - Handle view/update/reset actions
     // - Show ranked players with ratings
     // - Allow drag-and-drop reordering (future)
-    
+
     const action = interaction.options.getString('action') || 'view';
-    
+
     await interaction.reply({
         content: `📊 Big board ${action} functionality coming soon!`,
-        ephemeral: true
+        flags: 64 // MessageFlags.Ephemeral
     });
 }
