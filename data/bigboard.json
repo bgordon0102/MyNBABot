@@ -1,0 +1,35 @@
+{
+  "bigboards": {
+    "exampleTeam": {
+      "teamId": "LAL",
+      "teamName": "Los Angeles Lakers",
+      "rankings": [
+        {
+          "rank": 1,
+          "playerId": 1,
+          "playerName": "Sample Recruit 1",
+          "notes": "Top priority - perfect fit for system"
+        },
+        {
+          "rank": 2,
+          "playerId": 2,
+          "playerName": "Sample Recruit 2", 
+          "notes": "Great backup option with high upside"
+        }
+      ],
+      "lastUpdated": "2025-10-01T00:00:00.000Z"
+    }
+  },
+  "mcdonaldsTeam": {
+    "year": 2026,
+    "players": [
+      {
+        "playerId": 1,
+        "playerName": "Sample Recruit 1",
+        "position": "PG",
+        "overall": 85,
+        "school": "Sample High School"
+      }
+    ]
+  }
+}

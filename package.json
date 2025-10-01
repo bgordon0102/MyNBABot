@@ -1,11 +1,23 @@
 {
   "name": "leaguebuddy",
-  "version": "1.0.0",
+  "version": "2.0.0",
+  "description": "Discord.js bot for managing NBA 2K/MyNBA league operations",
   "main": "app.js",
   "type": "module",
+  "scripts": {
+    "start": "node app.js",
+    "deploy": "node deploy-commands.js",
+    "dev": "node --watch app.js"
+  },
+  "keywords": ["discord", "bot", "nba", "2k", "league", "basketball"],
+  "author": "bgordon0102",
+  "license": "ISC",
   "dependencies": {
     "discord.js": "^14.13.0",
     "@discordjs/builders": "^1.7.0",
     "dotenv": "^16.4.5"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }
