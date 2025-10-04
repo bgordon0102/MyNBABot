@@ -1,35 +1,28 @@
-import { SlashCommandBuilder } from 'discord.js';
+// src/commands/coach/invitecoach.js
+import { SlashCommandBuilder, PermissionFlagsBits } from "discord.js";
 
 export const data = new SlashCommandBuilder()
-    .setName('invitecoach')
-    .setDescription('Invite another coach to view private team information')
-    .addUserOption(option =>
-        option.setName('coach')
-            .setDescription('The coach to invite')
-            .setRequired(true))
-    .addStringOption(option =>
-        option.setName('permissions')
-            .setDescription('What they can access')
-            .setRequired(false)
-            .addChoices(
-                { name: 'View Only', value: 'view' },
-                { name: 'View & Comment', value: 'comment' },
-                { name: 'Full Access', value: 'full' }
-            ));
+    .setName("invitecoach")
+    .setDescription("Invite a coach or a coach role into your team channel")
+    .addRoleOption(option =>
+        option.setName("role").setDescription("Coach role to invite").setRequired(true)
+    );
 
 export async function execute(interaction) {
-    // TODO: implement logic to:
-    // - Validate coach permissions
-    // - Check if target is a coach
-    // - Create temporary access permissions
-    // - Send invitation notification
-    // - Log the invitation
+    const role = interaction.options.getRole("role");
+    const channel = interaction.channel;
 
-    const coach = interaction.options.getUser('coach');
-    const permissions = interaction.options.getString('permissions') || 'view';
+    try {
+        await channel.permissionOverwrites.edit(role.id, {
+            ViewChannel: true,
+            SendMessages: true,
+            ReadMessageHistory: true,
+        });
 
-    await interaction.reply({
-        content: `🤝 Coach invitation for ${coach.username} (${permissions} access) coming soon!`,
-        flags: 64 // MessageFlags.Ephemeral
-    });
+        await interaction.reply({ content: `✅ Role ${role} has been invited to this channel.`, flags: 64 });
+    } catch (err) {
+        console.error(err);
+        await interaction.reply({ content: "❌ Failed to invite coach role.", flags: 64 });
+    }
 }
+// Removed leftover CommonJS export

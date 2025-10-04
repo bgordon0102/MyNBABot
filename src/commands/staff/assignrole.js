@@ -10,35 +10,53 @@ const STAFF_ROLES = ['Commish', 'Schedule Tracker', 'Gameplay Mod', 'Trade Commi
 
 export const data = new SlashCommandBuilder()
     .setName('assignrole')
-    .setDescription('Assign a role to a user quickly.')
+    .setDescription('Assign up to two roles to a user quickly.')
     .addUserOption(option =>
         option.setName('user')
             .setDescription('The user to assign the role to')
             .setRequired(true))
     .addStringOption(option =>
-        option.setName('role')
-            .setDescription('The role to assign')
+        option.setName('role1')
+            .setDescription('The first role to assign')
             .setRequired(true)
+            .setAutocomplete(true))
+    .addStringOption(option =>
+        option.setName('role2')
+            .setDescription('The second role to assign (optional)')
+            .setRequired(false)
             .setAutocomplete(true))
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator);
 
 export async function execute(interaction) {
     const user = interaction.options.getUser('user');
-    const roleName = interaction.options.getString('role');
+    const roleName1 = interaction.options.getString('role1');
+    const roleName2 = interaction.options.getString('role2');
     const member = interaction.guild.members.cache.get(user.id);
 
     if (!member) {
         return interaction.reply({ content: 'User not found in this server.', ephemeral: true });
     }
 
-    const role = interaction.guild.roles.cache.find(r => r.name.toLowerCase() === roleName.toLowerCase());
-    if (!role) {
-        return interaction.reply({ content: `Role "${roleName}" not found.`, ephemeral: true });
+    const role1 = interaction.guild.roles.cache.find(r => r.name.toLowerCase() === roleName1.toLowerCase());
+    if (!role1) {
+        return interaction.reply({ content: `Role "${roleName1}" not found.`, ephemeral: true });
+    }
+    let role2 = null;
+    if (roleName2) {
+        role2 = interaction.guild.roles.cache.find(r => r.name.toLowerCase() === roleName2.toLowerCase());
+        if (!role2) {
+            return interaction.reply({ content: `Role "${roleName2}" not found.`, ephemeral: true });
+        }
     }
 
     try {
-        await member.roles.add(role);
-        await interaction.reply({ content: `Assigned role "${role.name}" to ${user.tag}.`, ephemeral: false });
+        await member.roles.add(role1);
+        let msg = `Assigned role "${role1.name}" to ${user.tag}.`;
+        if (role2) {
+            await member.roles.add(role2);
+            msg = `Assigned roles "${role1.name}" and "${role2.name}" to ${user.tag}.`;
+        }
+        await interaction.reply({ content: msg, ephemeral: false });
     } catch (err) {
         console.error(err);
         await interaction.reply({ content: 'Error assigning role. Check bot permissions.', ephemeral: true });
@@ -46,21 +64,30 @@ export async function execute(interaction) {
 }
 
 export async function autocomplete(interaction) {
-    const focusedValue = interaction.options.getFocused();
-
-    // Create list of all available roles
-    const allRoles = [
-        ...NBA_TEAMS.map(team => `${team} Coach`),
-        ...STAFF_ROLES
-    ];
-
-    // Filter roles based on what user typed
-    const filtered = allRoles.filter(role =>
-        role.toLowerCase().includes(focusedValue.toLowerCase())
-    );
-
-    // Return up to 25 choices (Discord limit)
-    await interaction.respond(
-        filtered.slice(0, 25).map(role => ({ name: role, value: role }))
-    );
+    try {
+        const focusedValue = interaction.options.getFocused();
+        // Create list of all available roles
+        const allRoles = [
+            ...NBA_TEAMS.map(team => `${team} Coach`),
+            ...STAFF_ROLES
+        ];
+        // Filter roles based on what user typed
+        const filtered = allRoles.filter(role =>
+            role.toLowerCase().includes(focusedValue.toLowerCase())
+        );
+        // Return up to 25 choices (Discord limit)
+        if (!interaction.responded && interaction.isAutocomplete()) {
+            await interaction.respond(
+                filtered.slice(0, 25).map(role => ({ name: role, value: role }))
+            );
+        }
+    } catch (err) {
+        // Silently ignore errors to avoid crashing the bot
+        console.error('Autocomplete error in /assignrole:', err?.message || err);
+        try {
+            if (!interaction.responded && interaction.isAutocomplete()) {
+                await interaction.respond([]); // Respond with empty if error
+            }
+        } catch { }
+    }
 }

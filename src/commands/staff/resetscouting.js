@@ -18,22 +18,40 @@ export const data = new SlashCommandBuilder()
 
 export async function execute(interaction) {
   try {
+    // Always defer immediately to avoid interaction expiration
+    try {
+      await interaction.deferReply({ flags: 64 });
+    } catch (err) {
+      console.error('Failed to defer reply in /resetscouting:', err?.message || err);
+      return;
+    }
+    // Reset scouting.json (legacy or other use)
     const scoutingData = readJSON(SCOUTING_FILE);
-
-    // Loop through all coaches
     for (const coachId in scoutingData) {
       if (scoutingData[coachId]) {
-        scoutingData[coachId].weeklyPoints = 40; // reset weekly points
-        scoutingData[coachId].weekScoutedPlayers = {}; // clear current week scouting info
+        scoutingData[coachId].weeklyPoints = 40;
+        scoutingData[coachId].weekScoutedPlayers = {};
       }
     }
-
     writeJSON(SCOUTING_FILE, scoutingData);
 
-    await interaction.reply({ content: 'All coaches weekly scouting points and info have been reset.', ephemeral: false });
+    // Reset scout_points.json (actual scouted info)
+    const scoutPointsPath = './data/scout_points.json';
+    let scoutPointsData = {};
+    if (fs.existsSync(scoutPointsPath)) {
+      scoutPointsData = JSON.parse(fs.readFileSync(scoutPointsPath, 'utf8'));
+      for (const coachId in scoutPointsData) {
+        if (scoutPointsData[coachId]) {
+          scoutPointsData[coachId].playersScouted = {};
+          scoutPointsData[coachId].weeklyPoints = {};
+        }
+      }
+      fs.writeFileSync(scoutPointsPath, JSON.stringify(scoutPointsData, null, 2));
+    }
 
+    await interaction.editReply({ content: 'All coaches weekly scouting points and scouted info have been reset.' });
   } catch (err) {
     console.error(err);
-    await interaction.reply({ content: 'Error resetting scouting data.', ephemeral: true });
+    await interaction.editReply({ content: 'Error resetting scouting data.' });
   }
 }

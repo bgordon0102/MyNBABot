@@ -21,13 +21,13 @@ export async function execute(interaction) {
             .addFields(
                 { name: '/mycommands ⭐', value: 'Shows this menu' },
                 { name: '/startseason', value: 'Initialize season schedule and setup' },
-                { name: '/resetseason', value: 'Reset the current season setup' },
-                { name: '/resetnbaroles', value: 'Create all NBA team coach and staff roles' },
                 { name: '/advanceweek', value: 'Advance to the next week\'s matchups' },
                 { name: '/deletegamechannel', value: 'Delete matchup channels for a selected week' },
                 { name: '/clearmessages', value: 'Clear messages in a channel' },
                 { name: '/assignrole', value: 'Assign a role to a user quickly' },
+                { name: '/resetnbaroles', value: 'Create all NBA team coach and staff roles' },
                 { name: '/resetscouting', value: 'Reset weekly scouting data' },
+                { name: '/simscores', value: 'Simulate and approve random scores for the current week' },
             )
             .setFooter({ text: 'Staff access only' });
     } else {
@@ -37,13 +37,15 @@ export async function execute(interaction) {
             .setDescription('Here are the commands available to Coaches:')
             .addFields(
                 { name: '/mycommands ⭐', value: 'Shows this menu' },
-                { name: '/recruitboard', value: 'View recruits and pull up player cards' },
-                { name: '/bigboard', value: 'Access draft boards (pre, mid, final)' },
-                { name: '/mcdonaldsteam', value: 'View McDonald\'s All-American teams' },
+                { name: '/recruitboard', value: 'View recruits and player cards' },
+                { name: '/bigboard', value: 'View and manage your personal draft big board (reorder your scouted players)' },
+                { name: '/prospectboard', value: 'View the prospect board (pre, mid, final)' },
                 { name: '/invitecoach', value: 'Invite a coach to your office channel' },
                 { name: '/uninvitecoach', value: 'Remove a coach from your office channel' },
-                { name: '/showschedule', value: 'View season schedule by team' },
-                { name: '/scout', value: 'Spend points to scout draft prospects' },
+                { name: '/schedule', value: 'Show a team\'s NBA season schedule' },
+                { name: '/standings', value: 'Show NBA-style conference standings' },
+                { name: '/playoffpicture', value: 'Show the current NBA-style playoff bracket and play-in teams' },
+                { name: '/scout', value: 'Scout a player from the big board' },
                 { name: '/myscouts', value: 'View players you have scouted and info gathered' },
             )
             .setFooter({ text: 'Coach access only' });

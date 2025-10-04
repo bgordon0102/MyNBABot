@@ -1,15 +1,13 @@
-import { SlashCommandBuilder, PermissionFlagsBits } from 'discord.js';
+
+import { SlashCommandBuilder, PermissionFlagsBits, ChannelType } from 'discord.js';
 import fs from 'fs';
+import path from 'path';
 
-const SCHEDULE_FILE = './data/schedule.json';
-
-function readJSON(file) {
-    return JSON.parse(fs.readFileSync(file, 'utf8'));
-}
+const SEASON_FILE = './data/season.json';
 
 export const data = new SlashCommandBuilder()
     .setName('deletegamechannel')
-    .setDescription('Clear all game channels for a selected week (JSON data remains intact).')
+    .setDescription('Delete all game channels for a selected week (Discord only, JSON remains intact).')
     .addIntegerOption(option =>
         option.setName('week')
             .setDescription('Week number to clear')
@@ -17,40 +15,72 @@ export const data = new SlashCommandBuilder()
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator);
 
 export async function execute(interaction) {
-    const week = interaction.options.getInteger('week');
-
-    // Defer reply to prevent timeout
-    await interaction.deferReply();
-
-    if (!fs.existsSync(SCHEDULE_FILE)) {
-        return interaction.editReply({ content: 'No active season found.' });
-    }
-
-    const schedule = readJSON(SCHEDULE_FILE);
-    const weekData = schedule.weeks[week];
-
-    if (!weekData) {
-        return interaction.editReply({ content: `Week ${week} does not exist in the schedule.` });
-    }
-
+    await interaction.deferReply(); // Always first, no conditions
+    const startTime = Date.now();
     try {
-        // Delete channels for the week (leave JSON intact)
-        for (const matchup of weekData) {
-            if (matchup.channelId) {
-                const channel = interaction.guild.channels.cache.get(matchup.channelId);
-                if (channel) await channel.delete().catch(() => { });
-                matchup.channelId = null; // clear channel ID so we can recreate later
+        const absSeasonPath = path.resolve(SEASON_FILE);
+        const exists = fs.existsSync(absSeasonPath);
+        console.log(`[deletegamechannel] Checking for season file at: ${absSeasonPath} (exists: ${exists})`);
+        const week = interaction.options.getInteger('week');
+        if (!exists) {
+            console.error('[deletegamechannel] No active season file found.');
+            return await interaction.editReply({ content: 'No active season found.' });
+        }
+        const season = JSON.parse(fs.readFileSync(SEASON_FILE, 'utf8'));
+        const teams = season.teams;
+        const gameno = season.gameno || (teams ? teams.length - 1 : 0);
+        const schedule = season.schedule;
+        if (!Array.isArray(schedule) || schedule.length === 0) {
+            console.error('[deletegamechannel] No schedule found in season file.');
+            return await interaction.editReply({ content: 'Error: No schedule found in season data. Please start a season first.' });
+        }
+        // Calculate matchups for the week
+        const startIdx = (week - 1) * gameno;
+        const endIdx = startIdx + gameno;
+        const weekMatchups = schedule.slice(startIdx, endIdx);
+        if (!weekMatchups || weekMatchups.length === 0) {
+            console.error(`[deletegamechannel] No games found for week ${week}.`);
+            return await interaction.editReply({ content: `No games found for week ${week}.` });
+        }
+        if (!interaction.guild) {
+            console.error('[deletegamechannel] interaction.guild is undefined.');
+            return await interaction.editReply({ content: 'Error: Guild not found.' });
+        }
+        if (!interaction.guild.channels || !interaction.guild.channels.cache) {
+            console.error('[deletegamechannel] interaction.guild.channels.cache is undefined.');
+            return await interaction.editReply({ content: 'Error: Guild channels not found.' });
+        }
+        // Find the category for this week
+        const categoryName = `Week ${week} Games`;
+        const category = interaction.guild.channels.cache.find(c => c.type === ChannelType.GuildCategory && c.name === categoryName);
+        if (!category) {
+            console.error(`[deletegamechannel] No category found for Week ${week}.`);
+            return await interaction.editReply({ content: `No category found for Week ${week}.` });
+        }
+        // Delete all channels under the category
+        for (const channel of interaction.guild.channels.cache.filter(ch => ch.parentId === category.id).values()) {
+            try {
+                await channel.delete();
+            } catch (e) {
+                console.error(`[deletegamechannel] Failed to delete channel ${channel.name}:`, e);
             }
         }
-
-        // Delete the week category if it exists
-        const category = interaction.guild.channels.cache.find(c => c.type === 4 && c.name === `Week ${week}`);
-        if (category) await category.delete().catch(() => { });
-
-        await interaction.editReply({ content: `✅ Week ${week} channels cleared. JSON data remains intact.` });
-
+        // Delete the category itself
+        try {
+            await category.delete();
+        } catch (e) {
+            console.error(`[deletegamechannel] Failed to delete category:`, e);
+        }
+        const elapsed = Date.now() - startTime;
+        console.log(`[deletegamechannel] Successfully deleted week ${week} channels in ${elapsed}ms.`);
+        await interaction.editReply({ content: `✅ Week ${week} game channels and category deleted from Discord.` });
     } catch (err) {
-        console.error(err);
-        await interaction.editReply({ content: 'Error clearing week channels.' });
+        console.error('[deletegamechannel] Fatal error:', err);
+        // Only try to edit reply if still possible
+        if (!interaction.replied && !interaction.deferred) {
+            try { await interaction.editReply({ content: 'Error clearing week channels.' }); } catch (e) {
+                console.error('[deletegamechannel] Failed to send error message:', e);
+            }
+        }
     }
 }

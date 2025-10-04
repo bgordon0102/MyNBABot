@@ -1,25 +1,26 @@
-import { SlashCommandBuilder } from 'discord.js';
+// src/commands/coach/uninvitecoach.js
+import { SlashCommandBuilder } from "discord.js";
 
 export const data = new SlashCommandBuilder()
-    .setName('uninvitecoach')
-    .setDescription('Remove a coach\'s access to your team information')
-    .addUserOption(option =>
-        option.setName('coach')
-            .setDescription('The coach to uninvite')
-            .setRequired(true));
+    .setName("uninvitecoach")
+    .setDescription("Remove a coach or coach role from your team channel")
+    .addRoleOption(option =>
+        option.setName("role").setDescription("Coach role to remove").setRequired(true)
+    );
 
 export async function execute(interaction) {
-    // TODO: implement logic to:
-    // - Validate coach permissions
-    // - Check existing invitations
-    // - Remove access permissions
-    // - Notify uninvited coach
-    // - Log the uninvitation
+    const role = interaction.options.getRole("role");
+    const channel = interaction.channel;
 
-    const coach = interaction.options.getUser('coach');
-
-    await interaction.reply({
-        content: `❌ Coach uninvitation for ${coach.username} coming soon!`,
-        flags: 64 // MessageFlags.Ephemeral
-    });
+    try {
+        await channel.permissionOverwrites.delete(role.id);
+        await interaction.reply({ content: `✅ Successfully uninvited role ${role}.`, flags: 64 });
+    } catch (err) {
+        // Ignore 'Interaction has already been acknowledged' errors
+        if (err.code === 40060) return;
+        console.error(err);
+        if (!interaction.replied && !interaction.deferred) {
+            await interaction.reply({ content: "❌ Failed to remove coach role.", flags: 64 });
+        }
+    }
 }

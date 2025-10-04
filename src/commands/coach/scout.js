@@ -1,33 +1,215 @@
-import { SlashCommandBuilder } from 'discord.js';
+import { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder } from 'discord.js';
+import fs from 'fs';
+import path from 'path';
 
 export const data = new SlashCommandBuilder()
     .setName('scout')
-    .setDescription('Scout a recruit or assign scouting points')
-    .addStringOption(option =>
-        option.setName('recruit')
-            .setDescription('Name of the recruit to scout')
-            .setRequired(true))
-    .addIntegerOption(option =>
-        option.setName('points')
-            .setDescription('Scouting points to allocate (1-10)')
-            .setRequired(false)
-            .setMinValue(1)
-            .setMaxValue(10));
+    .setDescription('Scout a player from the current big board');
 
 export async function execute(interaction) {
-    // TODO: implement logic to:
-    // - Validate recruit exists
-    // - Check coach's available scouting points
-    // - Allocate scouting points to recruit
-    // - Update scouting database
-    // - Show updated recruit information
-    // - Deduct points from coach's budget
+    console.log(`[SCOUT EXECUTE] Called by user: ${interaction.user?.tag || interaction.user?.id}, interactionId: ${interaction.id}, createdAt: ${interaction.createdAt}`);
+    const userId = interaction.user.id;
+    let deferred = false;
 
-    const recruit = interaction.options.getString('recruit');
-    const points = interaction.options.getInteger('points') || 1;
+    try {
+        await interaction.deferReply({ flags: 64 });
+        deferred = true;
+    } catch (err) {
+        console.error('Failed to defer reply in /scout:', err?.message || err);
+        // If we can't defer, the interaction is expired or invalid; do not continue
+        return;
+    }
+    try {
+        // Load current week
+        const seasonPath = path.join(process.cwd(), 'data/season.json');
+        const seasonData = JSON.parse(fs.readFileSync(seasonPath, 'utf8'));
+        const currentWeek = seasonData.currentWeek ?? 0;
+        if (currentWeek < 1) {
+            if (deferred) await interaction.editReply({ content: 'Scouting features unlock in Week 1. Only the recruit board is available during preseason.' });
+            return;
+        }
 
-    await interaction.reply({
-        content: `🔍 Scouting ${recruit} with ${points} points coming soon!`,
-        flags: 64 // MessageFlags.Ephemeral
-    });
+        // Determine current phase
+        let board = 'pre';
+        if (currentWeek >= 20) board = 'final';
+        else if (currentWeek >= 10) board = 'mid';
+
+        // Use board file logic from prospectBoards.json
+        const prospectBoardsPath = path.join(process.cwd(), 'data/prospectBoards.json');
+        const prospectBoards = JSON.parse(fs.readFileSync(prospectBoardsPath, 'utf8'));
+        const boardFilePath = prospectBoards[board];
+        if (!boardFilePath) throw new Error(`No board file path configured for phase: ${board}`);
+        const bigBoardData = JSON.parse(fs.readFileSync(path.join(process.cwd(), boardFilePath), 'utf8'));
+        const allPlayers = Object.values(bigBoardData).filter(player => player && player.name && player.position_1);
+
+        // Load scouting data
+        const scoutPath = path.join(process.cwd(), 'data/scout_points.json');
+        let scoutData = fs.existsSync(scoutPath) ? JSON.parse(fs.readFileSync(scoutPath, 'utf8')) : {};
+        if (!scoutData[userId]) {
+            scoutData[userId] = { playersScouted: {}, weeklyPoints: {} };
+        }
+        const userData = scoutData[userId];
+        if (!userData.weeklyPoints[`week_${currentWeek}`]) {
+            userData.weeklyPoints[`week_${currentWeek}`] = 40;
+        }
+        if (userData.weeklyPoints[`week_${currentWeek}`] <= 0) {
+            if (deferred) await interaction.editReply({ content: 'You have no scouting points left this week.' });
+            return;
+        }
+
+        // Create select menus grouped by 15, just like prospectboard
+        let numMenus = 1;
+        if (board === 'pre') numMenus = 2;
+        else if (board === 'mid') numMenus = 3;
+        else if (board === 'final') numMenus = 4;
+
+        const components = [];
+        for (let i = 0; i < numMenus; i++) {
+            const startIdx = i * 15;
+            const boardPlayers = allPlayers.slice(startIdx, startIdx + 15);
+            if (boardPlayers.length === 0) continue;
+            let customId = `scout_select_${i + 1}`;
+            const selectOptions = boardPlayers.map((player, idx) => ({
+                label: `${startIdx + idx + 1}. ${player.name}`,
+                description: `${player.position_1} - ${player.team}`,
+                value: player.id_number.toString()
+            }));
+            const selectMenu = new StringSelectMenuBuilder()
+                .setCustomId(customId)
+                .setPlaceholder(`Select a player to scout (${startIdx + 1}-${startIdx + boardPlayers.length})`)
+                .addOptions(selectOptions)
+                .setMinValues(1)
+                .setMaxValues(1); // Enforce single-select
+            const row = new ActionRowBuilder().addComponents(selectMenu);
+            components.push(row);
+        }
+
+        const embed = new EmbedBuilder()
+            .setTitle(`Big Board - ${board.charAt(0).toUpperCase() + board.slice(1)} Phase`)
+            .setColor(0x1e90ff)
+            .setDescription(allPlayers.map((p, idx) => `${idx + 1}: ${p.position_1} ${p.name} - ${p.team}`).join('\n'))
+            .setFooter({ text: `You have ${userData.weeklyPoints[`week_${currentWeek}`]} scouting points left this week.` });
+
+        if (deferred) await interaction.editReply({ embeds: [embed], components });
+    } catch (err) {
+        console.error('Failed to execute /scout:', err?.message || err);
+        if (deferred) {
+            try {
+                await interaction.editReply({ content: 'There was an error while executing this command!' });
+            } catch (editErr) {
+                console.error('Failed to send error message in /scout:', editErr?.message || editErr);
+            }
+        }
+    }
 }
+// New interaction handlers for each select menu
+export async function handleScoutSelect(interaction, menuIndex) {
+    // Always defer immediately to avoid interaction expiration
+    try {
+        await interaction.deferReply({ flags: 64 });
+    } catch (err) {
+        console.error('Failed to defer reply in handleScoutSelect:', err?.message || err);
+        return;
+    }
+    const userId = interaction.user.id;
+    const seasonPath = path.join(process.cwd(), 'data/season.json');
+    const seasonData = JSON.parse(fs.readFileSync(seasonPath, 'utf8'));
+    const currentWeek = seasonData.currentWeek || 1;
+    let board = 'pre';
+    if (currentWeek >= 20) board = 'final';
+    else if (currentWeek >= 10) board = 'mid';
+    // Use board file logic from season.json (prospectBoards)
+    const boardFilePath = seasonData.prospectBoards?.[board];
+    if (!boardFilePath) {
+        await interaction.editReply({ content: `No board file path configured for phase: ${board}` });
+        return;
+    }
+    const bigBoardData = JSON.parse(fs.readFileSync(path.join(process.cwd(), boardFilePath), 'utf8'));
+    const allPlayers = Object.values(bigBoardData).filter(player => player && player.name && player.position_1);
+    const startIdx = (menuIndex - 1) * 15;
+    const players = allPlayers.slice(startIdx, startIdx + 15);
+    const playerId = interaction.values[0];
+    const player = players.find(p => p.id_number.toString() === playerId);
+    if (!player) {
+        await safeReplyOrEdit({ content: 'Player not found.', flags: 64 });
+        return;
+    }
+    const playerName = player.name;
+    // Helper to reply or editReply depending on state
+    async function safeReplyOrEdit(options) {
+        try {
+            if (interaction.deferred || interaction.replied) {
+                await interaction.editReply(options);
+            } else {
+                await interaction.reply(options);
+            }
+        } catch (err) {
+            console.error('Failed to send reply/editReply:', err?.message || err);
+        }
+    }
+    if (!player) {
+        await safeReplyOrEdit({ content: 'Player not found.', flags: 64 });
+        return;
+    }
+
+    // Load scouting data
+    const scoutPath = path.join(process.cwd(), 'data/scout_points.json');
+    let scoutData = fs.existsSync(scoutPath) ? JSON.parse(fs.readFileSync(scoutPath, 'utf8')) : {};
+    if (!scoutData[userId]) {
+        scoutData[userId] = { playersScouted: {}, weeklyPoints: {} };
+    }
+    const userData = scoutData[userId];
+    // Only set to 40 if not already set for this week
+    if (userData.weeklyPoints[`week_${currentWeek}`] === undefined) {
+        userData.weeklyPoints[`week_${currentWeek}`] = 40;
+    }
+    let pointsLeft = userData.weeklyPoints[`week_${currentWeek}`];
+    if (pointsLeft <= 0) {
+        await safeReplyOrEdit({ content: 'You have no scouting points left this week.', flags: 64 });
+        return;
+    }
+    // Unlock order: build, draft_score, overall, potential
+    const categories = ['build', 'draft_score', 'overall', 'potential'];
+    // Persist unlocks across all phases: if unlocked in any phase, keep them
+    let unlocked = userData.playersScouted[playerName] || [];
+    // Guard: Only allow one unlock per interaction, even if handler is called twice
+    const alreadyUnlocked = unlocked.length;
+    // Find the next locked category
+    const nextCat = categories.find(cat => !unlocked.includes(cat));
+    let pointsUsed = 0;
+    if (nextCat && pointsLeft >= 10 && unlocked.length === alreadyUnlocked) {
+        unlocked = [...unlocked, nextCat];
+        pointsLeft -= 10;
+        pointsUsed = 10;
+    }
+    userData.playersScouted[playerName] = unlocked;
+    userData.weeklyPoints[`week_${currentWeek}`] = pointsLeft;
+    fs.writeFileSync(scoutPath, JSON.stringify(scoutData, null, 2));
+    // Always use editReply after deferReply
+    // Build small player card showing all unlocked info, or a message if none
+    const card = new EmbedBuilder()
+        .setTitle(`${player.position_1} ${player.name} - ${player.team}`)
+        .setThumbnail(player.image)
+        .setColor(0x1e90ff);
+    const displayOrder = ['build', 'draft_score', 'overall', 'potential'];
+    let anyUnlocked = false;
+    displayOrder.forEach(cat => {
+        if (unlocked.includes(cat)) {
+            anyUnlocked = true;
+            if (cat === 'overall') card.addFields({ name: 'Overall', value: player.overall.toString(), inline: true });
+            if (cat === 'potential') card.addFields({ name: 'Potential', value: player.potential.toString(), inline: true });
+            if (cat === 'draft_score') card.addFields({ name: 'Draft Score', value: player.draft_score.toString(), inline: true });
+            if (cat === 'build') card.addFields({ name: 'Build', value: player.build, inline: true });
+        }
+    });
+    if (!anyUnlocked) {
+        card.setDescription('No info unlocked yet. Use your scouting points to unlock player details.');
+    }
+    let footerMsg = `You have ${pointsLeft} scouting points left this week.`;
+    if (pointsUsed > 0) {
+        footerMsg = `You used ${pointsUsed} points. ${pointsLeft} points left this week.`;
+    }
+    card.setFooter({ text: footerMsg });
+    await safeReplyOrEdit({ embeds: [card], components: [], flags: 64 });
+}
+// Removed leftover CommonJS export

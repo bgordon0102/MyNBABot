@@ -9,7 +9,7 @@
     "height": "7'1\"",
     "weight": 225,
     "all_american": "yes",
-    "mcdonalds_team": "East",
+    "region": "East",
     "grade": 94,
     "pos number": 5,
     "star rating": 5
@@ -24,7 +24,7 @@
     "height": "6'6\"",
     "weight": 180,
     "all_american": "yes",
-    "mcdonalds_team": "East",
+    "region": "East",
     "grade": 94,
     "pos number": 3,
     "star rating": 5
@@ -39,7 +39,7 @@
     "height": "6'5\"",
     "weight": 180,
     "all_american": "yes",
-    "mcdonalds_team": "West",
+    "region": "West",
     "grade": 93,
     "pos number": 1,
     "star rating": 5
@@ -54,7 +54,7 @@
     "height": "6'6\"",
     "weight": 200,
     "all_american": "yes",
-    "mcdonalds_team": "East",
+    "region": "East",
     "grade": 93,
     "pos number": 3,
     "star rating": 5
@@ -69,7 +69,7 @@
     "height": "6'4\"",
     "weight": 180,
     "all_american": "yes",
-    "mcdonalds_team": "East",
+    "region": "East",
     "grade": 93,
     "pos number": 2,
     "star rating": 5
@@ -84,7 +84,7 @@
     "height": "6'5\"",
     "weight": 200,
     "all_american": "yes",
-    "mcdonalds_team": "East",
+    "region": "East",
     "grade": 92,
     "pos number": 1,
     "star rating": 5
@@ -99,7 +99,7 @@
     "height": "6'1\"",
     "weight": 175,
     "all_american": "yes",
-    "mcdonalds_team": "West",
+    "region": "West",
     "grade": 92,
     "pos number": 1,
     "star rating": 5
@@ -114,7 +114,7 @@
     "height": "6'9\"",
     "weight": 240,
     "all_american": "yes",
-    "mcdonalds_team": "East",
+    "region": "East",
     "grade": 92,
     "pos number": 5,
     "star rating": 5
@@ -129,7 +129,7 @@
     "height": "6'3\"",
     "weight": 180,
     "all_american": "yes",
-    "mcdonalds_team": "West",
+    "region": "West",
     "grade": 91,
     "pos number": 1,
     "star rating": 5
@@ -144,7 +144,7 @@
     "height": "6'7\"",
     "weight": 190,
     "all_american": "yes",
-    "mcdonalds_team": "West",
+    "region": "West",
     "grade": 91,
     "pos number": 2,
     "star rating": 5
@@ -159,7 +159,7 @@
     "height": "6'8\"",
     "weight": 210,
     "all_american": "yes",
-    "mcdonalds_team": "East",
+    "region": "East",
     "grade": 91,
     "pos number": 3,
     "star rating": 5
@@ -174,7 +174,7 @@
     "height": "6'8\"",
     "weight": 195,
     "all_american": "yes",
-    "mcdonalds_team": "East",
+    "region": "East",
     "grade": 91,
     "pos number": 3,
     "star rating": 5
@@ -189,7 +189,7 @@
     "height": "6'5\"",
     "weight": 175,
     "all_american": "yes",
-    "mcdonalds_team": "West",
+    "region": "West",
     "grade": 90,
     "pos number": 1,
     "star rating": 5
@@ -204,7 +204,7 @@
     "height": "6'6\"",
     "weight": 215,
     "all_american": "yes",
-    "mcdonalds_team": "West",
+    "region": "West",
     "grade": 90,
     "pos number": 3,
     "star rating": 5
@@ -219,24 +219,24 @@
     "height": "6'3\"",
     "weight": 190,
     "all_american": "yes",
-    "mcdonalds_team": "East",
+    "region": "East",
     "grade": 90,
     "pos number": 1,
     "star rating": 5
   },
   "16": {
     "national_rank": 16,
-    "positional_rank": 6,
-    "position": "SF",
+    "positional_rank": 1,
+    "position": "PF",
     "name": "Tyler Watts",
     "college": "Duke",
     "hometown": "Charlotte, NC",
     "height": "6'8\"",
     "weight": 190,
     "all_american": "yes",
-    "mcdonalds_team": "East",
+    "region": "East",
     "grade": 90,
-    "pos number": 3,
+    "pos number": 4,
     "star rating": 5
   },
   "17": {
@@ -249,14 +249,14 @@
     "height": "6'11\"",
     "weight": 210,
     "all_american": "yes",
-    "mcdonalds_team": "East",
+    "region": "East",
     "grade": 90,
     "pos number": 5,
     "star rating": 5
   },
   "18": {
     "national_rank": 18,
-    "positional_rank": 1,
+    "positional_rank": 2,
     "position": "PF",
     "name": "Audell Williams",
     "college": "Syrcuse",
@@ -264,7 +264,7 @@
     "height": "6'10\"",
     "weight": 215,
     "all_american": "yes",
-    "mcdonalds_team": "East",
+    "region": "East",
     "grade": 90,
     "pos number": 4,
     "star rating": 5
@@ -279,7 +279,7 @@
     "height": "6'10\"",
     "weight": 230,
     "all_american": "yes",
-    "mcdonalds_team": "East",
+    "region": "East",
     "grade": 90,
     "pos number": 5,
     "star rating": 5
@@ -294,7 +294,7 @@
     "height": "6'5\"",
     "weight": 220,
     "all_american": "yes",
-    "mcdonalds_team": "East",
+    "region": "East",
     "grade": 89,
     "pos number": 3,
     "star rating": 4
@@ -309,7 +309,7 @@
     "height": "6'6'",
     "weight": 205,
     "all_american": "yes",
-    "mcdonalds_team": "East",
+    "region": "East",
     "grade": 89,
     "pos number": 2,
     "star rating": 4
@@ -324,7 +324,7 @@
     "height": "6'7\"",
     "weight": 195,
     "all_american": "yes",
-    "mcdonalds_team": "West",
+    "region": "West",
     "grade": 89,
     "pos number": 3,
     "star rating": 4
@@ -339,14 +339,14 @@
     "height": "6'5\"",
     "weight": 210,
     "all_american": "no",
-    "mcdonalds_team": "East",
+    "region": "East",
     "grade": 89,
     "pos number": 2,
     "star rating": 4
   },
   "24": {
     "national_rank": 24,
-    "positional_rank": 2,
+    "positional_rank": 3,
     "position": "PF",
     "name": "Ahmed Mills",
     "college": "Colorado",
@@ -354,7 +354,7 @@
     "height": "6'8\"",
     "weight": 220,
     "all_american": "no",
-    "mcdonalds_team": "East",
+    "region": "East",
     "grade": 89,
     "pos number": 4,
     "star rating": 4
@@ -369,14 +369,14 @@
     "height": "6'1\"",
     "weight": 165,
     "all_american": "no",
-    "mcdonalds_team": "East",
+    "region": "East",
     "grade": 89,
     "pos number": 1,
     "star rating": 4
   },
   "26": {
     "national_rank": 26,
-    "positional_rank": 3,
+    "positional_rank": 4,
     "position": "PF",
     "name": "William Sykes",
     "college": "Illinois",
@@ -384,7 +384,7 @@
     "height": "6'8\"",
     "weight": 225,
     "all_american": "yes",
-    "mcdonalds_team": "West",
+    "region": "West",
     "grade": 89,
     "pos number": 4,
     "star rating": 4
@@ -399,7 +399,7 @@
     "height": "6'7\"",
     "weight": 180,
     "all_american": "no",
-    "mcdonalds_team": "East",
+    "region": "East",
     "grade": 89,
     "pos number": 3,
     "star rating": 4
@@ -414,7 +414,7 @@
     "height": "6'8\"",
     "weight": 220,
     "all_american": "yes",
-    "mcdonalds_team": "West",
+    "region": "West",
     "grade": 89,
     "pos number": 5,
     "star rating": 4
@@ -429,7 +429,7 @@
     "height": "6'11\"",
     "weight": 220,
     "all_american": "no",
-    "mcdonalds_team": "East",
+    "region": "East",
     "grade": 89,
     "pos number": 5,
     "star rating": 4
@@ -444,7 +444,7 @@
     "height": "6'5\"",
     "weight": 195,
     "all_american": "yes",
-    "mcdonalds_team": "West",
+    "region": "West",
     "grade": 89,
     "pos number": 2,
     "star rating": 4
@@ -459,7 +459,7 @@
     "height": "6'3\"",
     "weight": 190,
     "all_american": "yes",
-    "mcdonalds_team": "West",
+    "region": "West",
     "grade": 89,
     "pos number": 2,
     "star rating": 4
@@ -468,13 +468,13 @@
     "national_rank": 32,
     "positional_rank": 7,
     "position": "SG",
-    "name": "James Connolly",
+    "name": "James Cooney",
     "college": "Wisconsin",
     "hometown": "Chatsworth, CA",
     "height": "6'3\"",
     "weight": 180,
     "all_american": "yes",
-    "mcdonalds_team": "West",
+    "region": "West",
     "grade": 89,
     "pos number": 2,
     "star rating": 4
@@ -489,14 +489,14 @@
     "height": "6'2\"",
     "weight": 190,
     "all_american": "no",
-    "mcdonalds_team": "East",
+    "region": "East",
     "grade": 89,
     "pos number": 1,
     "star rating": 4
   },
   "34": {
     "national_rank": 34,
-    "positional_rank": 4,
+    "positional_rank": 5,
     "position": "PF",
     "name": "Angelo Booker",
     "college": "Kentucky",
@@ -504,14 +504,14 @@
     "height": "6'6\"",
     "weight": 215,
     "all_american": "no",
-    "mcdonalds_team": "East",
+    "region": "East",
     "grade": 89,
     "pos number": 4,
     "star rating": 4
   },
   "35": {
     "national_rank": 35,
-    "positional_rank": 5,
+    "positional_rank": 6,
     "position": "PF",
     "name": "Issac Barrios",
     "college": "Michigan",
@@ -519,14 +519,14 @@
     "height": "6'10\"",
     "weight": 230,
     "all_american": "no",
-    "mcdonalds_team": "East",
+    "region": "East",
     "grade": 88,
     "pos number": 4,
     "star rating": 4
   },
   "36": {
     "national_rank": 36,
-    "positional_rank": 6,
+    "positional_rank": 7,
     "position": "PF",
     "name": "Aaron Carrillo",
     "college": "Oregon",
@@ -534,7 +534,7 @@
     "height": "6'8\"",
     "weight": 220,
     "all_american": "no",
-    "mcdonalds_team": "East",
+    "region": "East",
     "grade": 88,
     "pos number": 4,
     "star rating": 4
@@ -546,10 +546,10 @@
     "name": "Armen Williams",
     "college": "UNLV",
     "hometown": "Minneapolis, MN",
-    "height": "6'10\"",
-    "weight": 235,
+    "height": "6'11\"",
+    "weight": 230,
     "all_american": "yes",
-    "mcdonalds_team": "West",
+    "region": "West",
     "grade": 88,
     "pos number": 5,
     "star rating": 4
@@ -561,27 +561,27 @@
     "name": "Qamani Wanaweru",
     "college": "Notre Dame",
     "hometown": "Pheonix, AZ",
-    "height": "6'8\"",
+    "height": "6'7\"",
     "weight": 185,
     "all_american": "yes",
-    "mcdonalds_team": "West",
+    "region": "West",
     "grade": 88,
     "pos number": 3,
     "star rating": 4
   },
   "39": {
     "national_rank": 39,
-    "positional_rank": 11,
-    "position": "SF",
+    "positional_rank": 8,
+    "position": "PF",
     "name": "Tykeim Shaw",
     "college": "Ohio State",
     "hometown": "Tulsa, OK",
-    "height": "6'5\"",
-    "weight": 190,
+    "height": "6'7\"",
+    "weight": 195,
     "all_american": "yes",
-    "mcdonalds_team": "West",
+    "region": "West",
     "grade": 88,
-    "pos number": 3,
+    "pos number": 4,
     "star rating": 4
   },
   "40": {
@@ -594,7 +594,7 @@
     "height": "6'6\"",
     "weight": 190,
     "all_american": "no",
-    "mcdonalds_team": "East",
+    "region": "East",
     "grade": 88,
     "pos number": 2,
     "star rating": 4
@@ -609,7 +609,7 @@
     "height": "6'1\"",
     "weight": 180,
     "all_american": "no",
-    "mcdonalds_team": "East",
+    "region": "East",
     "grade": 88,
     "pos number": 1,
     "star rating": 4
@@ -624,7 +624,7 @@
     "height": "6'6\"",
     "weight": 185,
     "all_american": "no",
-    "mcdonalds_team": "West",
+    "region": "West",
     "grade": 88,
     "pos number": 1,
     "star rating": 4
@@ -639,7 +639,7 @@
     "height": "7'1\"",
     "weight": 220,
     "all_american": "no",
-    "mcdonalds_team": "East",
+    "region": "East",
     "grade": 88,
     "pos number": 5,
     "star rating": 4
@@ -654,14 +654,14 @@
     "height": "6'1\"",
     "weight": 180,
     "all_american": "no",
-    "mcdonalds_team": "East",
+    "region": "East",
     "grade": 88,
     "pos number": 2,
     "star rating": 4
   },
   "45": {
     "national_rank": 45,
-    "positional_rank": 7,
+    "positional_rank": 9,
     "position": "PF",
     "name": "Ian Brittain",
     "college": "Alabama",
@@ -669,7 +669,7 @@
     "height": "6'8\"",
     "weight": 215,
     "all_american": "no",
-    "mcdonalds_team": "West",
+    "region": "West",
     "grade": 88,
     "pos number": 4,
     "star rating": 4
@@ -684,7 +684,7 @@
     "height": "6'11\"",
     "weight": 235,
     "all_american": "no",
-    "mcdonalds_team": "West",
+    "region": "West",
     "grade": 88,
     "pos number": 5,
     "star rating": 4
@@ -699,7 +699,7 @@
     "height": "6'8\"",
     "weight": 240,
     "all_american": "no",
-    "mcdonalds_team": "West",
+    "region": "West",
     "grade": 88,
     "pos number": 5,
     "star rating": 4
@@ -714,7 +714,7 @@
     "height": "7'0\"",
     "weight": 210,
     "all_american": "no",
-    "mcdonalds_team": "East",
+    "region": "East",
     "grade": 88,
     "pos number": 5,
     "star rating": 4
@@ -729,7 +729,7 @@
     "height": "6'4\"",
     "weight": 190,
     "all_american": "no",
-    "mcdonalds_team": "East",
+    "region": "East",
     "grade": 88,
     "pos number": 1,
     "star rating": 4
@@ -744,7 +744,7 @@
     "height": "6'9\"",
     "weight": 180,
     "all_american": "no",
-    "mcdonalds_team": "East",
+    "region": "East",
     "grade": 88,
     "pos number": 3,
     "star rating": 4
