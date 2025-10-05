@@ -1,3 +1,4 @@
+console.log('DEBUG: Bot startup log from app.js');
 import { Client, GatewayIntentBits, Collection } from 'discord.js';
 import { fileURLToPath, pathToFileURL } from 'url';
 import { dirname, join } from 'path';

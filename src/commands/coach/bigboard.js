@@ -16,7 +16,6 @@ export async function execute(interaction) {
         const seasonData = JSON.parse(fs.readFileSync(seasonPath, 'utf8'));
         const currentWeek = seasonData.currentWeek ?? 0;
         if (currentWeek < 1) {
-            await interaction.deferReply({ ephemeral: true });
             await interaction.editReply({ content: 'Scouting features unlock in Week 1. Only the recruit board is available during preseason.' });
             return;
         }
@@ -65,12 +64,18 @@ export async function execute(interaction) {
         const prospectBoardsPath = path.join(process.cwd(), 'data/prospectBoards.json');
         const prospectBoards = JSON.parse(fs.readFileSync(prospectBoardsPath, 'utf8'));
         const boardFile = prospectBoards[phase];
+        let boardData = {};
         if (!boardFile) {
-            await interaction.editReply({ content: `No board file configured for phase: ${phase}` });
+            await interaction.editReply({ content: `No board file configured for phase: ${phase}. Please contact staff if this is unexpected.` });
             return;
         }
         const boardPath = path.join(process.cwd(), boardFile);
-        const boardData = JSON.parse(fs.readFileSync(boardPath, 'utf8'));
+        try {
+            boardData = JSON.parse(fs.readFileSync(boardPath, 'utf8'));
+        } catch (err) {
+            await interaction.editReply({ content: `Could not load the board file for phase: ${phase}. Please contact staff if this is unexpected.` });
+            return;
+        }
         // Build a map of name->player for the current phase
         const currentBoardNameMap = {};
         Object.values(boardData).forEach(p => { if (p && p.name) currentBoardNameMap[p.name] = p; });

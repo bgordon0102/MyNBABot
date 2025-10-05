@@ -1,6 +1,8 @@
 import { SlashCommandBuilder, EmbedBuilder, StringSelectMenuBuilder, ActionRowBuilder } from 'discord.js';
 import fs from 'fs';
 
+import path from 'path';
+
 const SEASON_FILE = './data/season.json';
 const PLAYERS_FILE = './data/players.json';
 
@@ -24,12 +26,27 @@ export const data = new SlashCommandBuilder()
 export async function execute(interaction) {
     const board = interaction.options.getString('board');
     // Always defer reply IMMEDIATELY for robust handling
-    let deferred = false;
-    await interaction.deferReply({ flags: 64 });
+    let responded = false;
+    // Timeout: always respond within 10 seconds
+    const timeout = setTimeout(async () => {
+        if (!responded) {
+            responded = true;
+            try {
+                await interaction.editReply({ content: '⏰ Prospect board timed out. Please try again.' });
+            } catch (e) {
+                console.error('Timeout error sending fallback reply:', e);
+            }
+        }
+    }, 10000);
+    await interaction.deferReply();
     try {
         // Read season data for current week
         if (!fs.existsSync(SEASON_FILE)) {
-            if (deferred) await interaction.editReply({ content: 'Season file not found.' });
+            if (!responded) {
+                responded = true;
+                clearTimeout(timeout);
+                await interaction.editReply({ content: 'Season file not found.' });
+            }
             return;
         }
 
@@ -39,22 +56,46 @@ export async function execute(interaction) {
         // Check unlock rules
         const unlockWeeks = { pre: 1, mid: 10, final: 20 };
         if (currentWeek < unlockWeeks[board]) {
-            if (deferred) await interaction.editReply({
-                content: `\ud83d\udd12 This board is locked until Week ${unlockWeeks[board]}. Current week: ${currentWeek}`
-            });
+            if (!responded) {
+                responded = true;
+                clearTimeout(timeout);
+                await interaction.editReply({
+                    content: `🔒 This board is locked until Week ${unlockWeeks[board]}. Current week: ${currentWeek}`
+                });
+            }
             return;
         }
 
         // Read board file paths from prospectBoards.json
-        const prospectBoardsPath = './data/prospectBoards.json';
+        const prospectBoardsPath = path.join(process.cwd(), 'data/prospectBoards.json');
         if (!fs.existsSync(prospectBoardsPath)) {
-            if (deferred) await interaction.editReply({ content: 'Prospect boards file not found.' });
+            if (!responded) {
+                responded = true;
+                clearTimeout(timeout);
+                await interaction.editReply({ content: 'Prospect boards file not found.' });
+            }
             return;
         }
         const prospectBoards = readJSON(prospectBoardsPath);
-        const boardFilePath = prospectBoards[board];
-        if (!boardFilePath || !fs.existsSync(boardFilePath)) {
-            if (deferred) await interaction.editReply({ content: `${board} board file not found.` });
+        let boardFilePath = prospectBoards[board];
+        if (!boardFilePath) {
+            if (!responded) {
+                responded = true;
+                clearTimeout(timeout);
+                await interaction.editReply({ content: `${board} board file not found in prospectBoards.json.` });
+            }
+            return;
+        }
+        // Always resolve to absolute path
+        if (!path.isAbsolute(boardFilePath)) {
+            boardFilePath = path.join(process.cwd(), boardFilePath);
+        }
+        if (!fs.existsSync(boardFilePath)) {
+            if (!responded) {
+                responded = true;
+                clearTimeout(timeout);
+                await interaction.editReply({ content: `${board} board file not found at resolved path: ${boardFilePath}` });
+            }
             return;
         }
 
@@ -64,7 +105,11 @@ export async function execute(interaction) {
             bigBoardData = readJSON(boardFilePath);
         } catch (e) {
             console.error('Failed to parse board file:', e);
-            if (deferred) await interaction.editReply({ content: `Failed to parse ${board} board file.` });
+            if (!responded) {
+                responded = true;
+                clearTimeout(timeout);
+                await interaction.editReply({ content: `Failed to parse ${board} board file.` });
+            }
             return;
         }
         // Get all players for the board
@@ -76,7 +121,11 @@ export async function execute(interaction) {
             console.log('[prospectboard] First player:', allPlayers[0]);
         }
         if (allPlayers.length === 0) {
-            if (deferred) await interaction.editReply({ content: `No players found in ${board} board.` });
+            if (!responded) {
+                responded = true;
+                clearTimeout(timeout);
+                await interaction.editReply({ content: `No players found in ${board} board.` });
+            }
             return;
         }
 
@@ -135,19 +184,29 @@ export async function execute(interaction) {
             components.push(row);
         }
 
-        if (deferred) await interaction.editReply({
-            embeds: [embed],
-            components
-        });
+        if (!responded) {
+            responded = true;
+            clearTimeout(timeout);
+            await interaction.editReply({
+                embeds: [embed],
+                components
+            });
+        }
     } catch (err) {
         // Enhanced error logging for debugging
         console.error('prospectboard.js error:', err && err.stack ? err.stack : err);
-        if (deferred) {
+        if (!responded) {
+            responded = true;
+            clearTimeout(timeout);
             try {
                 await interaction.editReply({ content: 'Error loading recruit board.' });
             } catch (e) {
                 console.error('Failed to send error message:', e && e.stack ? e.stack : e);
             }
         }
+    }
+    if (!responded) {
+        responded = true;
+        clearTimeout(timeout);
     }
 }

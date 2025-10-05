@@ -3,7 +3,7 @@ import fs from "fs";
 import path from "path";
 import { EmbedBuilder } from "discord.js";
 
-const playersFile = path.join(process.cwd(), "data/players.json");
+const prospectBoardsFile = path.join(process.cwd(), "data/prospectBoards.json");
 
 export async function execute(interaction) {
     await interaction.deferUpdate();
@@ -13,9 +13,20 @@ export async function execute(interaction) {
     if (boardTitle.includes("Mid Prospect")) board = "mid";
     else if (boardTitle.includes("Final Prospect")) board = "final";
 
-    const playerConfig = JSON.parse(fs.readFileSync(playersFile));
-    const boardFilePath = playerConfig.boardFiles[board];
-    const bigBoardData = JSON.parse(fs.readFileSync(boardFilePath));
+    const prospectBoards = JSON.parse(fs.readFileSync(prospectBoardsFile, 'utf8'));
+    let boardFilePath = prospectBoards[board];
+    if (!boardFilePath) {
+        await interaction.editReply({ content: `Board file for phase '${board}' not found.`, flags: 64 });
+        return;
+    }
+    if (!path.isAbsolute(boardFilePath)) {
+        boardFilePath = path.join(process.cwd(), boardFilePath);
+    }
+    if (!fs.existsSync(boardFilePath)) {
+        await interaction.editReply({ content: `Board file not found at resolved path: ${boardFilePath}`, flags: 64 });
+        return;
+    }
+    const bigBoardData = JSON.parse(fs.readFileSync(boardFilePath, 'utf8'));
     const allPlayers = Object.values(bigBoardData).filter(player => player && player.name && player.position_1);
 
     // Page 1: 1-15
@@ -31,16 +42,14 @@ export async function execute(interaction) {
         .setThumbnail(selected.image || null)
         .addFields(
             { name: "Team", value: selected.team || "N/A", inline: true },
-            { name: "Nationality", value: selected.nationality || "N/A", inline: true },
             { name: "Class", value: selected.class || "N/A", inline: true },
             { name: "Age", value: selected.age?.toString() || "N/A", inline: true },
-            { name: "Height", value: selected.height || "N/A", inline: true },
-            { name: "Weight", value: selected.weight?.toString() || "N/A", inline: true },
-            { name: "Wingspan", value: selected.wingspan || "N/A", inline: true },
-            { name: "About", value: selected.about || "N/A" },
+            { name: "Nationality", value: selected.nationality || "N/A", inline: true },
+            { name: "Physicals", value: `**Ht:** ${selected.height || 'N/A'}  **Wt:** ${selected.weight?.toString() || 'N/A'}  **Wingspan:** ${selected.wingspan || 'N/A'}`, inline: false },
+            { name: "About", value: selected.about || "N/A", inline: false },
             { name: "Strengths", value: strengths, inline: true },
             { name: "Weaknesses", value: weaknesses, inline: true },
-            { name: "Pro Comparison", value: selected.pro_comp || "N/A", inline: false }
+            { name: "Pro Comp", value: selected.pro_comp || "N/A", inline: true }
         )
         .setColor("Green");
 

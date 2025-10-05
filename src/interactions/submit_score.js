@@ -17,20 +17,26 @@ function writeScores(scores) {
 }
 
 export async function sendWelcomeAndButton(channel, week, seasonNo) {
-    // Try to tag both coach roles in the welcome message
+    // Tag both coach roles using coachRoleMap.json and full team names
     let team1RoleId = null, team2RoleId = null;
-    let team1 = '', team2 = '';
     try {
-        // Extract team names from channel name
+        // Extract team abbreviations from channel name
         const match = channel.name.match(/^(.*?)-vs-(.*?)$/);
         if (match) {
-            team1 = match[1].replace(/-/g, ' ');
-            team2 = match[2].replace(/-/g, ' ');
-            const guild = channel.guild;
-            const team1Role = guild.roles.cache.find(r => r.name.toLowerCase() === `${team1.toLowerCase()} coach`);
-            const team2Role = guild.roles.cache.find(r => r.name.toLowerCase() === `${team2.toLowerCase()} coach`);
-            if (team1Role) team1RoleId = team1Role.id;
-            if (team2Role) team2RoleId = team2Role.id;
+            const abbrToFull = {
+                ATL: 'Atlanta Hawks', BOS: 'Boston Celtics', BKN: 'Brooklyn Nets', CHA: 'Charlotte Hornets', CHI: 'Chicago Bulls', CLE: 'Cleveland Cavaliers', DAL: 'Dallas Mavericks', DEN: 'Denver Nuggets', DET: 'Detroit Pistons', GSW: 'Golden State Warriors', HOU: 'Houston Rockets', IND: 'Indiana Pacers', LAC: 'LA Clippers', LAL: 'Los Angeles Lakers', MEM: 'Memphis Grizzlies', MIA: 'Miami Heat', MIL: 'Milwaukee Bucks', MIN: 'Minnesota Timberwolves', NOP: 'New Orleans Pelicans', NYK: 'New York Knicks', OKC: 'Oklahoma City Thunder', ORL: 'Orlando Magic', PHI: 'Philadelphia 76ers', PHX: 'Phoenix Suns', POR: 'Portland Trail Blazers', SAC: 'Sacramento Kings', SAS: 'San Antonio Spurs', TOR: 'Toronto Raptors', UTA: 'Utah Jazz', WAS: 'Washington Wizards'
+            };
+            const abbr1 = match[1].toUpperCase();
+            const abbr2 = match[2].toUpperCase();
+            const team1Full = abbrToFull[abbr1] || abbr1;
+            const team2Full = abbrToFull[abbr2] || abbr2;
+            // Load coachRoleMap.json
+            let coachRoleMap = {};
+            try {
+                coachRoleMap = JSON.parse(fs.readFileSync('./data/coachRoleMap.json', 'utf8'));
+            } catch { }
+            team1RoleId = coachRoleMap[team1Full];
+            team2RoleId = coachRoleMap[team2Full];
         }
     } catch { }
     const submitBtn = new ButtonBuilder()
@@ -39,17 +45,58 @@ export async function sendWelcomeAndButton(channel, week, seasonNo) {
         .setStyle(ButtonStyle.Primary);
     // 48-hour countdown from now
     const deadline = Math.floor(Date.now() / 1000) + 48 * 3600;
-    let content = `Welcome! Use this channel to coordinate your matchup. After your game, the winning coach should report the score using the button below.\n\n:alarm_clock: **Score must be submitted within <t:${deadline}:R> (<t:${deadline}:f>)**`;
+    let content = '';
     if (team1RoleId && team2RoleId) {
-        content = `<@&${team1RoleId}> <@&${team2RoleId}>\n` + content;
+        content += `Welcome <@&${team1RoleId}> & <@&${team2RoleId}>!\n`;
     }
-    await channel.send({
-        content,
-        components: [new ActionRowBuilder().addComponents(submitBtn)]
-    });
+    content += 'Use this channel to coordinate your matchup. After your game, the winning coach should report the score using the button below.\n\n';
+    content += `:alarm_clock: **Score must be submitted within <t:${deadline}:R> (<t:${deadline}:f>)**`;
+    console.log('[sendWelcomeAndButton] Attempting to send welcome message to channel:', channel.name, 'ID:', channel.id);
+    console.log('[sendWelcomeAndButton] Content:', content);
+    try {
+        await channel.send({
+            content,
+            components: [new ActionRowBuilder().addComponents(submitBtn)]
+        });
+        console.log('[sendWelcomeAndButton] Successfully sent welcome message to channel:', channel.name, 'ID:', channel.id);
+    } catch (err) {
+        console.error('[sendWelcomeAndButton] Failed to send welcome message to channel:', channel.name, 'ID:', channel.id, 'Error:', err);
+    }
 }
 
 export async function handleButton(interaction) {
+    console.log('[submit_score] DEBUG: handleButton called by user:', interaction.user.tag, 'ID:', interaction.user.id);
+    // Restrict: Only coaches for this game can submit a score
+    try {
+        // Extract team abbreviations from channel name
+        const match = interaction.channel.name.match(/^(.*?)-vs-(.*?)$/);
+        if (match) {
+            const abbrToNickname = {
+                ATL: 'Hawks', BOS: 'Celtics', BKN: 'Nets', CHA: 'Hornets', CHI: 'Bulls', CLE: 'Cavaliers', DAL: 'Mavericks', DEN: 'Nuggets', DET: 'Pistons', GSW: 'Warriors', HOU: 'Rockets', IND: 'Pacers', LAC: 'Clippers', LAL: 'Lakers', MEM: 'Grizzlies', MIA: 'Heat', MIL: 'Bucks', MIN: 'Timberwolves', NOP: 'Pelicans', NYK: 'Knicks', OKC: 'Thunder', ORL: 'Magic', PHI: 'Sixers', PHX: 'Suns', POR: 'Trail Blazers', SAC: 'Kings', SAS: 'Spurs', TOR: 'Raptors', UTA: 'Jazz', WAS: 'Wizards'
+            };
+            const abbr1 = match[1].toUpperCase();
+            const abbr2 = match[2].toUpperCase();
+            const nickname1 = abbrToNickname[abbr1] || abbr1;
+            const nickname2 = abbrToNickname[abbr2] || abbr2;
+            const guild = interaction.guild;
+            const team1Role = guild.roles.cache.find(r => r.name.toLowerCase() === `${nickname1.toLowerCase()} coach`);
+            const team2Role = guild.roles.cache.find(r => r.name.toLowerCase() === `${nickname2.toLowerCase()} coach`);
+            const member = await guild.members.fetch(interaction.user.id);
+            // Debug logging
+            console.log('[submit_score] User:', interaction.user.tag, 'ID:', interaction.user.id);
+            console.log('[submit_score] Member roles:', member.roles.cache.map(r => r.name + ' (' + r.id + ')').join(', '));
+            console.log('[submit_score] Team1 role:', team1Role ? team1Role.name + ' (' + team1Role.id + ')' : 'not found');
+            console.log('[submit_score] Team2 role:', team2Role ? team2Role.name + ' (' + team2Role.id + ')' : 'not found');
+            if (!member.roles.cache.has(team1Role?.id) && !member.roles.cache.has(team2Role?.id)) {
+                await interaction.reply({ content: 'Only the coaches for this game can submit a score.', ephemeral: true });
+                return;
+            }
+        }
+    } catch (e) {
+        console.error('[submit_score] Error during coach role check:', e);
+        await interaction.reply({ content: 'Unable to verify coach role. Please contact an admin.', ephemeral: true });
+        return;
+    }
     // Open modal for score submission
     const modal = new ModalBuilder()
         .setCustomId('submit_score_modal')

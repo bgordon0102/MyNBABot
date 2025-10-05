@@ -26,18 +26,25 @@ export async function execute(interaction) {
             console.error('[deletegamechannel] No active season file found.');
             return await interaction.editReply({ content: 'No active season found.' });
         }
-        const season = JSON.parse(fs.readFileSync(SEASON_FILE, 'utf8'));
-        const teams = season.teams;
-        const gameno = season.gameno || (teams ? teams.length - 1 : 0);
-        const schedule = season.schedule;
-        if (!Array.isArray(schedule) || schedule.length === 0) {
-            console.error('[deletegamechannel] No schedule found in season file.');
-            return await interaction.editReply({ content: 'Error: No schedule found in season data. Please start a season first.' });
+        // Robust schedule read
+        function safeReadJSON(file, fallback) {
+            try {
+                const data = fs.readFileSync(file, 'utf8');
+                if (!data) throw new Error('Empty file');
+                return JSON.parse(data);
+            } catch {
+                console.warn(`[deletegamechannel] File ${file} missing or invalid, using fallback.`);
+                return fallback;
+            }
         }
-        // Calculate matchups for the week
-        const startIdx = (week - 1) * gameno;
-        const endIdx = startIdx + gameno;
-        const weekMatchups = schedule.slice(startIdx, endIdx);
+        const schedulePath = path.join(process.cwd(), 'data/schedule.json');
+        const schedule = safeReadJSON(schedulePath, []);
+        if (!Array.isArray(schedule) || schedule.length === 0) {
+            console.error('[deletegamechannel] No schedule found in schedule.json.');
+            return await interaction.editReply({ content: 'Error: No schedule found in schedule.json. Please start a season first.' });
+        }
+        // Get week matchups
+        const weekMatchups = Array.isArray(schedule[week]) ? schedule[week] : [];
         if (!weekMatchups || weekMatchups.length === 0) {
             console.error(`[deletegamechannel] No games found for week ${week}.`);
             return await interaction.editReply({ content: `No games found for week ${week}.` });

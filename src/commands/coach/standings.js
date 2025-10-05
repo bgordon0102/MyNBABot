@@ -7,21 +7,21 @@ const SCORES_FILE = './data/scores.json';
 
 // NBA conference mapping (Eastern/Western)
 const EAST = [
-    'Hawks', 'Celtics', 'Nets', 'Hornets', 'Bulls', 'Cavaliers', 'Pistons', 'Pacers', 'Heat', 'Bucks', 'Knicks', 'Magic', '76ers', 'Raptors', 'Wizards'
+    'Atlanta Hawks', 'Boston Celtics', 'Brooklyn Nets', 'Charlotte Hornets', 'Chicago Bulls', 'Cleveland Cavaliers', 'Detroit Pistons', 'Indiana Pacers', 'Miami Heat', 'Milwaukee Bucks', 'New York Knicks', 'Orlando Magic', 'Philadelphia 76ers', 'Toronto Raptors', 'Washington Wizards'
 ];
 const WEST = [
-    'Mavericks', 'Nuggets', 'Warriors', 'Rockets', 'Clippers', 'Lakers', 'Grizzlies', 'Timberwolves', 'Pelicans', 'Thunder', 'Suns', 'Trail Blazers', 'Kings', 'Spurs', 'Jazz'
+    'Dallas Mavericks', 'Denver Nuggets', 'Golden State Warriors', 'Houston Rockets', 'LA Clippers', 'Los Angeles Lakers', 'Memphis Grizzlies', 'Minnesota Timberwolves', 'New Orleans Pelicans', 'Oklahoma City Thunder', 'Phoenix Suns', 'Portland Trail Blazers', 'Sacramento Kings', 'San Antonio Spurs', 'Utah Jazz'
 ];
 
 function getStandings() {
     const TEAMS_FILE = './data/teams.json';
     if (!fs.existsSync(TEAMS_FILE) || !fs.existsSync(SCORES_FILE)) return null;
-    const teams = JSON.parse(fs.readFileSync(TEAMS_FILE, 'utf8'));
+    const teamsArr = JSON.parse(fs.readFileSync(TEAMS_FILE, 'utf8'));
     const scores = JSON.parse(fs.readFileSync(SCORES_FILE, 'utf8'));
     // Initialize standings
     const standings = {};
-    for (const team of teams) {
-        standings[team] = { team, wins: 0, losses: 0, winPct: 0, gb: 0 };
+    for (const team of teamsArr) {
+        standings[team.name] = { team: team.name, wins: 0, losses: 0, winPct: 0, gb: 0 };
     }
     // Calculate wins/losses
     for (const game of scores) {
@@ -40,10 +40,10 @@ function getStandings() {
         }
     }
     // Calculate win %
-    for (const team of teams) {
-        const s = standings[team];
+    for (const team of teamsArr) {
+        const s = standings[team.name];
         if (!s) {
-            console.warn(`[standings] Team missing from standings during win% calc:`, team);
+            console.warn(`[standings] Team missing from standings during win% calc:`, team.name);
             continue;
         }
         const total = s.wins + s.losses;

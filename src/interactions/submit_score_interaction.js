@@ -16,20 +16,43 @@ function writeScores(scores) {
 
 export const customId = 'submit_score';
 export async function execute(interaction) {
-    // Only allow the two coaches in this channel to use the button
+    // Robust coach role check with debug logging and coachRoleMap.json
+    console.log('[submit_score] DEBUG: execute called by user:', interaction.user.tag, 'ID:', interaction.user.id);
     const channelName = interaction.channel.name;
     const match = channelName.match(/([a-z0-9\-]+)-vs-([a-z0-9\-]+)/);
     if (!match) {
         return interaction.reply({ content: 'This button can only be used in a valid game channel.', ephemeral: true });
     }
-    const teamA = match[1].replace(/-/g, ' ');
-    const teamB = match[2].replace(/-/g, ' ');
+    // NBA abbreviation to full team name mapping
+    const abbrToFull = {
+        PHI: 'Philadelphia 76ers', DET: 'Detroit Pistons', OKC: 'Oklahoma City Thunder', DEN: 'Denver Nuggets', GSW: 'Golden State Warriors', CHA: 'Charlotte Hornets', ORL: 'Orlando Magic', ATL: 'Atlanta Hawks', MIN: 'Minnesota Timberwolves', IND: 'Indiana Pacers', SAC: 'Sacramento Kings', NYK: 'New York Knicks', HOU: 'Houston Rockets', LAC: 'LA Clippers', WAS: 'Washington Wizards', PHX: 'Phoenix Suns', CLE: 'Cleveland Cavaliers', DAL: 'Dallas Mavericks', MEM: 'Memphis Grizzlies', LAL: 'Los Angeles Lakers', SAS: 'San Antonio Spurs', BKN: 'Brooklyn Nets', MIL: 'Milwaukee Bucks', POR: 'Portland Trail Blazers', NOP: 'New Orleans Pelicans', UTA: 'Utah Jazz', BOS: 'Boston Celtics', MIA: 'Miami Heat', CHI: 'Chicago Bulls', TOR: 'Toronto Raptors'
+    };
+    const abbr1 = match[1].toUpperCase();
+    const abbr2 = match[2].toUpperCase();
+    const teamAFull = abbrToFull[abbr1] || abbr1;
+    const teamBFull = abbrToFull[abbr2] || abbr2;
+    // Load coachRoleMap.json
+    let coachRoleMap = {};
+    try {
+        coachRoleMap = JSON.parse(fs.readFileSync('./data/coachRoleMap.json', 'utf8'));
+    } catch (e) {
+        console.log('[submit_score] ERROR: Could not read coachRoleMap.json:', e);
+    }
+    const teamARoleId = coachRoleMap[teamAFull];
+    const teamBRoleId = coachRoleMap[teamBFull];
     const guild = interaction.guild;
-    const teamARole = guild.roles.cache.find(r => r.name.toLowerCase() === `${teamA} coach`);
-    const teamBRole = guild.roles.cache.find(r => r.name.toLowerCase() === `${teamB} coach`);
-    const member = guild.members.cache.get(interaction.user.id);
-    if (!member || (!teamARole || !teamBRole) || (!member.roles.cache.has(teamARole.id) && !member.roles.cache.has(teamBRole.id))) {
-        return interaction.reply({ content: 'Only the coaches for this game can submit a score.', ephemeral: true });
+    const member = await guild.members.fetch(interaction.user.id);
+    // Debug logging
+    console.log('[submit_score] Channel:', channelName, '| TeamA:', teamAFull, '| TeamB:', teamBFull);
+    console.log('[submit_score] Role IDs from map:', teamARoleId, teamBRoleId);
+    console.log('[submit_score] Member roles:', member.roles.cache.map(r => r.name + ' (' + r.id + ')').join(', '));
+    if (!teamARoleId && !teamBRoleId) {
+        await interaction.reply({ content: 'Coach roles for these teams are not set up. Please contact staff.', ephemeral: true });
+        return;
+    }
+    if (!member.roles.cache.has(teamARoleId) && !member.roles.cache.has(teamBRoleId)) {
+        await interaction.reply({ content: 'Only the coaches for this game can submit a score.', ephemeral: true });
+        return;
     }
     // Open modal with team names pre-filled
     const modal = new ModalBuilder()
@@ -39,13 +62,13 @@ export async function execute(interaction) {
         .setCustomId('team_a')
         .setLabel('Team A')
         .setStyle(TextInputStyle.Short)
-        .setValue(teamA)
+        .setValue(teamAFull)
         .setRequired(true);
     const teamBInput = new TextInputBuilder()
         .setCustomId('team_b')
         .setLabel('Team B')
         .setStyle(TextInputStyle.Short)
-        .setValue(teamB)
+        .setValue(teamBFull)
         .setRequired(true);
     const scoreAInput = new TextInputBuilder()
         .setCustomId('score_a')
@@ -131,15 +154,88 @@ export async function handleModal(interaction) {
 export async function handleApproval(interaction, approve) {
     if (approve) {
         const teamA = interaction.message.embeds[0].fields[0].name;
-        const scoreA = interaction.message.embeds[0].fields[0].value;
+        const scoreA = parseInt(interaction.message.embeds[0].fields[0].value);
         const teamB = interaction.message.embeds[0].fields[1].name;
-        const scoreB = interaction.message.embeds[0].fields[1].value;
+        const scoreB = parseInt(interaction.message.embeds[0].fields[1].value);
         const week = interaction.message.embeds[0].fields[2].value;
         const seasonNo = interaction.message.embeds[0].fields[3].value;
         const submittedBy = interaction.message.embeds[0].fields[4].value;
         const scores = readScores();
         scores.push({ teamA, scoreA, teamB, scoreB, week, seasonNo, submittedBy, approved: true, approvedBy: interaction.user.id, approvedAt: new Date().toISOString() });
         writeScores(scores);
+
+        // --- Update persistent standings.json ---
+        const TEAMS_FILE = './data/teams.json';
+        const STANDINGS_FILE = './data/standings.json';
+        let teams = [];
+        if (fs.existsSync(TEAMS_FILE)) {
+            teams = JSON.parse(fs.readFileSync(TEAMS_FILE, 'utf8')).map(t => t.name);
+        }
+        // Initialize standings
+        const standings = {};
+        for (const team of teams) {
+            standings[team] = { team, wins: 0, losses: 0, winPct: 0, gb: 0 };
+        }
+        // Calculate wins/losses
+        for (const game of scores) {
+            if (!game.approved) continue;
+            const { teamA, teamB, scoreA, scoreB } = game;
+            if (!standings[teamA] || !standings[teamB]) continue;
+            if (scoreA > scoreB) {
+                standings[teamA].wins++;
+                standings[teamB].losses++;
+            } else if (scoreB > scoreA) {
+                standings[teamB].wins++;
+                standings[teamA].losses++;
+            }
+        }
+        // Calculate win %
+        for (const team of teams) {
+            const s = standings[team];
+            const total = s.wins + s.losses;
+            s.winPct = total > 0 ? (s.wins / total) : 0;
+        }
+        // Sort and calculate games behind (GB)
+        function sortConf(conf) {
+            const arr = conf.filter(t => standings[t]).map(t => standings[t]);
+            if (arr.length === 0) return arr;
+            arr.sort((a, b) => b.winPct - a.winPct || b.wins - a.wins || a.losses - b.losses || a.team.localeCompare(b.team));
+            const leader = arr[0];
+            for (const s of arr) {
+                s.gb = ((leader.wins - s.wins) + (s.losses - leader.losses)) / 2;
+            }
+            return arr;
+        }
+        // NBA conference mapping
+        const EAST = [
+            'Atlanta Hawks', 'Boston Celtics', 'Brooklyn Nets', 'Charlotte Hornets', 'Chicago Bulls', 'Cleveland Cavaliers', 'Detroit Pistons', 'Indiana Pacers', 'Miami Heat', 'Milwaukee Bucks', 'New York Knicks', 'Orlando Magic', 'Philadelphia 76ers', 'Toronto Raptors', 'Washington Wizards'
+        ];
+        const WEST = [
+            'Dallas Mavericks', 'Denver Nuggets', 'Golden State Warriors', 'Houston Rockets', 'LA Clippers', 'Los Angeles Lakers', 'Memphis Grizzlies', 'Minnesota Timberwolves', 'New Orleans Pelicans', 'Oklahoma City Thunder', 'Phoenix Suns', 'Portland Trail Blazers', 'Sacramento Kings', 'San Antonio Spurs', 'Utah Jazz'
+        ];
+        const standingsOut = {
+            east: sortConf(EAST),
+            west: sortConf(WEST)
+        };
+        fs.writeFileSync(STANDINGS_FILE, JSON.stringify(standingsOut, null, 2));
+        // --- End persistent standings update ---
+
+        // --- Update persistent playoffpicture.json ---
+        const PLAYOFF_FILE = './data/playoffpicture.json';
+        function getPlayoffPicture(confArr) {
+            // NBA Playoff logic: Top 6 = Playoff, 7-10 = Play-In
+            return {
+                playoff: confArr.slice(0, 6),
+                playin: confArr.slice(6, 10)
+            };
+        }
+        const playoffOut = {
+            east: getPlayoffPicture(standingsOut.east),
+            west: getPlayoffPicture(standingsOut.west)
+        };
+        fs.writeFileSync(PLAYOFF_FILE, JSON.stringify(playoffOut, null, 2));
+        // --- End persistent playoffpicture update ---
+
         await interaction.update({ content: '✅ Score approved and logged!', embeds: interaction.message.embeds, components: [] });
     } else {
         await interaction.update({ content: '❌ Score denied. Please resubmit if needed.', embeds: interaction.message.embeds, components: [] });

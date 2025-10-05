@@ -1,0 +1,154 @@
+{
+  "east": {
+    "playoff": [
+      {
+        "team": "Milwaukee Bucks",
+        "wins": 3,
+        "losses": 0,
+        "winPct": 1,
+        "gb": 0
+      },
+      {
+        "team": "Atlanta Hawks",
+        "wins": 3,
+        "losses": 1,
+        "winPct": 0.75,
+        "gb": 0.5
+      },
+      {
+        "team": "Boston Celtics",
+        "wins": 2,
+        "losses": 1,
+        "winPct": 0.6666666666666666,
+        "gb": 1
+      },
+      {
+        "team": "Brooklyn Nets",
+        "wins": 2,
+        "losses": 1,
+        "winPct": 0.6666666666666666,
+        "gb": 1
+      },
+      {
+        "team": "Charlotte Hornets",
+        "wins": 2,
+        "losses": 1,
+        "winPct": 0.6666666666666666,
+        "gb": 1
+      },
+      {
+        "team": "Detroit Pistons",
+        "wins": 2,
+        "losses": 1,
+        "winPct": 0.6666666666666666,
+        "gb": 1
+      }
+    ],
+    "playin": [
+      {
+        "team": "Indiana Pacers",
+        "wins": 2,
+        "losses": 1,
+        "winPct": 0.6666666666666666,
+        "gb": 1
+      },
+      {
+        "team": "New York Knicks",
+        "wins": 2,
+        "losses": 1,
+        "winPct": 0.6666666666666666,
+        "gb": 1
+      },
+      {
+        "team": "Orlando Magic",
+        "wins": 2,
+        "losses": 1,
+        "winPct": 0.6666666666666666,
+        "gb": 1
+      },
+      {
+        "team": "Philadelphia 76ers",
+        "wins": 2,
+        "losses": 1,
+        "winPct": 0.6666666666666666,
+        "gb": 1
+      }
+    ]
+  },
+  "west": {
+    "playoff": [
+      {
+        "team": "Sacramento Kings",
+        "wins": 3,
+        "losses": 0,
+        "winPct": 1,
+        "gb": 0
+      },
+      {
+        "team": "Denver Nuggets",
+        "wins": 2,
+        "losses": 1,
+        "winPct": 0.6666666666666666,
+        "gb": 1
+      },
+      {
+        "team": "LA Clippers",
+        "wins": 2,
+        "losses": 1,
+        "winPct": 0.6666666666666666,
+        "gb": 1
+      },
+      {
+        "team": "Memphis Grizzlies",
+        "wins": 2,
+        "losses": 1,
+        "winPct": 0.6666666666666666,
+        "gb": 1
+      },
+      {
+        "team": "Oklahoma City Thunder",
+        "wins": 2,
+        "losses": 1,
+        "winPct": 0.6666666666666666,
+        "gb": 1
+      },
+      {
+        "team": "Phoenix Suns",
+        "wins": 2,
+        "losses": 1,
+        "winPct": 0.6666666666666666,
+        "gb": 1
+      }
+    ],
+    "playin": [
+      {
+        "team": "Utah Jazz",
+        "wins": 2,
+        "losses": 1,
+        "winPct": 0.6666666666666666,
+        "gb": 1
+      },
+      {
+        "team": "Los Angeles Lakers",
+        "wins": 2,
+        "losses": 2,
+        "winPct": 0.5,
+        "gb": 1.5
+      },
+      {
+        "team": "Minnesota Timberwolves",
+        "wins": 2,
+        "losses": 2,
+        "winPct": 0.5,
+        "gb": 1.5
+      },
+      {
+        "team": "Houston Rockets",
+        "wins": 1,
+        "losses": 2,
+        "winPct": 0.3333333333333333,
+        "gb": 2
+      }
+    ]
+  }
+}

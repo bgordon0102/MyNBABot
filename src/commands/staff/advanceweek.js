@@ -1,5 +1,25 @@
 function writeJSON(file, data) {
-    fs.writeFileSync(file, JSON.stringify(data, null, 2));
+    try {
+        if (typeof data === 'undefined') {
+            console.error(`[writeJSON] Tried to write undefined data to ${file}`);
+            return;
+        }
+        fs.writeFileSync(file, JSON.stringify(data, null, 2));
+    } catch (err) {
+        console.error(`[writeJSON] Failed to write to ${file}:`, err);
+    }
+}
+
+function safeReadJSON(file, fallback) {
+    try {
+        const data = fs.readFileSync(file, 'utf8');
+        if (!data) throw new Error('Empty file');
+        return JSON.parse(data);
+    } catch {
+        console.warn(`[advanceweek] File ${file} missing or invalid, using fallback.`);
+        writeJSON(file, fallback);
+        return fallback;
+    }
 }
 export const data = new SlashCommandBuilder()
     .setName('advanceweek')
@@ -27,25 +47,11 @@ function readJSON(file) {
 }
 
 export async function execute(interaction) {
-    let deferred = false;
-    try {
-        await interaction.deferReply(); // ABSOLUTELY FIRST
-        deferred = true;
-    } catch (err) {
-        console.error('Failed to defer reply in /advanceweek:', err?.message || err);
-        // If we can't defer, the interaction is expired or invalid; do not continue
-        return;
-    }
     console.log('[advanceweek] Handler entered');
+    await interaction.deferReply(); // Always first, no conditions
     try {
         console.log('[advanceweek] Checking for season file...');
-        if (!fs.existsSync(SEASON_FILE)) {
-            console.log('[advanceweek] Season file not found.');
-            return await interaction.editReply({ content: 'Season file not found.' });
-        }
-
-        const season = readJSON(SEASON_FILE);
-        console.log('[advanceweek] Season loaded.');
+        const season = safeReadJSON(SEASON_FILE, { currentWeek: 1, seasonNo: 1, coachRoleMap: {} });
         // Always start with week 1 if not set or less than 1
         if (!season.currentWeek || season.currentWeek < 1) {
             season.currentWeek = 1;
@@ -55,11 +61,7 @@ export async function execute(interaction) {
         let weekNum = interaction.options.getInteger('week') || season.currentWeek;
         console.log('[advanceweek] Processing week:', weekNum);
 
-        // Always create week 1 channels if weekNum is 1 or 2 and no Week 1 Games category exists
-        if (weekNum > 1 && !interaction.guild.channels.cache.find(c => c.type === ChannelType.GuildCategory && c.name === `Week 1 Games`)) {
-            weekNum = 1;
-            season.currentWeek = 1;
-        }
+        // Removed logic that forced weekNum to 1 if Week 1 Games category does not exist.
 
         // Delete previous week's category/channels before advancing (but not on week 1)
         if (weekNum > 1) {
@@ -74,23 +76,21 @@ export async function execute(interaction) {
         }
 
         // Calculate week number and matchups (week-based schedule)
-        let schedule = Array.isArray(season.schedule) ? season.schedule : [];
-        // Only support 29 games (one per team, round robin)
+        const schedulePath = path.join(process.cwd(), 'data/schedule.json');
+        const schedule = safeReadJSON(schedulePath, []);
+        // Only support 29 weeks (NBA: 30 teams, 29 games per team)
         const totalWeeks = 29;
         if (weekNum < 1 || weekNum > totalWeeks) {
             return await interaction.editReply({ content: `Invalid week number. Must be between 1 and ${totalWeeks}.` });
         }
-        // If schedule is array of arrays (weeks), flatten and get correct week
-        let weekMatchups = [];
-        if (Array.isArray(schedule[0])) {
-            // schedule[weekNum-1] is the array of games for this week
-            weekMatchups = schedule[weekNum - 1] || [];
-        } else {
-            // fallback: filter by .week property
-            const weekMatchupsRaw = schedule.filter(m => m.week === weekNum);
-            weekMatchups = Array.isArray(weekMatchupsRaw) ? weekMatchupsRaw : [weekMatchupsRaw];
-        }
+        // Use weekNum as index (week 0 is preseason/empty)
+        const weekMatchups = Array.isArray(schedule[weekNum]) ? schedule[weekNum] : [];
         console.log('[advanceweek] Week matchups:', weekMatchups);
+        if (weekMatchups.length === 0) {
+            console.warn('[advanceweek] No matchups found for this week!');
+        } else {
+            console.log('[advanceweek] First matchup object:', JSON.stringify(weekMatchups[0], null, 2));
+        }
 
         // Category name for this week
         const categoryName = `Week ${weekNum} Games`;
@@ -108,35 +108,71 @@ export async function execute(interaction) {
 
         // For each matchup, create a private channel
         const coachRoleMap = season.coachRoleMap || {};
+        let coachRoleMapChanged = false;
         for (const matchup of weekMatchups) {
-            console.log('[advanceweek] Creating channel for matchup:', matchup);
+            console.log('[advanceweek] Creating channel for matchup:', JSON.stringify(matchup, null, 2));
             const team1 = matchup.team1;
             const team2 = matchup.team2;
-            if (!team1 || !team2 || !team1.name || !team2.name) continue;
-            const channelName = `${team1.name.toLowerCase()}-vs-${team2.name.toLowerCase()}`.replace(/\s+/g, '-');
-
-            // Use coachRoleMap for permissions, validate roles exist
-            let team1RoleId = coachRoleMap[team1.name];
-            let team2RoleId = coachRoleMap[team2.name];
-            const team1Role = team1RoleId ? interaction.guild.roles.cache.get(team1RoleId) : null;
-            const team2Role = team2RoleId ? interaction.guild.roles.cache.get(team2RoleId) : null;
-            if (team1RoleId && !team1Role) {
-                console.warn(`[advanceweek] Coach role for ${team1.name} (ID: ${team1RoleId}) not found in guild! Channel will not be visible to this coach until the role exists and is assigned.`);
-                team1RoleId = null;
+            if (!team1 || !team2 || !team1.name || !team2.name) {
+                console.warn('[advanceweek] Skipping matchup due to missing team info:', JSON.stringify(matchup, null, 2));
+                continue;
             }
-            if (team2RoleId && !team2Role) {
-                console.warn(`[advanceweek] Coach role for ${team2.name} (ID: ${team2RoleId}) not found in guild! Channel will not be visible to this coach until the role exists and is assigned.`);
-                team2RoleId = null;
+            const channelName = `${team1.abbreviation.toLowerCase()}-vs-${team2.abbreviation.toLowerCase()}`;
+
+            // --- Robust coach role logic ---
+            async function ensureCoachRole(team) {
+                let roleId = coachRoleMap[team.name];
+                let role = roleId ? interaction.guild.roles.cache.get(roleId) : null;
+                if (!role) {
+                    // Try to find by name
+                    const nickname = team.name.split(' ').slice(-1)[0];
+                    role = interaction.guild.roles.cache.find(r => r.name.toLowerCase() === `${nickname.toLowerCase()} coach`);
+                    if (role) {
+                        console.log(`[advanceweek] Found coach role by name for ${team.name}: ${role.id}`);
+                        coachRoleMap[team.name] = role.id;
+                        coachRoleMapChanged = true;
+                        return role.id;
+                    }
+                    // Create role if still missing
+                    try {
+                        role = await interaction.guild.roles.create({
+                            name: `${nickname} Coach`,
+                            mentionable: true,
+                            reason: `Auto-created by advanceweek for ${team.name}`
+                        });
+                        coachRoleMap[team.name] = role.id;
+                        coachRoleMapChanged = true;
+                        console.log(`[advanceweek] Created missing coach role for ${team.name}: ${role.id}`);
+                        return role.id;
+                    } catch (err) {
+                        console.error(`[advanceweek] Failed to create coach role for ${team.name}:`, err);
+                        return null;
+                    }
+                } else {
+                    console.log(`[advanceweek] Using existing coach role for ${team.name}: ${role.id}`);
+                    return role.id;
+                }
             }
 
-            // Permissions: only the two coach roles, commish, and schedule tracker
+            // Always ensure both coach roles exist
+            let team1RoleId = await ensureCoachRole(team1);
+            let team2RoleId = await ensureCoachRole(team2);
+
+            // Permissions: both coach roles, commish, schedule tracker, and the command runner
+            const coachPerms = [
+                PermissionsBitField.Flags.ViewChannel,
+                PermissionsBitField.Flags.SendMessages,
+                PermissionsBitField.Flags.ReadMessageHistory
+            ];
             const permissionOverwrites = [
                 { id: interaction.guild.roles.everyone, deny: [PermissionsBitField.Flags.ViewChannel] },
             ];
-            if (team1RoleId) permissionOverwrites.push({ id: team1RoleId, allow: [PermissionsBitField.Flags.ViewChannel] });
-            if (team2RoleId) permissionOverwrites.push({ id: team2RoleId, allow: [PermissionsBitField.Flags.ViewChannel] });
-            if (commishRole) permissionOverwrites.push({ id: commishRole.id, allow: [PermissionsBitField.Flags.ViewChannel] });
-            if (scheduleTrackerRole) permissionOverwrites.push({ id: scheduleTrackerRole.id, allow: [PermissionsBitField.Flags.ViewChannel] });
+            if (team1RoleId) permissionOverwrites.push({ id: team1RoleId, allow: coachPerms });
+            if (team2RoleId) permissionOverwrites.push({ id: team2RoleId, allow: coachPerms });
+            if (commishRole) permissionOverwrites.push({ id: commishRole.id, allow: coachPerms });
+            if (scheduleTrackerRole) permissionOverwrites.push({ id: scheduleTrackerRole.id, allow: coachPerms });
+            // Always allow the command runner for debugging
+            permissionOverwrites.push({ id: interaction.user.id, allow: coachPerms });
 
             const gameChannel = await interaction.guild.channels.create({
                 name: channelName,
@@ -147,7 +183,6 @@ export async function execute(interaction) {
 
             // Send welcome message and submit score button, with error handling
             try {
-                // Tag both coach roles if present
                 let coachMentions = [];
                 if (team1RoleId) coachMentions.push(`<@&${team1RoleId}>`);
                 if (team2RoleId) coachMentions.push(`<@&${team2RoleId}>`);
@@ -156,7 +191,16 @@ export async function execute(interaction) {
                 console.error('Failed to send welcome message:', e);
             }
         }
-
+        // If coachRoleMap was changed, update season.json
+        if (coachRoleMapChanged) {
+            try {
+                season.coachRoleMap = coachRoleMap;
+                writeJSON(SEASON_FILE, season);
+                console.log('[advanceweek] Updated coachRoleMap in season.json');
+            } catch (err) {
+                console.error('[advanceweek] Failed to update coachRoleMap in season.json:', err);
+            }
+        }
 
         // Post Top Performer for this week in the specified channel
         const performerChannelId = '1421189114912440423';
@@ -202,21 +246,19 @@ export async function execute(interaction) {
 
         // Only update currentWeek in season.json
         const absSeasonPath = path.resolve(SEASON_FILE);
-        let original = {};
-        try {
-            original = JSON.parse(fs.readFileSync(absSeasonPath, 'utf8'));
-        } catch (e) {
-            console.error('[advanceweek] Could not read original season.json:', e);
-        }
+        let original = safeReadJSON(absSeasonPath, { currentWeek: 1, seasonNo: 1, coachRoleMap: {} });
         original.currentWeek = weekNum + 1;
-        fs.writeFileSync(absSeasonPath, JSON.stringify(original, null, 2));
+        writeJSON(absSeasonPath, original);
 
     } catch (err) {
         console.error(err);
-        try {
-            await interaction.editReply({ content: 'Error advancing week.' });
-        } catch (e) {
-            console.error('Failed to send error message:', e);
+        // Only try to edit reply if still possible
+        if (!interaction.replied && !interaction.deferred) {
+            try {
+                await interaction.editReply({ content: 'Error advancing week.' });
+            } catch (e) {
+                // Ignore
+            }
         }
     }
 }

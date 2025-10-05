@@ -5,20 +5,21 @@ const SEASON_FILE = './data/season.json';
 const SCORES_FILE = './data/scores.json';
 
 const EAST = [
-    'Hawks', 'Celtics', 'Nets', 'Hornets', 'Bulls', 'Cavaliers', 'Pistons', 'Pacers', 'Heat', 'Bucks', 'Knicks', 'Magic', '76ers', 'Raptors', 'Wizards'
+    'Atlanta Hawks', 'Boston Celtics', 'Brooklyn Nets', 'Charlotte Hornets', 'Chicago Bulls', 'Cleveland Cavaliers', 'Detroit Pistons', 'Indiana Pacers', 'Miami Heat', 'Milwaukee Bucks', 'New York Knicks', 'Orlando Magic', 'Philadelphia 76ers', 'Toronto Raptors', 'Washington Wizards'
 ];
 const WEST = [
-    'Mavericks', 'Nuggets', 'Warriors', 'Rockets', 'Clippers', 'Lakers', 'Grizzlies', 'Timberwolves', 'Pelicans', 'Thunder', 'Suns', 'Trail Blazers', 'Kings', 'Spurs', 'Jazz'
+    'Dallas Mavericks', 'Denver Nuggets', 'Golden State Warriors', 'Houston Rockets', 'LA Clippers', 'Los Angeles Lakers', 'Memphis Grizzlies', 'Minnesota Timberwolves', 'New Orleans Pelicans', 'Oklahoma City Thunder', 'Phoenix Suns', 'Portland Trail Blazers', 'Sacramento Kings', 'San Antonio Spurs', 'Utah Jazz'
 ];
 
 function getStandings() {
-    if (!fs.existsSync(SEASON_FILE) || !fs.existsSync(SCORES_FILE)) return null;
-    const season = JSON.parse(fs.readFileSync(SEASON_FILE, 'utf8'));
+    const TEAMS_FILE = './data/teams.json';
+    if (!fs.existsSync(TEAMS_FILE) || !fs.existsSync(SCORES_FILE)) return null;
+    const teamsArr = JSON.parse(fs.readFileSync(TEAMS_FILE, 'utf8'));
     const scores = JSON.parse(fs.readFileSync(SCORES_FILE, 'utf8'));
-    const teams = season.teams;
+    // Initialize standings
     const standings = {};
-    for (const team of teams) {
-        standings[team] = { team, wins: 0, losses: 0, winPct: 0, gb: 0 };
+    for (const team of teamsArr) {
+        standings[team.name] = { team: team.name, wins: 0, losses: 0, winPct: 0, gb: 0 };
     }
     for (const game of scores) {
         if (!game.approved) continue;
@@ -32,8 +33,8 @@ function getStandings() {
             standings[teamA].losses++;
         }
     }
-    for (const team of teams) {
-        const s = standings[team];
+    for (const team of teamsArr) {
+        const s = standings[team.name];
         const total = s.wins + s.losses;
         s.winPct = total > 0 ? (s.wins / total) : 0;
     }
@@ -69,22 +70,43 @@ export async function execute(interaction) {
     }
     const east = getPlayoffPicture(standings.east);
     const west = getPlayoffPicture(standings.west);
-    function formatSeed(s, i) {
-        return `**${i + 1}. ${s.team}**  (${s.wins}-${s.losses}, .${String(Math.round(s.winPct * 1000)).padStart(3, '0')})`;
+    function getTeamName(arr, idx) {
+        return arr[idx] ? arr[idx].team : 'TBD';
     }
-    const eastPlayoff = east.playoff.map(formatSeed).join('\n');
-    const eastPlayin = east.playin.map((s, i) => formatSeed(s, i + 6)).join('\n');
-    const westPlayoff = west.playoff.map(formatSeed).join('\n');
-    const westPlayin = west.playin.map((s, i) => formatSeed(s, i + 6)).join('\n');
-    const embed = new EmbedBuilder()
-        .setTitle('NBA Playoff Picture')
+    // Playoff matchups: 1 vs 8, 2 vs 7, 3 vs 6, 4 vs 5 (NBA format)
+    function playoffMatchups(conf) {
+        return [
+            `1️⃣ ${getTeamName(conf, 0)} vs 8️⃣ ${getTeamName(conf, 7)}`,
+            `2️⃣ ${getTeamName(conf, 1)} vs 7️⃣ ${getTeamName(conf, 6)}`,
+            `3️⃣ ${getTeamName(conf, 2)} vs 6️⃣ ${getTeamName(conf, 5)}`,
+            `4️⃣ ${getTeamName(conf, 3)} vs 5️⃣ ${getTeamName(conf, 4)}`
+        ].join('\n');
+    }
+    // Play-In matchups: 7 vs 10, 8 vs 9
+    function playinMatchups(conf) {
+        return [
+            `7️⃣ ${getTeamName(conf, 6)} vs 🔟 ${getTeamName(conf, 9)}`,
+            `8️⃣ ${getTeamName(conf, 7)} vs 9️⃣ ${getTeamName(conf, 8)}`
+        ].join('\n');
+    }
+
+    const eastEmbed = new EmbedBuilder()
+        .setTitle('🏆 Eastern Conference Playoff Bracket')
         .addFields(
-            { name: 'East Playoff Seeds (1-6)', value: eastPlayoff || 'N/A', inline: false },
-            { name: 'East Play-In (7-10)', value: eastPlayin || 'N/A', inline: false },
-            { name: 'West Playoff Seeds (1-6)', value: westPlayoff || 'N/A', inline: false },
-            { name: 'West Play-In (7-10)', value: westPlayin || 'N/A', inline: false }
+            { name: 'Playoff Matchups', value: playoffMatchups(standings.east), inline: false },
+            { name: 'Play-In Matchups', value: playinMatchups(standings.east), inline: false }
+        )
+        .setColor(0x1D428A)
+        .setFooter({ text: 'Top 6: Playoff | 7-10: Play-In' });
+
+    const westEmbed = new EmbedBuilder()
+        .setTitle('🏆 Western Conference Playoff Bracket')
+        .addFields(
+            { name: 'Playoff Matchups', value: playoffMatchups(standings.west), inline: false },
+            { name: 'Play-In Matchups', value: playinMatchups(standings.west), inline: false }
         )
         .setColor(0xE03A3E)
-        .setFooter({ text: 'Top 6: Playoff | 7-10: Play-In | NBA Playoff Format' });
-    await interaction.editReply({ embeds: [embed] });
+        .setFooter({ text: 'Top 6: Playoff | 7-10: Play-In' });
+
+    await interaction.editReply({ embeds: [eastEmbed, westEmbed] });
 }

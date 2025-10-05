@@ -4,7 +4,7 @@ import path from "path";
 import { EmbedBuilder } from "discord.js";
 
 // This handler is for page 3 (31-45)
-const playersFile = path.join(process.cwd(), "data/players.json");
+const prospectBoardsFile = path.join(process.cwd(), "data/prospectBoards.json");
 
 export async function execute(interaction) {
     await interaction.deferUpdate();
@@ -14,9 +14,20 @@ export async function execute(interaction) {
     if (boardTitle.includes("Final Prospect")) board = "final";
     else if (boardTitle.includes("Pre Prospect")) board = "pre";
 
-    const playerConfig = JSON.parse(fs.readFileSync(playersFile));
-    const boardFilePath = playerConfig.boardFiles[board];
-    const bigBoardData = JSON.parse(fs.readFileSync(boardFilePath));
+    const prospectBoards = JSON.parse(fs.readFileSync(prospectBoardsFile, 'utf8'));
+    let boardFilePath = prospectBoards[board];
+    if (!boardFilePath) {
+        await interaction.editReply({ content: `Board file for phase '${board}' not found.`, flags: 64 });
+        return;
+    }
+    if (!path.isAbsolute(boardFilePath)) {
+        boardFilePath = path.join(process.cwd(), boardFilePath);
+    }
+    if (!fs.existsSync(boardFilePath)) {
+        await interaction.editReply({ content: `Board file not found at resolved path: ${boardFilePath}`, flags: 64 });
+        return;
+    }
+    const bigBoardData = JSON.parse(fs.readFileSync(boardFilePath, 'utf8'));
     const allPlayers = Object.values(bigBoardData).filter(player => player && player.name && player.position_1);
 
     // Page 3: 31-45

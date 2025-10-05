@@ -37,9 +37,14 @@ export async function execute(interaction) {
         // Use board file logic from prospectBoards.json
         const prospectBoardsPath = path.join(process.cwd(), 'data/prospectBoards.json');
         const prospectBoards = JSON.parse(fs.readFileSync(prospectBoardsPath, 'utf8'));
-        const boardFilePath = prospectBoards[board];
+        let boardFilePath = prospectBoards[board];
         if (!boardFilePath) throw new Error(`No board file path configured for phase: ${board}`);
-        const bigBoardData = JSON.parse(fs.readFileSync(path.join(process.cwd(), boardFilePath), 'utf8'));
+        // Always resolve to absolute path
+        if (!path.isAbsolute(boardFilePath)) {
+            boardFilePath = path.join(process.cwd(), boardFilePath);
+        }
+        if (!fs.existsSync(boardFilePath)) throw new Error(`Board file not found at resolved path: ${boardFilePath}`);
+        const bigBoardData = JSON.parse(fs.readFileSync(boardFilePath, 'utf8'));
         const allPlayers = Object.values(bigBoardData).filter(player => player && player.name && player.position_1);
 
         // Load scouting data
@@ -114,17 +119,30 @@ export async function handleScoutSelect(interaction, menuIndex) {
     const userId = interaction.user.id;
     const seasonPath = path.join(process.cwd(), 'data/season.json');
     const seasonData = JSON.parse(fs.readFileSync(seasonPath, 'utf8'));
-    const currentWeek = seasonData.currentWeek || 1;
+    const currentWeek = seasonData.currentWeek ?? 0;
+    if (currentWeek < 1) {
+        await interaction.editReply({ content: 'Scouting features unlock in Week 1. Only the recruit board is available during preseason.' });
+        return;
+    }
     let board = 'pre';
     if (currentWeek >= 20) board = 'final';
     else if (currentWeek >= 10) board = 'mid';
-    // Use board file logic from season.json (prospectBoards)
-    const boardFilePath = seasonData.prospectBoards?.[board];
+    // Use board file logic from prospectBoards.json
+    const prospectBoardsPath = path.join(process.cwd(), 'data/prospectBoards.json');
+    const prospectBoards = JSON.parse(fs.readFileSync(prospectBoardsPath, 'utf8'));
+    let boardFilePath = prospectBoards[board];
     if (!boardFilePath) {
         await interaction.editReply({ content: `No board file path configured for phase: ${board}` });
         return;
     }
-    const bigBoardData = JSON.parse(fs.readFileSync(path.join(process.cwd(), boardFilePath), 'utf8'));
+    if (!path.isAbsolute(boardFilePath)) {
+        boardFilePath = path.join(process.cwd(), boardFilePath);
+    }
+    if (!fs.existsSync(boardFilePath)) {
+        await interaction.editReply({ content: `Board file not found at resolved path: ${boardFilePath}` });
+        return;
+    }
+    const bigBoardData = JSON.parse(fs.readFileSync(boardFilePath, 'utf8'));
     const allPlayers = Object.values(bigBoardData).filter(player => player && player.name && player.position_1);
     const startIdx = (menuIndex - 1) * 15;
     const players = allPlayers.slice(startIdx, startIdx + 15);
@@ -193,16 +211,19 @@ export async function handleScoutSelect(interaction, menuIndex) {
         .setColor(0x1e90ff);
     const displayOrder = ['build', 'draft_score', 'overall', 'potential'];
     let anyUnlocked = false;
+    let info = [];
     displayOrder.forEach(cat => {
         if (unlocked.includes(cat)) {
             anyUnlocked = true;
-            if (cat === 'overall') card.addFields({ name: 'Overall', value: player.overall.toString(), inline: true });
-            if (cat === 'potential') card.addFields({ name: 'Potential', value: player.potential.toString(), inline: true });
-            if (cat === 'draft_score') card.addFields({ name: 'Draft Score', value: player.draft_score.toString(), inline: true });
-            if (cat === 'build') card.addFields({ name: 'Build', value: player.build, inline: true });
+            if (cat === 'build') info.push(`**Build:** ${player.build}`);
+            if (cat === 'draft_score') info.push(`**Draft Score:** ${player.draft_score}`);
+            if (cat === 'overall') info.push(`**Overall:** ${player.overall}`);
+            if (cat === 'potential') info.push(`**Potential:** ${player.potential}`);
         }
     });
-    if (!anyUnlocked) {
+    if (anyUnlocked) {
+        card.setDescription(info.join(' | '));
+    } else {
         card.setDescription('No info unlocked yet. Use your scouting points to unlock player details.');
     }
     let footerMsg = `You have ${pointsLeft} scouting points left this week.`;

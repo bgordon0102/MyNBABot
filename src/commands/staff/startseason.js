@@ -3,103 +3,36 @@ import fs from 'fs';
 import path from 'path';
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, MessageFlags } from 'discord.js';
 
-const SEASON_FILE = './data/season.json';
-const TEAMS_FILE = './data/teams.json';
-const LEAGUE_FILE = './data/league.json';
-const PLAYERS_FILE = './data/players.json';
-const BIGBOARD_FILE = './data/bigboard.json';
-const SCOUTING_FILE = './data/scouting.json';
-const RECRUITS_FILE = './data/recruits.json';
+const DATA_DIR = path.resolve(process.cwd(), 'data');
+const COACHROLEMAP_FILE = path.join(DATA_DIR, 'coachRoleMap.json');
+const SEASON_FILE = path.join(DATA_DIR, 'season.json');
+const TEAMS_FILE = path.join(DATA_DIR, 'teams.json');
+const LEAGUE_FILE = path.join(DATA_DIR, 'league.json');
+const PLAYERS_FILE = path.join(DATA_DIR, 'players.json');
+const BIGBOARD_FILE = path.join(DATA_DIR, 'bigboard.json');
+const SCOUTING_FILE = path.join(DATA_DIR, 'scouting.json');
+const RECRUITS_FILE = path.join(DATA_DIR, 'recruits.json');
+const SCOUT_POINTS_FILE = path.join(DATA_DIR, 'scout_points.json');
+const SCHEDULE_FILE = path.join(DATA_DIR, 'schedule.json');
 
 // Helper to write JSON
 function writeJSON(file, data) {
-    fs.writeFileSync(file, JSON.stringify(data, null, 2));
+    try {
+        if (typeof data === 'undefined') {
+            console.error(`[writeJSON] Tried to write undefined data to ${file}`);
+            return;
+        }
+        fs.writeFileSync(file, JSON.stringify(data, null, 2));
+    } catch (err) {
+        console.error(`[writeJSON] Failed to write to ${file}:`, err);
+    }
 }
 
-// Generate a week-based round-robin schedule: each team plays one game per week
-function generateWeekBasedSchedule(teams, gameno) {
-    // Standard round-robin (circle method)
-    const n = teams.length;
-    const rounds = n - 1;
-    const schedule = [];
-    let id = 0;
-    let teamList = [...teams];
-    if (n % 2 !== 0) teamList.push(null); // Add bye if odd
-    const numTeams = teamList.length;
-    const half = numTeams / 2;
-    for (let round = 0; round < rounds; round++) {
-        const weekGames = [];
-        for (let i = 0; i < half; i++) {
-            const t1 = teamList[i];
-            const t2 = teamList[numTeams - 1 - i];
-            if (t1 && t2) {
-                weekGames.push({ id: id++, team1: t1, team2: t2 });
-            }
-        }
-        schedule.push(weekGames);
-        // Rotate teams (except first)
-        teamList = [teamList[0], teamList[numTeams - 1], ...teamList.slice(1, numTeams - 1)];
-    }
-    // Only single round robin (29 games per team)
-    return schedule;
-}
-
-export const data = new SlashCommandBuilder()
-    .setName('startseason')
-    .setDescription('Start a new NBA 2K season. If data exists, you will be prompted to confirm reset.')
-    .addIntegerOption(option =>
-        option.setName('seasonno')
-            .setDescription('Season number')
-            .setRequired(true))
-    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator);
-
-export async function execute(interaction, seasonnoOverride = null) {
-    const gameno = 29; // Always 29 games per team
-    let seasonno = seasonnoOverride;
-    if (!seasonno) {
-        if (interaction.options && typeof interaction.options.getInteger === 'function') {
-            seasonno = interaction.options.getInteger('seasonno');
-        } else if (interaction.customId && interaction.customId.startsWith('startseason_confirm_')) {
-            // Try to extract from customId: startseason_confirm_<seasonno>
-            const parts = interaction.customId.split('_');
-            seasonno = parseInt(parts[2], 10);
-        }
-    }
-    if (!seasonno) {
-        await interaction.editReply({ content: 'Error: Could not determine season number.', ephemeral: true });
-        return;
-    }
-
-    // Check if any data files exist
-    const filesExist = [SEASON_FILE, TEAMS_FILE, LEAGUE_FILE, PLAYERS_FILE, BIGBOARD_FILE, SCOUTING_FILE, RECRUITS_FILE].some(f => fs.existsSync(f));
-    if (filesExist && !interaction.customId?.startsWith('startseason_confirm')) {
-        // Store the season number in the customId for confirmation
-        const row = new ActionRowBuilder().addComponents(
-            new ButtonBuilder()
-                .setCustomId(`startseason_confirm_${seasonno}`)
-                .setLabel('Confirm Reset & Start New Season')
-                .setStyle(ButtonStyle.Danger)
-        );
-        const warningMsg = '⚠️ League/season data already exists!\n**Running this command will ERASE ALL current league data and start a new season.**';
-        // Always defer reply if not already done
-        if (!interaction.deferred && !interaction.replied) {
-            await interaction.deferReply({ ephemeral: true });
-        }
-        await interaction.editReply({
-            content: warningMsg,
-            components: [row],
-            flags: MessageFlags.Ephemeral
-        });
-        return;
-    }
-
-    // Delete all old data files if they exist
-    [SEASON_FILE, TEAMS_FILE, LEAGUE_FILE, PLAYERS_FILE, BIGBOARD_FILE, SCOUTING_FILE, RECRUITS_FILE].forEach(f => {
-        if (fs.existsSync(f)) {
-            try { fs.unlinkSync(f); } catch (e) { console.warn(`Could not delete ${f}:`, e.message); }
-        }
-    });
-
+// Extracted season reset logic (no Discord interaction)
+export function resetSeasonData(seasonno, guild, caller = 'unknown') {
+    console.log(`[resetSeasonData] Called from: ${caller}`);
+    console.log(`[resetSeasonData] process.cwd():`, process.cwd());
+    const gameno = 29;
     // Static NBA team list (shuffled for random schedule)
     const nbaTeams = [
         { id: 1, name: "Atlanta Hawks", abbreviation: "ATL" },
@@ -140,92 +73,203 @@ export async function execute(interaction, seasonnoOverride = null) {
         [staticTeams[i], staticTeams[j]] = [staticTeams[j], staticTeams[i]];
     }
 
-    // Map: team name -> coach role (if exists)
-    const coachRoleMap = {};
-    for (const team of staticTeams) {
-        const role = interaction.guild.roles.cache.find(r => r.name.toLowerCase() === `${team.name.toLowerCase()} coach`);
-        if (role) coachRoleMap[team.name] = role.id;
+    // --- Self-healing file logic ---
+    function safeReadJSON(file, fallback) {
+        try {
+            const data = fs.readFileSync(file, 'utf8');
+            if (!data) throw new Error('Empty file');
+            return JSON.parse(data);
+        } catch {
+            console.warn(`[startseason] File ${file} missing or invalid, recreating with defaults.`);
+            writeJSON(file, fallback);
+            return fallback;
+        }
     }
-    console.log('Coach role map:', coachRoleMap);
 
+    // Coach Role Map: always try to generate from guild, fallback to file, fallback to all nulls (but always all teams)
+    let coachRoleMap = {};
+    let usedFallback = false;
+    if (guild && guild.roles && guild.roles.cache) {
+        for (const team of staticTeams) {
+            const nickname = team.name.split(' ').slice(-1)[0];
+            let role = guild.roles.cache.find(r => r.name.toLowerCase() === `${nickname.toLowerCase()} coach`);
+            if (role) {
+                coachRoleMap[team.name] = role.id;
+            } else if (team.name === 'Portland Trail Blazers') {
+                coachRoleMap[team.name] = '1423036950700626053';
+                console.warn(`[startseason] No role found for team ${team.name}, using hardcoded fallback role ID.`);
+            } else {
+                coachRoleMap[team.name] = null;
+                console.warn(`[startseason] No role found for team ${team.name}`);
+            }
+        }
+    }
+    // If still empty, fallback to file
+    if (Object.keys(coachRoleMap).length === 0) {
+        const fileMap = safeReadJSON(COACHROLEMAP_FILE, {});
+        for (const team of staticTeams) {
+            coachRoleMap[team.name] = fileMap[team.name] || null;
+        }
+        usedFallback = true;
+    }
+    // If still empty, fallback to all nulls (but always all teams)
+    if (Object.keys(coachRoleMap).length === 0 || Object.values(coachRoleMap).every(v => v === null)) {
+        for (const team of staticTeams) {
+            coachRoleMap[team.name] = null;
+        }
+        usedFallback = true;
+        console.warn('[startseason] coachRoleMap fallback: all nulls');
+    }
+    // Always ensure all teams are present
+    for (const team of staticTeams) {
+        if (!(team.name in coachRoleMap)) {
+            coachRoleMap[team.name] = null;
+        }
+    }
+    console.log('[startseason] Writing coachRoleMap.json:', COACHROLEMAP_FILE, JSON.stringify(coachRoleMap, null, 2));
+    writeJSON(COACHROLEMAP_FILE, coachRoleMap);
+    console.log('[startseason] Wrote coachRoleMap.json');
+    if (usedFallback) {
+        console.warn('[startseason] Used fallback for coachRoleMap, check your guild context or role setup.');
+    }
+
+    // Schedule
     const schedule = generateWeekBasedSchedule(staticTeams, gameno);
+    // Validate schedule: must be non-empty array of arrays
+    if (!Array.isArray(schedule) || schedule.length === 0 || !Array.isArray(schedule[0])) {
+        console.error('[startseason] Generated schedule is invalid, writing fallback.');
+        console.log('[startseason] Writing schedule.json: fallback');
+        writeJSON(SCHEDULE_FILE, [{ error: 'No schedule generated' }]);
+    } else {
+        console.log('[startseason] Writing schedule.json:', SCHEDULE_FILE, JSON.stringify(schedule, null, 2));
+        writeJSON(SCHEDULE_FILE, schedule);
+        console.log('[startseason] Wrote schedule.json');
+    }
 
-    // Save to season.json as week-based array, with ids and coachRoleMap
+    // Teams
+    console.log('[startseason] Writing teams.json:', TEAMS_FILE, JSON.stringify(staticTeams, null, 2));
+    writeJSON(TEAMS_FILE, staticTeams);
+    console.log('[startseason] Wrote teams.json');
 
-
-    // Define all new file paths
-    const SCHEDULE_FILE = './data/schedule.json';
-    const TEAMS_FILE_NEW = './data/teams.json';
-    const COACHROLEMAP_FILE = './data/coachRoleMap.json';
-    const PROSPECTBOARDS_FILE = './data/prospectBoards.json';
-    const STANDINGS_FILE = './data/standings.json';
-
-    // Always create prospectBoards for season 1
+    // Prospect Boards
     const prospectBoards = {
         pre: "./CUS01/2k26_CUS01 - Preseason Big Board.json",
         mid: "./CUS01/2k26_CUS01 - Midseason Big Board.json",
         final: "./CUS01/2k26_CUS01 - Final Big Board.json"
     };
+    let preseasonData = safeReadJSON(path.resolve(process.cwd(), prospectBoards.pre.replace('./', '')), []);
+    let midseasonData = safeReadJSON(path.resolve(process.cwd(), prospectBoards.mid.replace('./', '')), []);
+    let finalData = safeReadJSON(path.resolve(process.cwd(), prospectBoards.final.replace('./', '')), []);
+    writeJSON(path.join(DATA_DIR, 'prospectBoards.json'), prospectBoards);
+    writeJSON(prospectBoards.pre, preseasonData);
+    writeJSON(prospectBoards.mid, midseasonData);
+    writeJSON(prospectBoards.final, finalData);
 
-    // Delete and recreate all needed files as blank for a new season (including prospect boards)
-    const allFiles = [
-        SCHEDULE_FILE, TEAMS_FILE_NEW, COACHROLEMAP_FILE, PROSPECTBOARDS_FILE, STANDINGS_FILE,
-        LEAGUE_FILE, PLAYERS_FILE, BIGBOARD_FILE, SCOUTING_FILE, RECRUITS_FILE, './data/scout_points.json',
-        prospectBoards.pre, prospectBoards.mid, prospectBoards.final
-    ];
-    allFiles.forEach(file => {
-        // Always resolve to the workspace root
-        const filePath = path.resolve(process.cwd(), file.replace('./', ''));
-        // Ensure directory exists
-        const dir = path.dirname(filePath);
-        if (!fs.existsSync(dir)) {
-            fs.mkdirSync(dir, { recursive: true });
-        }
-        try { if (fs.existsSync(filePath)) fs.unlinkSync(filePath); } catch { }
-        // Initialize teams.json as an array, others as objects
-        if (filePath.endsWith('teams.json')) {
-            fs.writeFileSync(filePath, JSON.stringify([], null, 2));
-        } else {
-            fs.writeFileSync(filePath, JSON.stringify({}, null, 2));
-        }
-    });
-
-    // Always overwrite all data files with fresh content for a new season
-    const seasonData = {
-        currentWeek: 0,
-        seasonNo: seasonno
-    };
-    fs.writeFileSync(SEASON_FILE, JSON.stringify(seasonData, null, 2));
-
-    // Overwrite schedule.json
-    fs.writeFileSync(SCHEDULE_FILE, JSON.stringify(schedule, null, 2));
-    // Overwrite teams.json (ensure correct path)
-    const teamsFilePath = path.resolve(process.cwd(), TEAMS_FILE_NEW.replace('./', ''));
-    console.log('[startseason] Writing teams.json to:', teamsFilePath);
-    console.log('[startseason] Teams data:', JSON.stringify(staticTeams, null, 2));
-    fs.writeFileSync(teamsFilePath, JSON.stringify(staticTeams, null, 2));
-    console.log('[startseason] teams.json write complete.');
-    // Overwrite coachRoleMap.json
-    fs.writeFileSync(COACHROLEMAP_FILE, JSON.stringify(coachRoleMap, null, 2));
-    // Overwrite prospectBoards.json
-    fs.writeFileSync(PROSPECTBOARDS_FILE, JSON.stringify(prospectBoards, null, 2));
-    // Overwrite standings.json (initialize all to 0)
+    // Standings
     const standings = {};
     staticTeams.forEach(team => {
-        standings[team] = { wins: 0, losses: 0, ties: 0, games: 0, pointsFor: 0, pointsAgainst: 0 };
+        standings[team.name] = { wins: 0, losses: 0, games: 0, pointsFor: 0, pointsAgainst: 0 };
     });
-    fs.writeFileSync(STANDINGS_FILE, JSON.stringify(standings, null, 2));
+    writeJSON(path.join(DATA_DIR, 'standings.json'), standings);
 
-    // Send confirmation message using the correct method for the interaction type
-    const msg = {
-        content: `All old league data cleared. New season initialized with ${staticTeams.length} teams! Week channels will be created using /advanceweek.`,
-        ephemeral: false
+    // Scores: always reset to empty array
+    writeJSON(path.join(DATA_DIR, 'scores.json'), []);
+
+    // Season file: always use the freshly generated coachRoleMap
+    const seasonData = {
+        currentWeek: 0,
+        seasonNo: seasonno,
+        coachRoleMap: coachRoleMap
     };
-    if (interaction.deferred || interaction.replied) {
-        await interaction.editReply(msg);
-    } else if (interaction.isButton && interaction.isButton()) {
-        await interaction.followUp(msg);
+    if (!seasonData || typeof seasonData !== 'object' || Object.keys(seasonData).length === 0) {
+        console.error('[resetSeasonData] seasonData is invalid, not writing to season.json');
     } else {
-        await interaction.reply(msg);
+        writeJSON(SEASON_FILE, seasonData);
     }
+
+    // League, Players, Bigboard, Scouting, Recruits, Scout Points
+    // League: always write a valid league object with seasonNo and teams
+    const leagueData = {
+        seasonNo: seasonno,
+        teams: staticTeams.map(t => ({ id: t.id, name: t.name, abbreviation: t.abbreviation }))
+    };
+    console.log('[startseason] Writing league.json:', LEAGUE_FILE, JSON.stringify(leagueData, null, 2));
+    writeJSON(LEAGUE_FILE, leagueData);
+    console.log('[startseason] Wrote league.json');
+    writeJSON(PLAYERS_FILE, []);
+    writeJSON(BIGBOARD_FILE, []);
+    writeJSON(SCOUTING_FILE, {});
+    writeJSON(RECRUITS_FILE, []);
+    writeJSON(SCOUT_POINTS_FILE, {});
+
+    return staticTeams.length;
+}
+
+// Generate a week-based round-robin schedule: each team plays one game per week
+function generateWeekBasedSchedule(teams, gameno) {
+    // Standard round-robin (circle method)
+    const n = teams.length;
+    const rounds = n - 1;
+    const schedule = [];
+    let id = 0;
+    let teamList = [...teams];
+    if (n % 2 !== 0) teamList.push(null); // Add bye if odd
+    const numTeams = teamList.length;
+    const half = numTeams / 2;
+    // Add week 0 (no games)
+    schedule.push([]);
+    for (let round = 0; round < rounds; round++) {
+        const weekGames = [];
+        for (let i = 0; i < half; i++) {
+            const t1 = teamList[i];
+            const t2 = teamList[numTeams - 1 - i];
+            if (t1 && t2) {
+                weekGames.push({ id: id++, team1: t1, team2: t2 });
+            }
+        }
+        schedule.push(weekGames);
+        // Rotate teams (except first)
+        teamList = [teamList[0], teamList[numTeams - 1], ...teamList.slice(1, numTeams - 1)];
+    }
+    // Only single round robin (29 games per team)
+    return schedule;
+}
+
+// Discord command builder and execute function
+export const data = new SlashCommandBuilder()
+    .setName('startseason')
+    .setDescription('Start a new NBA 2K season. If data exists, you will be prompted to confirm reset.')
+    .addIntegerOption(option =>
+        option.setName('seasonno')
+            .setDescription('Season number')
+            .setRequired(true))
+    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator);
+
+export async function execute(interaction, seasonnoOverride = null) {
+    // Always get season number from override or interaction
+    const seasonno = seasonnoOverride !== null ? seasonnoOverride : interaction.options.getInteger('seasonno');
+
+    // Immediately defer reply to prevent Discord timeout
+    try {
+        await interaction.deferReply({ ephemeral: true });
+    } catch (err) {
+        console.error('[startseason] Failed to defer reply:', err);
+    }
+
+    // Show confirmation button instead of resetting immediately
+    const confirmRow = new ActionRowBuilder().addComponents(
+        new ButtonBuilder()
+            .setCustomId(`startseason_confirm_${seasonno}`)
+            .setLabel('✅ Yes, start/reset season')
+            .setStyle(ButtonStyle.Danger)
+    );
+    try {
+        await interaction.editReply({
+            content: `⚠️ Are you sure you want to start/reset Season ${seasonno}? This will erase and recreate all league data files.`,
+            components: [confirmRow],
+        });
+    } catch (err) {
+        console.error('[startseason] Failed to send confirmation button:', err);
+    }
+    // Actual reset will be handled in a button interaction handler.
 }
