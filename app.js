@@ -275,7 +275,12 @@ async function startBot() {
     console.log('🔄 Loading LEAGUEbuddy interactions...');
     await loadInteractions();
     console.log('🚀 Starting LEAGUEbuddy bot...');
-    await client.login(process.env.TOKEN);
+    // Use DISCORD_TOKEN for Railway, fallback to TOKEN for local .env
+    const token = process.env.DISCORD_TOKEN || process.env.TOKEN;
+    if (!token) {
+      throw new Error('No Discord bot token found in DISCORD_TOKEN or TOKEN environment variables.');
+    }
+    await client.login(token);
   } catch (error) {
     console.error('❌ Failed to start LEAGUEbuddy:', error);
     process.exit(1);
