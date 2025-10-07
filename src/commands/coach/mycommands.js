@@ -20,7 +20,16 @@ export async function execute(interaction) {
             .setDescription('Here are the commands available to Staff:')
             .addFields(
                 { name: '/mycommands ⭐', value: 'Shows this menu' },
-                // ...existing staff commands...
+                { name: '/advanceweek', value: 'Advance the league to the next week' },
+                { name: '/assignrole', value: 'Assign a coach role to a user' },
+                { name: '/clearcoachoffices', value: 'Remove all messages from coach office channels' },
+                { name: '/clearmessages', value: 'Clear messages from a specified channel' },
+                { name: '/createcoachoffices', value: 'Create all coach office channels' },
+                { name: '/deletegamechannel', value: 'Delete a game channel' },
+                { name: '/generaterandomscores', value: 'Simulate and approve random scores for all games up to a given week' },
+                { name: '/resetnbaroles', value: 'Reset NBA coach roles for all teams' },
+                { name: '/resetscouting', value: 'Reset all scouting data' },
+                { name: '/startseason', value: 'Start or reset the NBA season and all league data files' }
             )
             .setFooter({ text: 'Staff access only' });
     } else {

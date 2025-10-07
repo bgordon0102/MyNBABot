@@ -17,7 +17,7 @@ export async function execute(interaction) {
 
     // Embed listing all 50 players
     const listEmbed = new EmbedBuilder()
-        .setTitle("🏀 Recruiting Board")
+        .setTitle("ESPN's Top 50 Recruits")
         .setDescription(
             players.map(p => `${p.national_rank}: ${p.position} ${p.name} - ${p.college}`).join("\n")
         )
