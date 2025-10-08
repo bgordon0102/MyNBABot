@@ -9,13 +9,57 @@ export class DraftClassManager {
      */
     static getAvailableClasses() {
         try {
+            // Check if file exists, create if not
+            if (!fs.existsSync(DRAFT_CLASSES_FILE)) {
+                console.log('Draft classes file not found, creating default...');
+                const defaultConfig = {
+                    availableClasses: [
+                        {
+                            id: "CUS01",
+                            name: "2026 Custom Class 01",
+                            folder: "CUS01",
+                            year: "2k26",
+                            active: true
+                        },
+                        {
+                            id: "CUS02",
+                            name: "2026 Custom Class 02",
+                            folder: "CUS02",
+                            year: "2k26",
+                            active: false
+                        }
+                    ],
+                    currentClass: "CUS01"
+                };
+                
+                // Ensure data directory exists
+                const dataDir = path.dirname(DRAFT_CLASSES_FILE);
+                if (!fs.existsSync(dataDir)) {
+                    fs.mkdirSync(dataDir, { recursive: true });
+                }
+                
+                fs.writeFileSync(DRAFT_CLASSES_FILE, JSON.stringify(defaultConfig, null, 2));
+                return defaultConfig;
+            }
+            
             const data = fs.readFileSync(DRAFT_CLASSES_FILE, 'utf8');
             return JSON.parse(data);
         } catch (error) {
             console.error('Error reading draft classes:', error);
+            console.error('Error details:', error.stack);
+            
+            // Return safe fallback
             return {
-                availableClasses: [],
-                currentClass: null
+                availableClasses: [
+                    {
+                        id: "CUS01",
+                        name: "2026 Custom Class 01",
+                        folder: "CUS01",
+                        year: "2k26",
+                        active: true
+                    }
+                ],
+                currentClass: "CUS01"
             };
         }
     }
