@@ -233,10 +233,7 @@ async function handleSync(interaction, userId) {
     }
     // Show all available league names and IDs
     const leagueList = leagues.map(l => `• **${l.name}** (ID: ${l.id}, Teams: ${l.teams})`).join('\n');
-    await interaction.editReply({
-        content:
-            `Found the following leagues on your EA account:\n${leagueList}\n\nReply with the league ID you want to sync using /ea sync leagueid:<ID>`
-    });
+    await interaction.editReply({ content: `Found the following leagues on your EA account:\n${leagueList}` });
     // ...existing code for further import (teams, players, games, etc)...
 }
 

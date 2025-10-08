@@ -19,6 +19,12 @@ const MACHINE_KEY = "444d362e8e067fe2";
 const EA_LOGIN_URL = `https://accounts.ea.com/connect/auth?hide_create=true&release_type=prod&response_type=code&redirect_uri=${REDIRECT_URL}&client_id=${CLIENT_ID}&machineProfileKey=${MACHINE_KEY}&authentication_source=${AUTH_SOURCE}`;
 
 class EASportsAPI {
+    // File-based logger for EA debug logs
+    static logToFile(message) {
+        const logPath = path.join(process.cwd(), 'ea_debug.log');
+        const timestamp = new Date().toISOString();
+        fs.appendFileSync(logPath, `[${timestamp}] ${message}\n`, 'utf8');
+    }
     constructor() {
         this.tokens = new Map(); // Store user tokens
         this.callbackServer = null;
@@ -403,10 +409,15 @@ class EASportsAPI {
                 const sessionKey = walAuthResponse.data.userLoginInfo.sessionKey;
                 console.log('✅ WAL authentication successful');
 
-                // Get leagues using Mobile_GetMyLeagues command (like snallabot)
+
+                // Madden 26 WAL/Blaze endpoint and headers
+                // Token refresh check
+                if (Date.now() > token.expires_at) {
+                    token = await refreshEaToken(token.refresh_token);
+                }
 
                 const cfmResponse = await axios.post(
-                    `https://wal2.tools.gos.bio-iad.ea.com/wal/mca/Process/${sessionKey}`,
+                    `https://wal3.tools.gos.bio-iad.ea.com/wal/mca/Process/${sessionKey}`,
                     {
                         apiVersion: 2,
                         clientDevice: 3,
@@ -417,21 +428,21 @@ class EASportsAPI {
                             componentId: 2060,
                             commandId: 801,
                             ipAddress: '127.0.0.1',
-                            requestPayload: '{}',
+                            requestPayload: {}, // object literal for Madden 26
                             componentName: 'careermode',
                             messageAuthData: {
                                 authCode: sessionKey,
                                 authData: token.access_token,
-                                authType: 17039361
+                                authType: 17039362 // Madden 26
                             }
                         })
                     },
                     {
                         headers: {
                             'Accept': 'application/json',
-                            'X-BLAZE-ID': 'madden-2025-ps5-gen5',
+                            'X-BLAZE-ID': 'madden-2026-ps5-gen5',
                             'X-BLAZE-VOID-RESP': 'XML',
-                            'X-Application-Key': 'MADDEN-MCA',
+                            'X-Application-Key': 'MADDEN26-MCA',
                             'Content-Type': 'application/json',
                             'User-Agent': 'Dalvik/2.1.0 (Linux; U; Android 13; sdk_gphone_x86_64 Build/TE1A.220922.031)'
                         }
@@ -446,37 +457,83 @@ class EASportsAPI {
                 const walResponse = cfmResponse.data?.responseInfo?.value?.leagues || [];
                 console.log(`🏆 Found ${walResponse.length} Connected Franchise Mode leagues via WAL`);
 
-                walResponse.forEach(league => {
-                    console.log(`[EA DEBUG] League: Name="${league.leagueName}" | ID=${league.leagueId} | Year=${league.calendarYear} | Members=${league.numMembers} | Platform=${league.platform || 'Unknown'}`);
-                });
-
-                if (walResponse.length > 0) {
-                    // Return actual CFM leagues with proper filtering
-                    let filteredLeagues = walResponse;
-
-                    if (userConsole) {
-                        const platformMap = {
-                            'PS5': ['ps5', 'playstation5', 'ps4'],
-                            'XBOX': ['xbox', 'xboxone', 'xboxseriesx'],
-                            'PC': ['pc', 'origin', 'steam']
-                        };
-
-                        const expectedPlatforms = platformMap[userConsole] || [userConsole.toLowerCase()];
-
-                        filteredLeagues = walResponse.filter(league => {
-                            // WAL leagues may not have platform info, so skip filtering for now
-                            return true;
-                        });
+                if (walResponse.length === 0) {
+                    console.warn('[EA DEBUG] WAL/Blaze response contained no leagues. Fallback to persona mapping will be used.');
+                } else {
+                    // For each league, perform Mobile_GetLeague to fetch team data
+                    const leagueResults = [];
+                    try {
+                        for (const league of walResponse) {
+                            const leagueObjStr = JSON.stringify(league, null, 2);
+                            console.log('[EA DEBUG] Full League Object:', leagueObjStr);
+                            EASportsAPI.logToFile(`[EA DEBUG] Full League Object: ${leagueObjStr}`);
+                            let teamNames = 'Unknown';
+                            try {
+                                // Mobile_GetLeague request for team data
+                                const leaguePayload = {
+                                    apiVersion: 2,
+                                    clientDevice: 3,
+                                    requestInfo: JSON.stringify({
+                                        messageExpirationTime: Math.floor(Date.now() / 1000) + 300,
+                                        deviceId: 'LEAGUEbuddy-MCA',
+                                        commandName: 'Mobile_GetLeague',
+                                        componentId: 2060,
+                                        commandId: 802,
+                                        ipAddress: '127.0.0.1',
+                                        requestPayload: { leagueId: league.leagueId, includeTeamData: true },
+                                        componentName: 'careermode',
+                                        messageAuthData: {
+                                            authCode: sessionKey,
+                                            authData: token.access_token,
+                                            authType: 17039362
+                                        }
+                                    })
+                                };
+                                const leagueHeaders = {
+                                    'Accept': 'application/json',
+                                    'X-BLAZE-ID': 'madden-2026-ps5-gen5',
+                                    'X-BLAZE-VOID-RESP': 'XML',
+                                    'X-Application-Key': 'MADDEN26-MCA',
+                                    'Content-Type': 'application/json',
+                                    'User-Agent': 'Dalvik/2.1.0 (Linux; U; Android 13; sdk_gphone_x86_64 Build/TE1A.220922.031)'
+                                };
+                                EASportsAPI.logToFile(`[EA DEBUG] Preparing Mobile_GetLeague for leagueId ${league.leagueId}`);
+                                const leaguePayloadStr = JSON.stringify(leaguePayload, null, 2);
+                                console.log('[EA DEBUG] Mobile_GetLeague request:', leaguePayloadStr);
+                                EASportsAPI.logToFile(`[EA DEBUG] Mobile_GetLeague request: ${leaguePayloadStr}`);
+                                const leagueResponse = await axios.post(
+                                    `https://wal3.tools.gos.bio-iad.ea.com/wal/mca/Process/${sessionKey}`,
+                                    leaguePayload,
+                                    { headers: leagueHeaders }
+                                );
+                                const leagueRespStr = JSON.stringify(leagueResponse.data, null, 2);
+                                console.log(`[EA DEBUG] Mobile_GetLeague response for leagueId ${league.leagueId}:`, leagueRespStr);
+                                EASportsAPI.logToFile(`[EA DEBUG] Mobile_GetLeague response for leagueId ${league.leagueId}: ${leagueRespStr}`);
+                                // Parse teams array from response
+                                const teamsArr = leagueResponse.data?.responseInfo?.value?.teams || [];
+                                if (teamsArr.length > 0) {
+                                    teamNames = teamsArr.map(t => t.displayName || t.name || t.teamName).join(', ');
+                                }
+                            } catch (err) {
+                                const errMsg = `[EA DEBUG] Mobile_GetLeague failed for leagueId ${league.leagueId}: ${err && err.stack ? err.stack : err}`;
+                                console.warn(errMsg);
+                                EASportsAPI.logToFile(errMsg);
+                            }
+                            leagueResults.push({
+                                id: league.leagueId,
+                                name: league.leagueName,
+                                console: 'Cross-Platform',
+                                teams: teamNames,
+                                week: league.seasonText || 'Unknown',
+                                season: league.calendarYear || (maddenVersion ? `Madden ${maddenVersion}` : '2025')
+                            });
+                        }
+                    } catch (fatalErr) {
+                        const fatalMsg = `[EA DEBUG] Fatal error in Mobile_GetLeague loop: ${fatalErr && fatalErr.stack ? fatalErr.stack : fatalErr}`;
+                        console.error(fatalMsg);
+                        EASportsAPI.logToFile(fatalMsg);
                     }
-
-                    return filteredLeagues.map(league => ({
-                        id: league.leagueId,
-                        name: league.leagueName,
-                        console: 'Cross-Platform',
-                        teams: league.numMembers || 'Unknown',
-                        week: league.seasonText || 'Unknown',
-                        season: league.calendarYear || (maddenVersion ? `Madden ${maddenVersion}` : '2025')
-                    }));
+                    return leagueResults;
                 }
             } catch (cfmError) {
                 console.log(`⚠️ WAL CFM access failed, falling back to personas: ${cfmError.message}`);
@@ -754,8 +811,15 @@ class EASportsAPI {
 
     // Disconnect user
     disconnect(userId) {
+        console.log(`[EA DEBUG] disconnect() called for userId: ${userId}`);
+        if (this.tokens.has(userId)) {
+            console.log(`[EA DEBUG] Token found for userId: ${userId}. Deleting...`);
+        } else {
+            console.log(`[EA DEBUG] No token found for userId: ${userId}.`);
+        }
         this.tokens.delete(userId);
         this.saveTokens();
+        console.log(`[EA DEBUG] Token state after disconnect:`, Array.from(this.tokens.keys()));
     }
 
     // Force refresh - clears cached tokens to get fresh data
