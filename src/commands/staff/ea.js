@@ -92,13 +92,13 @@ async function handleConnect(interaction, userId) {
     const embed = new EmbedBuilder()
         .setColor('#0099ff')
         .setTitle('🔗 Connect to EA Sports')
-        .setDescription('**Follow these steps to connect your EA Sports account:**')
+        .setDescription('**Follow these steps to connect your EA Sports account (exactly like snallabot):**')
         .addFields(
-            { name: '📋 Instructions', value: '1. Click the link below to login to EA Sports\n2. Use your **normal EA account credentials**\n3. After login, you\'ll see a blank page with a URL starting with `http://127.0.0.1`\n4. **This is normal and expected!**\n5. The connection will complete automatically' },
+            { name: '📋 Instructions', value: '1. A browser window will open with setup instructions\n2. Click "Login to EA" and use your **normal EA account credentials**\n3. After login, you\'ll see a blank page with a URL starting with `http://127.0.0.1`\n4. **This is normal and expected!**\n5. Copy the entire URL and paste it in the setup page\n6. Click "Submit URL" to complete the connection' },
             { name: '🔒 Security Note', value: 'LEAGUEbuddy does **NOT** store your EA credentials. It only stores secure authentication tokens.' },
-            { name: '⚠️ Important', value: 'Keep your browser open until you see the success message!' }
+            { name: '⚠️ Important', value: 'Each EA login URL can only be used once. If it fails, start over.' }
         )
-        .setFooter({ text: 'Starting EA Sports authentication...' });
+        .setFooter({ text: 'Opening EA Sports setup page...' });
 
     await interaction.reply({ embeds: [embed], ephemeral: true });
 

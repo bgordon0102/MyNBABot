@@ -1,18 +1,19 @@
 # EA Sports Integration for LEAGUEbuddy
 
-This integration allows LEAGUEbuddy to connect with EA Sports accounts to import Madden league data, player ratings, and draft classes directly from EA's servers.
+This integration allows LEAGUEbuddy to connect with EA Sports accounts using **the exact same method as snallabot** to import Madden league data, player ratings, and draft classes directly from EA's servers.
 
-## How It Works
+## How It Works (Identical to snallabot)
 
-LEAGUEbuddy uses the same OAuth flow as snallabot and other EA Sports integrations:
+LEAGUEbuddy uses the exact same OAuth flow, constants, and API endpoints as snallabot:
 
-### 1. Authentication Flow
+### 1. Authentication Flow (Snallabot Method)
 - User runs `/ea connect` in Discord
-- LEAGUEbuddy opens a browser to EA Sports login page
-- User logs in with their normal EA account credentials
-- EA redirects to `http://127.0.0.1:3000/callback` (localhost)
-- LEAGUEbuddy captures the authentication token
-- Connection is established automatically
+- LEAGUEbuddy opens a setup page at `http://127.0.0.1:3000`
+- User clicks "Login to EA" which opens the official EA Sports login
+- After login, EA redirects to `http://127.0.0.1/success?code=...` (blank page)
+- **This blank page is normal and expected**
+- User copies the entire URL and pastes it back in the setup form
+- LEAGUEbuddy exchanges the code for access/refresh tokens
 
 ### 2. Security
 - **No credentials stored**: LEAGUEbuddy never stores your EA username/password
@@ -52,13 +53,15 @@ Remove the connection between LEAGUEbuddy and your EA Sports account.
 
 ## Setup Requirements
 
-### Environment Variables
-Add these to your `.env` file:
+### Environment Variables (Snallabot Constants)
+Add these to your `.env` file (using exact snallabot values):
 ```
-EA_CLIENT_ID=your_ea_client_id
-EA_CLIENT_SECRET=your_ea_client_secret
-EA_BASE_URL=https://www.ea.com
-EA_API_URL=https://api.ea.com
+# EA Sports API Configuration (using snallabot constants)
+EA_AUTH_SOURCE=317239
+EA_CLIENT_SECRET=wfGAWnrxLroZOwwELYA2ZrAuaycuF2WDb00zOLv48Sb79viJDGlyD6OyK8pM5eIiv_20240731135155
+EA_CLIENT_ID=MCA_25_COMP_APP
+EA_MACHINE_KEY=444d362e8e067fe2
+EA_REDIRECT_URL=http://127.0.0.1/success
 ```
 
 ### Node.js Dependencies
