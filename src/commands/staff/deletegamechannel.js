@@ -65,22 +65,41 @@ export async function execute(interaction) {
             return await interaction.editReply({ content: `No category found for Week ${week}.` });
         }
         // Delete all channels under the category
-        for (const channel of interaction.guild.channels.cache.filter(ch => ch.parentId === category.id).values()) {
+        let deletedChannels = 0;
+        let failedChannels = 0;
+
+        const channelsToDelete = interaction.guild.channels.cache.filter(ch => ch.parentId === category.id);
+        console.log(`[deletegamechannel] Found ${channelsToDelete.size} channels to delete in category ${categoryName}`);
+
+        for (const channel of channelsToDelete.values()) {
             try {
+                console.log(`[deletegamechannel] Deleting channel: ${channel.name}`);
                 await channel.delete();
+                deletedChannels++;
+                // Add small delay to avoid rate limiting
+                await new Promise(resolve => setTimeout(resolve, 100));
             } catch (e) {
                 console.error(`[deletegamechannel] Failed to delete channel ${channel.name}:`, e);
+                failedChannels++;
             }
         }
+
         // Delete the category itself
         try {
+            console.log(`[deletegamechannel] Deleting category: ${categoryName}`);
             await category.delete();
+            console.log(`[deletegamechannel] Category deleted successfully`);
         } catch (e) {
             console.error(`[deletegamechannel] Failed to delete category:`, e);
+            return await interaction.editReply({
+                content: `⚠️ Deleted ${deletedChannels} channels but failed to delete category "${categoryName}". ${failedChannels > 0 ? `${failedChannels} channels failed to delete.` : ''}`
+            });
         }
         const elapsed = Date.now() - startTime;
         console.log(`[deletegamechannel] Successfully deleted week ${week} channels in ${elapsed}ms.`);
-        await interaction.editReply({ content: `✅ Week ${week} game channels and category deleted from Discord.` });
+        await interaction.editReply({
+            content: `✅ Week ${week} game channels and category deleted from Discord.\n📊 Deleted: ${deletedChannels} channels${failedChannels > 0 ? `, Failed: ${failedChannels}` : ''}`
+        });
     } catch (err) {
         console.error('[deletegamechannel] Fatal error:', err);
         // Only try to edit reply if still possible
