@@ -63,10 +63,24 @@ export default {
             }
         } catch (error) {
             console.error('Error in draftclass command:', error);
-            await interaction.reply({
-                content: `❌ Error: ${error.message}`,
-                ephemeral: true
-            });
+            console.error('Error stack:', error.stack);
+            
+            const errorMsg = `❌ **Draft Class Error:**
+            
+**Message:** ${error.message}
+**Type:** ${error.constructor.name}
+**Subcommand:** ${subcommand}
+
+Check Railway logs for full details.`;
+
+            try {
+                await interaction.reply({
+                    content: errorMsg,
+                    ephemeral: true
+                });
+            } catch (replyError) {
+                console.error('Failed to send error reply:', replyError);
+            }
         }
     },
 
