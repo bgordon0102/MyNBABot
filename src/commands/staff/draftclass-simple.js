@@ -4,18 +4,15 @@ import { DraftClassManager } from '../../utils/draftClassManager.js';
 export default {
     data: new SlashCommandBuilder()
         .setName('draftclass')
-        .setDescription('View or manually switch draft classes (auto-set by season)')
+        .setDescription('Switch between draft classes (CUS01/CUS02)')
         .addStringOption(option =>
             option
                 .setName('class')
-                .setDescription('Manually override draft class')
+                .setDescription('Choose draft class: CUS01 or CUS02')
                 .setRequired(false)
                 .addChoices(
-                    { name: 'CUS01 - Season 1 Draft Class', value: 'CUS01' },
-                    { name: 'CUS02 - Season 2 Draft Class', value: 'CUS02' },
-                    { name: 'CUS03 - Season 3 Draft Class', value: 'CUS03' },
-                    { name: 'CUS04 - Season 4 Draft Class', value: 'CUS04' },
-                    { name: 'CUS05 - Season 5 Draft Class', value: 'CUS05' }
+                    { name: 'CUS01 - 2026 Custom Class 01', value: 'CUS01' },
+                    { name: 'CUS02 - 2026 Custom Class 02', value: 'CUS02' }
                 )
         ),
 
@@ -35,20 +32,12 @@ export default {
                     .setDescription(`**Current Active Class:** ${currentClass?.name || 'None'} (${currentClass?.id || 'N/A'})`)
                     .addFields(
                         {
-                            name: 'Season-Based System',
-                            value: 'Draft classes are automatically set by season:\n• Season 1 → CUS01\n• Season 2 → CUS02\n• Season 3 → CUS03 (etc.)',
-                            inline: false
-                        },
-                        {
-                            name: 'Available Classes',
-                            value: config.availableClasses.map(c => {
-                                const seasonNum = c.id.replace('CUS', '').replace(/^0+/, '') || '1';
-                                return `${c.active ? '🟢' : '⚫'} **Season ${seasonNum}** - ${c.id} (${c.name})`;
-                            }).join('\n') || 'None',
-                            inline: false
+                            name: 'Available Classes', value: config.availableClasses.map(c =>
+                                `${c.active ? '🟢' : '⚫'} **${c.name}** (${c.id})`
+                            ).join('\n') || 'None', inline: false
                         }
                     )
-                    .setFooter({ text: 'Classes auto-switch with /startseason, or manually override with /draftclass <class>' })
+                    .setFooter({ text: 'Use /draftclass <class> to switch' })
                     .setTimestamp();
 
                 await interaction.reply({ embeds: [embed] });

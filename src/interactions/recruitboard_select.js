@@ -3,10 +3,10 @@ export const customId = "recruitboard_select_1";
 import fs from "fs";
 import path from "path";
 import { EmbedBuilder } from "discord.js";
-
-const playersFile = path.join(process.cwd(), "CUS01/2k26_CUS01 - Recruiting.json");
+import { DraftClassManager } from "../utils/draftClassManager.js";
 
 export async function execute(interaction) {
+    const playersFile = path.join(process.cwd(), DraftClassManager.getCurrentRecruitingFile());
     const playersData = JSON.parse(fs.readFileSync(playersFile));
     const players = Object.values(playersData);
 

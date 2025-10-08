@@ -1,26 +1,26 @@
 {
-  "availableClasses": [
-    {
-      "id": "CUS01",
-      "name": "2026 Custom Class 01",
-      "folder": "CUS01",
-      "year": "2k26",
-      "active": false
-    },
-    {
-      "id": "CUS02",
-      "name": "2026 Custom Class 02",
-      "folder": "CUS02",
-      "year": "2k26",
-      "active": false
-    },
-    {
-      "id": "CUS03",
-      "name": "2026 Custom Class 03",
-      "folder": "CUS03",
-      "year": "2k26",
-      "active": true
-    }
-  ],
-  "currentClass": "CUS03"
+    "availableClasses": [
+        {
+            "id": "CUS01",
+            "name": "Season 1 Draft Class",
+            "folder": "CUS01",
+            "year": "2k26",
+            "active": false
+        },
+        {
+            "id": "CUS02",
+            "name": "Season 2 Draft Class",
+            "folder": "CUS02",
+            "year": "2k26",
+            "active": false
+        },
+        {
+            "id": "CUS03",
+            "name": "Season 3 Draft Class",
+            "folder": "CUS03",
+            "year": "2k26",
+            "active": true
+        }
+    ],
+    "currentClass": "CUS03"
 }

@@ -31,23 +31,23 @@ export class DraftClassManager {
                     ],
                     currentClass: "CUS01"
                 };
-                
+
                 // Ensure data directory exists
                 const dataDir = path.dirname(DRAFT_CLASSES_FILE);
                 if (!fs.existsSync(dataDir)) {
                     fs.mkdirSync(dataDir, { recursive: true });
                 }
-                
+
                 fs.writeFileSync(DRAFT_CLASSES_FILE, JSON.stringify(defaultConfig, null, 2));
                 return defaultConfig;
             }
-            
+
             const data = fs.readFileSync(DRAFT_CLASSES_FILE, 'utf8');
             return JSON.parse(data);
         } catch (error) {
             console.error('Error reading draft classes:', error);
             console.error('Error details:', error.stack);
-            
+
             // Return safe fallback
             return {
                 availableClasses: [
@@ -78,7 +78,7 @@ export class DraftClassManager {
     static getClassForSeason(seasonNumber) {
         const classId = `CUS${seasonNumber.toString().padStart(2, '0')}`;
         const config = this.getAvailableClasses();
-        
+
         // Check if the class exists
         const existingClass = config.availableClasses.find(c => c.id === classId);
         if (existingClass) {
@@ -105,10 +105,10 @@ export class DraftClassManager {
 
         const config = this.getAvailableClasses();
         config.availableClasses.push(newClass);
-        
+
         // Save the updated config
         fs.writeFileSync(DRAFT_CLASSES_FILE, JSON.stringify(config, null, 2));
-        
+
         return newClass;
     }
 

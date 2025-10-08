@@ -1,9 +1,9 @@
 // Utility to get top performer for a week from the provided JSON
 import fs from 'fs';
-
-const TOP_PERFORMER_FILE = './CUS01/2k26_CUS01 - Top Performer.json';
+import { DraftClassManager } from './draftClassManager.js';
 
 export function getTopPerformerForWeek(weekNum) {
+    const TOP_PERFORMER_FILE = DraftClassManager.getCurrentTopPerformerFile();
     if (!fs.existsSync(TOP_PERFORMER_FILE)) {
         console.error(`[top_performer] File not found: ${TOP_PERFORMER_FILE}`);
         return null;

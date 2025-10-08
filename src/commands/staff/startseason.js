@@ -157,7 +157,7 @@ export function resetSeasonData(seasonno, guild, caller = 'unknown') {
         console.log(`[startseason] Setting draft class for season ${seasonno}`);
         const activeClass = DraftClassManager.setActiveClassForSeason(seasonno);
         console.log(`[startseason] Using draft class: ${activeClass.id} (${activeClass.name})`);
-        
+
         const prospectBoards = DraftClassManager.getCurrentProspectBoards();
         let preseasonData = safeReadJSON(path.resolve(process.cwd(), prospectBoards.pre.replace('./', '')), []);
         let midseasonData = safeReadJSON(path.resolve(process.cwd(), prospectBoards.mid.replace('./', '')), []);
@@ -190,6 +190,7 @@ export function resetSeasonData(seasonno, guild, caller = 'unknown') {
         writeJSON(prospectBoards.mid, midseasonData);
         writeJSON(prospectBoards.final, finalData);
 
+        // Use fallback recruiting and top performer files
         const recruitingFile = `./CUS01/2k26_CUS01 - Recruiting.json`;
         const topPerformerFile = `./CUS01/2k26_CUS01 - Top Performer.json`;
         let recruitingData = safeReadJSON(path.resolve(process.cwd(), recruitingFile.replace('./', '')), []);

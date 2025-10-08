@@ -2,22 +2,38 @@
 import fs from "fs";
 import path from "path";
 import { SlashCommandBuilder, ActionRowBuilder, StringSelectMenuBuilder, EmbedBuilder } from "discord.js";
-
-const playersFile = path.join(process.cwd(), "CUS01/2k26_CUS01 - Recruiting.json");
+import { DraftClassManager } from "../../utils/draftClassManager.js";
 
 export const data = new SlashCommandBuilder()
     .setName("recruitboard")
     .setDescription("View the recruiting board");
 
 export async function execute(interaction) {
-    const playersData = JSON.parse(fs.readFileSync(playersFile));
+    // Get recruiting file from current active draft class
+    const recruitingFile = DraftClassManager.getCurrentRecruitingFile();
+    const recruitingFilePath = path.join(process.cwd(), recruitingFile);
+
+    // Check if file exists
+    if (!fs.existsSync(recruitingFilePath)) {
+        await interaction.reply({
+            content: `❌ Recruiting file not found: \`${recruitingFile}\`\nMake sure the current draft class files exist.`,
+            ephemeral: true
+        });
+        return;
+    }
+
+    const playersData = JSON.parse(fs.readFileSync(recruitingFilePath));
 
     // Convert object to sorted array by national rank
     const players = Object.values(playersData).sort((a, b) => a.national_rank - b.national_rank);
 
+    // Get current class info for title
+    const currentClass = DraftClassManager.getCurrentClass();
+    const seasonNum = currentClass.id.replace('CUS', '').replace(/^0+/, '') || '1';
+
     // Embed listing all 50 players
     const listEmbed = new EmbedBuilder()
-        .setTitle("ESPN's Top 50 Recruits")
+        .setTitle(`Season ${seasonNum} - ESPN's Top 50 Recruits`)
         .setDescription(
             players.map(p => `${p.national_rank}: ${p.position} ${p.name} - ${p.college}`).join("\n")
         )
