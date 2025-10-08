@@ -56,7 +56,7 @@ class EASportsAPI {
         return new Promise((resolve, reject) => {
             // Create callback server exactly like snallabot
             const app = express();
-            
+
             // Snallabot doesn't use a callback route, they have users paste the URL
             app.get('/', (req, res) => {
                 res.send(`
@@ -98,15 +98,15 @@ class EASportsAPI {
                     </html>
                 `);
             });
-            
+
             app.post('/submit', async (req, res) => {
                 const { code: rawCode } = req.body;
-                
+
                 try {
                     const searchParams = rawCode.substring(rawCode.indexOf("?"));
                     const eaCodeParams = new URLSearchParams(searchParams);
                     const code = eaCodeParams.get("code");
-                    
+
                     if (!code) {
                         throw new Error(`Invalid code URL sent. Expected format is http://127.0.0.1/success?code=CODE Actual url sent ${rawCode}`);
                     }
@@ -114,7 +114,7 @@ class EASportsAPI {
                     const token = await this.exchangeCodeForToken(code);
                     this.tokens.set(userId, token);
                     this.saveTokens();
-                    
+
                     res.send(`
                         <html>
                             <body style="font-family: Arial, sans-serif; padding: 20px; text-align: center;">
@@ -131,7 +131,7 @@ class EASportsAPI {
                             </body>
                         </html>
                     `);
-                    
+
                     server.close();
                     resolve({
                         success: true,
@@ -170,7 +170,7 @@ class EASportsAPI {
     // Exchange authorization code for access token - exactly like snallabot
     async exchangeCodeForToken(code) {
         try {
-            const response = await axios.post('https://accounts.ea.com/connect/token', 
+            const response = await axios.post('https://accounts.ea.com/connect/token',
                 `authentication_source=${AUTH_SOURCE}&client_secret=${CLIENT_SECRET}&grant_type=authorization_code&code=${code}&redirect_uri=${REDIRECT_URL}&release_type=prod&client_id=${CLIENT_ID}`,
                 {
                     headers: {
@@ -210,7 +210,7 @@ class EASportsAPI {
                 {
                     headers: {
                         "Accept-Charset": "UTF-8",
-                        "X-Include-Deviceid": "true", 
+                        "X-Include-Deviceid": "true",
                         "User-Agent": "Dalvik/2.1.0 (Linux; U; Android 13; sdk_gphone_x86_64 Build/TE1A.220922.031)",
                         "Accept-Encoding": "gzip",
                     }
@@ -238,8 +238,8 @@ class EASportsAPI {
             );
 
             const entitlements = entitlementsResponse.data?.entitlements?.entitlement || [];
-            const maddenEntitlements = entitlements.filter(e => 
-                e.entitlementTag && e.entitlementTag.includes('MADDEN_25')
+            const maddenEntitlements = entitlements.filter(e =>
+                e.entitlementTag && e.entitlementTag.includes('MADDEN_26')
             );
 
             if (maddenEntitlements.length === 0) {
@@ -255,14 +255,14 @@ class EASportsAPI {
                         {
                             headers: {
                                 "User-Agent": "Dalvik/2.1.0 (Linux; U; Android 13; sdk_gphone_x86_64 Build/TE1A.220922.031)",
-                                "Accept-Charset": "UFT-8", 
+                                "Accept-Charset": "UFT-8",
                                 "X-Expand-Results": "true",
                                 "Accept-Encoding": "gzip",
                                 "Authorization": `Bearer ${token.access_token}`,
                             }
                         }
                     );
-                    
+
                     const personas = personaResponse.data?.personas?.persona || [];
                     maddenPersonas.push(...personas);
                 } catch (error) {
@@ -280,13 +280,13 @@ class EASportsAPI {
                 name: `${persona.displayName}'s League`,
                 console: persona.namespaceName,
                 teams: 'Unknown',
-                week: 'Unknown', 
+                week: 'Unknown',
                 season: 2025
             }));
 
         } catch (error) {
             console.error('Failed to get user leagues:', error.response?.data || error.message);
-            
+
             // If API calls fail, return empty array instead of crashing
             return [];
         }
