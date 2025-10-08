@@ -10,8 +10,21 @@ const __dirname = dirname(__filename);
  */
 
 export class DataManager {
-    constructor() {
+    constructor(gameType = null) {
         this.dataPath = join(__dirname, '../../data');
+        this.gameType = gameType; // '2k', 'madden', or null for root data folder
+    }
+
+    /**
+     * Get the appropriate file path based on game type
+     * @param {string} filename - Name of the JSON file (without extension)
+     * @returns {string} Full file path
+     */
+    getFilePath(filename) {
+        if (this.gameType) {
+            return join(this.dataPath, this.gameType, `${filename}.json`);
+        }
+        return join(this.dataPath, `${filename}.json`);
     }
 
     /**
@@ -21,11 +34,11 @@ export class DataManager {
      */
     readData(filename) {
         try {
-            const filePath = join(this.dataPath, `${filename}.json`);
+            const filePath = this.getFilePath(filename);
             const rawData = readFileSync(filePath, 'utf8');
             return JSON.parse(rawData);
         } catch (error) {
-            console.error(`Error reading ${filename}.json:`, error);
+            console.error(`Error reading ${filename}.json from ${this.gameType || 'root'}:`, error);
             return null;
         }
     }
@@ -38,12 +51,12 @@ export class DataManager {
      */
     writeData(filename, data) {
         try {
-            const filePath = join(this.dataPath, `${filename}.json`);
+            const filePath = this.getFilePath(filename);
             const jsonData = JSON.stringify(data, null, 2);
             writeFileSync(filePath, jsonData, 'utf8');
             return true;
         } catch (error) {
-            console.error(`Error writing ${filename}.json:`, error);
+            console.error(`Error writing ${filename}.json to ${this.gameType || 'root'}:`, error);
             return false;
         }
     }

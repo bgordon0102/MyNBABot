@@ -12,7 +12,7 @@ export async function execute(interaction) {
     await interaction.deferReply({ ephemeral: true }); // Always defer immediately
     try {
         // Use season.json to check current week
-        const seasonPath = path.join(process.cwd(), 'data/season.json');
+        const seasonPath = path.join(process.cwd(), 'data/2k/season.json');
         const seasonData = JSON.parse(fs.readFileSync(seasonPath, 'utf8'));
         const currentWeek = seasonData.currentWeek ?? 0;
         if (currentWeek < 1) {
@@ -21,7 +21,7 @@ export async function execute(interaction) {
         }
 
         const userId = interaction.user.id;
-        const scoutPath = path.join(process.cwd(), 'data/scout_points.json');
+        const scoutPath = path.join(process.cwd(), 'data/2k/scout_points.json');
         if (!fs.existsSync(scoutPath)) {
             await interaction.editReply({ content: 'No scouting data found.' });
             return;
@@ -61,7 +61,7 @@ export async function execute(interaction) {
         let phase = 'pre';
         if (currentWeek >= 20) phase = 'final';
         else if (currentWeek >= 10) phase = 'mid';
-        const prospectBoardsPath = path.join(process.cwd(), 'data/prospectBoards.json');
+        const prospectBoardsPath = path.join(process.cwd(), 'data/2k/prospectBoards.json');
         const prospectBoards = JSON.parse(fs.readFileSync(prospectBoardsPath, 'utf8'));
         const boardFile = prospectBoards[phase];
         let boardData = {};

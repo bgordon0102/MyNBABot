@@ -18,7 +18,7 @@ export const data = new SlashCommandBuilder()
 export async function autocomplete(interaction) {
     try {
         const focusedValue = interaction.options.getFocused();
-        const teamsPath = path.join(process.cwd(), "data/teams.json");
+        const teamsPath = path.join(process.cwd(), "data/2k/teams.json");
         let teams = [];
         if (fs.existsSync(teamsPath)) {
             try {
@@ -48,9 +48,9 @@ export async function execute(interaction) {
     const team = interaction.options.getString("team");
 
     // Path to teams and schedule files
-    const teamsPath = path.join(process.cwd(), "data/teams.json");
-    const schedulePath = path.join(process.cwd(), "data/schedule.json");
-    const seasonPath = path.join(process.cwd(), "data/season.json");
+    const teamsPath = path.join(process.cwd(), "data/2k/teams.json");
+    const schedulePath = path.join(process.cwd(), "data/2k/schedule.json");
+    const seasonPath = path.join(process.cwd(), "data/2k/season.json");
     if (!fs.existsSync(teamsPath) || !fs.existsSync(schedulePath) || !fs.existsSync(seasonPath)) {
         return interaction.reply({
             content: "No season data found. Please run `/startseason` first.",

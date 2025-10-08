@@ -77,7 +77,7 @@ export default {
             const path = await import('path');
 
             fs.writeFileSync(
-                path.join(process.cwd(), 'data/prospectBoards.json'),
+                path.join(process.cwd(), 'data/2k/prospectBoards.json'),
                 JSON.stringify(prospectBoards, null, 2)
             );
 

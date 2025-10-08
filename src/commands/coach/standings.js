@@ -2,8 +2,8 @@ import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
 import fs from 'fs';
 import path from 'path';
 
-const SEASON_FILE = './data/season.json';
-const SCORES_FILE = './data/scores.json';
+const SEASON_FILE = './data/2k/season.json';
+const SCORES_FILE = './data/2k/scores.json';
 
 // NBA conference mapping (Eastern/Western)
 const EAST = [
@@ -14,7 +14,7 @@ const WEST = [
 ];
 
 function getStandings() {
-    const TEAMS_FILE = './data/teams.json';
+    const TEAMS_FILE = './data/2k/teams.json';
     if (!fs.existsSync(TEAMS_FILE) || !fs.existsSync(SCORES_FILE)) return null;
     const teamsArr = JSON.parse(fs.readFileSync(TEAMS_FILE, 'utf8'));
     const scores = JSON.parse(fs.readFileSync(SCORES_FILE, 'utf8'));

@@ -1,12 +1,12 @@
 import { ButtonInteraction } from 'discord.js';
 
-const SEASON_FILE = './data/season.json';
-const TEAMS_FILE = './data/teams.json';
+const SEASON_FILE = './data/2k/season.json';
+const TEAMS_FILE = './data/2k/teams.json';
 const LEAGUE_FILE = './data/league.json';
-const PLAYERS_FILE = './data/players.json';
-const BIGBOARD_FILE = './data/bigboard.json';
-const SCOUTING_FILE = './data/scouting.json';
-const RECRUITS_FILE = './data/recruits.json';
+const PLAYERS_FILE = './data/2k/players.json';
+const BIGBOARD_FILE = './data/2k/bigboard.json';
+const SCOUTING_FILE = './data/2k/scouting.json';
+const RECRUITS_FILE = './data/2k/recruits.json';
 
 export const customId = /^startseason_confirm/;
 

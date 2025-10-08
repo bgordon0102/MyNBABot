@@ -3,7 +3,7 @@ import fs from "fs";
 import path from "path";
 import { EmbedBuilder } from "discord.js";
 
-const prospectBoardsFile = path.join(process.cwd(), "data/prospectBoards.json");
+const prospectBoardsFile = path.join(process.cwd(), "data/2k/prospectBoards.json");
 
 export async function execute(interaction) {
     await interaction.deferUpdate();

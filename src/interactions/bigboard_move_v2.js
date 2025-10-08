@@ -7,7 +7,7 @@ export const customId = 'bigboard_move_v2';
 export async function execute(interaction) {
     // This handler is for button presses (move up/down) with a selected player in the customId
     const userId = interaction.user.id;
-    const scoutPath = path.join(process.cwd(), 'data/scout_points.json');
+    const scoutPath = path.join(process.cwd(), 'data/2k/scout_points.json');
     if (!fs.existsSync(scoutPath)) {
         return await interaction.reply({ content: 'No scouting data found.', flags: 64 });
     }
@@ -50,7 +50,7 @@ export async function execute(interaction) {
 
     // Rebuild the embed and components to reflect the new order
     // Load player data
-    const seasonPath = path.join(process.cwd(), 'data/season.json');
+    const seasonPath = path.join(process.cwd(), 'data/2k/season.json');
     const seasonData = JSON.parse(fs.readFileSync(seasonPath, 'utf8'));
     const currentWeek = seasonData.currentWeek || 1;
     let phase = 'pre';

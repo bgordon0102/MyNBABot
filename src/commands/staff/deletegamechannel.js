@@ -3,7 +3,7 @@ import { SlashCommandBuilder, PermissionFlagsBits, ChannelType } from 'discord.j
 import fs from 'fs';
 import path from 'path';
 
-const SEASON_FILE = './data/season.json';
+const SEASON_FILE = './data/2k/season.json';
 
 export const data = new SlashCommandBuilder()
     .setName('deletegamechannel')
@@ -37,7 +37,7 @@ export async function execute(interaction) {
                 return fallback;
             }
         }
-        const schedulePath = path.join(process.cwd(), 'data/schedule.json');
+        const schedulePath = path.join(process.cwd(), 'data/2k/schedule.json');
         const schedule = safeReadJSON(schedulePath, []);
         if (!Array.isArray(schedule) || schedule.length === 0) {
             console.error('[deletegamechannel] No schedule found in schedule.json.');

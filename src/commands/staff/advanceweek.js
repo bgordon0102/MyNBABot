@@ -39,7 +39,7 @@ import { getTopPerformerForWeek } from '../../utils/top_performer.js';
 import { EmbedBuilder } from 'discord.js';
 
 
-const SEASON_FILE = './data/season.json';
+const SEASON_FILE = './data/2k/season.json';
 
 
 function readJSON(file) {
@@ -76,7 +76,7 @@ export async function execute(interaction) {
         }
 
         // Calculate week number and matchups (week-based schedule)
-        const schedulePath = path.join(process.cwd(), 'data/schedule.json');
+        const schedulePath = path.join(process.cwd(), 'data/2k/schedule.json');
         const schedule = safeReadJSON(schedulePath, []);
         // Only support 29 weeks (NBA: 30 teams, 29 games per team)
         const totalWeeks = 29;

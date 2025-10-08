@@ -3,8 +3,8 @@ import fs from 'fs';
 
 import path from 'path';
 
-const SEASON_FILE = './data/season.json';
-const PLAYERS_FILE = './data/players.json';
+const SEASON_FILE = './data/2k/season.json';
+const PLAYERS_FILE = './data/2k/players.json';
 
 function readJSON(file) {
     return JSON.parse(fs.readFileSync(file, 'utf8'));
@@ -67,7 +67,7 @@ export async function execute(interaction) {
         }
 
         // Read board file paths from prospectBoards.json
-        const prospectBoardsPath = path.join(process.cwd(), 'data/prospectBoards.json');
+        const prospectBoardsPath = path.join(process.cwd(), 'data/2k/prospectBoards.json');
         if (!fs.existsSync(prospectBoardsPath)) {
             if (!responded) {
                 responded = true;

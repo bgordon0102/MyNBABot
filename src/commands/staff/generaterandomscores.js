@@ -53,10 +53,10 @@ export async function execute(interaction) {
     const week = interaction.options.getInteger('week');
     // Use absolute paths from project root
     const baseDir = path.resolve(__dirname, '../../../');
-    const schedulePath = path.join(baseDir, 'data/schedule.json');
-    const standingsPath = path.join(baseDir, 'data/standings.json');
-    const playoffPath = path.join(baseDir, 'data/playoffpicture.json');
-    const seasonPath = path.join(baseDir, 'data/season.json');
+    const schedulePath = path.join(baseDir, 'data/2k/schedule.json');
+    const standingsPath = path.join(baseDir, 'data/2k/standings.json');
+    const playoffPath = path.join(baseDir, 'data/2k/playoffpicture.json');
+    const seasonPath = path.join(baseDir, 'data/2k/season.json');
 
     // schedule.json is expected to be an array of arrays: [ [], [week1games], [week2games], ... ]
     // Index 0 is week 0 (no games), index 1 is week 1, etc.
@@ -68,7 +68,7 @@ export async function execute(interaction) {
     let standings = safeReadJSON(standingsPath, {});
     let playoff = safeReadJSON(playoffPath, {});
     // Also update scores.json for standings/playoffpicture compatibility
-    const scoresPath = path.join(baseDir, 'data/scores.json');
+    const scoresPath = path.join(baseDir, 'data/2k/scores.json');
     let scores = safeReadJSON(scoresPath, []);
     // Self-healing: Remove any games from scores.json with week 0 (string or number)
     scores = scores.filter(g => g.week !== '0' && g.week !== 0);

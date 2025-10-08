@@ -6,7 +6,7 @@ export const customId = 'bigboard_move';
 
 export async function execute(interaction) {
     const userId = interaction.user.id;
-    const scoutPath = path.join(process.cwd(), 'data/scout_points.json');
+    const scoutPath = path.join(process.cwd(), 'data/2k/scout_points.json');
     if (!fs.existsSync(scoutPath)) {
         return await interaction.reply({ content: 'No scouting data found.', ephemeral: true });
     }

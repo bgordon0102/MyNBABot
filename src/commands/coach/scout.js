@@ -21,7 +21,7 @@ export async function execute(interaction) {
     }
     try {
         // Load current week
-        const seasonPath = path.join(process.cwd(), 'data/season.json');
+        const seasonPath = path.join(process.cwd(), 'data/2k/season.json');
         const seasonData = JSON.parse(fs.readFileSync(seasonPath, 'utf8'));
         const currentWeek = seasonData.currentWeek ?? 0;
         if (currentWeek < 1) {
@@ -35,7 +35,7 @@ export async function execute(interaction) {
         else if (currentWeek >= 10) board = 'mid';
 
         // Use board file logic from prospectBoards.json
-        const prospectBoardsPath = path.join(process.cwd(), 'data/prospectBoards.json');
+        const prospectBoardsPath = path.join(process.cwd(), 'data/2k/prospectBoards.json');
         const prospectBoards = JSON.parse(fs.readFileSync(prospectBoardsPath, 'utf8'));
         let boardFilePath = prospectBoards[board];
         if (!boardFilePath) throw new Error(`No board file path configured for phase: ${board}`);
@@ -48,7 +48,7 @@ export async function execute(interaction) {
         const allPlayers = Object.values(bigBoardData).filter(player => player && player.name && player.position_1);
 
         // Load scouting data
-        const scoutPath = path.join(process.cwd(), 'data/scout_points.json');
+        const scoutPath = path.join(process.cwd(), 'data/2k/scout_points.json');
         let scoutData = fs.existsSync(scoutPath) ? JSON.parse(fs.readFileSync(scoutPath, 'utf8')) : {};
         if (!scoutData[userId]) {
             scoutData[userId] = { playersScouted: {}, weeklyPoints: {} };
@@ -117,7 +117,7 @@ export async function handleScoutSelect(interaction, menuIndex) {
         return;
     }
     const userId = interaction.user.id;
-    const seasonPath = path.join(process.cwd(), 'data/season.json');
+    const seasonPath = path.join(process.cwd(), 'data/2k/season.json');
     const seasonData = JSON.parse(fs.readFileSync(seasonPath, 'utf8'));
     const currentWeek = seasonData.currentWeek ?? 0;
     if (currentWeek < 1) {
@@ -128,7 +128,7 @@ export async function handleScoutSelect(interaction, menuIndex) {
     if (currentWeek >= 20) board = 'final';
     else if (currentWeek >= 10) board = 'mid';
     // Use board file logic from prospectBoards.json
-    const prospectBoardsPath = path.join(process.cwd(), 'data/prospectBoards.json');
+    const prospectBoardsPath = path.join(process.cwd(), 'data/2k/prospectBoards.json');
     const prospectBoards = JSON.parse(fs.readFileSync(prospectBoardsPath, 'utf8'));
     let boardFilePath = prospectBoards[board];
     if (!boardFilePath) {
@@ -171,7 +171,7 @@ export async function handleScoutSelect(interaction, menuIndex) {
     }
 
     // Load scouting data
-    const scoutPath = path.join(process.cwd(), 'data/scout_points.json');
+    const scoutPath = path.join(process.cwd(), 'data/2k/scout_points.json');
     let scoutData = fs.existsSync(scoutPath) ? JSON.parse(fs.readFileSync(scoutPath, 'utf8')) : {};
     if (!scoutData[userId]) {
         scoutData[userId] = { playersScouted: {}, weeklyPoints: {} };

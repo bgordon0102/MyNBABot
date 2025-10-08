@@ -55,12 +55,25 @@ async function deployCommands() {
 
     const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
 
-    const data = await rest.put(
-      Routes.applicationGuildCommands(process.env.CLIENT_ID, process.env.GUILD_ID),
-      { body: commands }
-    );
-
-    console.log(`✅ Successfully registered ${data.length} application commands!`);
+    // Try global command deployment if guild deployment fails
+    let data;
+    try {
+      // First try guild-specific deployment (faster)
+      data = await rest.put(
+        Routes.applicationGuildCommands(process.env.CLIENT_ID, process.env.GUILD_ID),
+        { body: commands }
+      );
+      console.log(`✅ Successfully registered ${data.length} guild commands!`);
+    } catch (guildError) {
+      console.log('⚠️ Guild deployment failed, trying global deployment...');
+      // Fallback to global deployment (takes up to 1 hour to sync)
+      data = await rest.put(
+        Routes.applicationCommands(process.env.CLIENT_ID),
+        { body: commands }
+      );
+      console.log(`✅ Successfully registered ${data.length} global commands!`);
+    }
+    
     console.log('🏀 LEAGUEbuddy commands are ready to use!');
 
   } catch (error) {

@@ -3,8 +3,8 @@ import fs from 'fs';
 
 import path from 'path';
 
-const SEASON_FILE = './data/season.json';
-const SCORES_FILE = './data/scores.json';
+const SEASON_FILE = './data/2k/season.json';
+const SCORES_FILE = './data/2k/scores.json';
 
 function readScores() {
     if (!fs.existsSync(SCORES_FILE)) return [];
@@ -165,8 +165,8 @@ export async function handleApproval(interaction, approve) {
         writeScores(scores);
 
         // --- Update persistent standings.json ---
-        const TEAMS_FILE = './data/teams.json';
-        const STANDINGS_FILE = './data/standings.json';
+        const TEAMS_FILE = './data/2k/teams.json';
+        const STANDINGS_FILE = './data/2k/standings.json';
         let teams = [];
         if (fs.existsSync(TEAMS_FILE)) {
             teams = JSON.parse(fs.readFileSync(TEAMS_FILE, 'utf8')).map(t => t.name);
@@ -221,7 +221,7 @@ export async function handleApproval(interaction, approve) {
         // --- End persistent standings update ---
 
         // --- Update persistent playoffpicture.json ---
-        const PLAYOFF_FILE = './data/playoffpicture.json';
+        const PLAYOFF_FILE = './data/2k/playoffpicture.json';
         function getPlayoffPicture(confArr) {
             // NBA Playoff logic: Top 6 = Playoff, 7-10 = Play-In
             return {

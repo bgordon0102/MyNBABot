@@ -4,8 +4,8 @@ export const execute = handleButton;
 import { ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, PermissionFlagsBits, ChannelType, InteractionType } from 'discord.js';
 import fs from 'fs';
 
-const SEASON_FILE = './data/season.json';
-const SCORES_FILE = './data/scores.json';
+const SEASON_FILE = './data/2k/season.json';
+const SCORES_FILE = './data/2k/scores.json';
 
 // Helper to read/write scores
 function readScores() {

@@ -1,7 +1,7 @@
 import { SlashCommandBuilder, PermissionFlagsBits } from 'discord.js';
 import fs from 'fs';
 
-const SCOUTING_FILE = './data/scouting.json';
+const SCOUTING_FILE = './data/2k/scouting.json';
 
 
 function writeJSON(file, data) {
@@ -53,7 +53,7 @@ export async function execute(interaction) {
     writeJSON(SCOUTING_FILE, scoutingData);
 
     // Reset scout_points.json (actual scouted info)
-    const scoutPointsPath = './data/scout_points.json';
+    const scoutPointsPath = './data/2k/scout_points.json';
     let scoutPointsData = safeReadJSON(scoutPointsPath, {});
     for (const coachId in scoutPointsData) {
       if (scoutPointsData[coachId]) {
