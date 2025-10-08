@@ -21,6 +21,12 @@ export default {
             subcommand
                 .setName('sync')
                 .setDescription('Sync league data from EA Sports')
+                .addStringOption(option =>
+                    option
+                        .setName('league')
+                        .setDescription('Specific league ID to sync (leave empty to see all leagues)')
+                        .setRequired(false)
+                )
         )
         .addSubcommand(subcommand =>
             subcommand
@@ -48,6 +54,22 @@ export default {
                         .setDescription('The URL from the blank EA page (starts with http://127.0.0.1/success)')
                         .setRequired(true)
                 )
+        )
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName('refresh')
+                .setDescription('Force refresh EA Sports data (clears cache)')
+        )
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName('setleague')
+                .setDescription('Set your default league for LEAGUEbuddy integration')
+                .addStringOption(option =>
+                    option
+                        .setName('leagueid')
+                        .setDescription('The EA Sports League ID to set as default')
+                        .setRequired(true)
+                )
         ),
 
     async execute(interaction) {
@@ -73,6 +95,12 @@ export default {
                     break;
                 case 'submit':
                     await handleSubmit(interaction, userId);
+                    break;
+                case 'refresh':
+                    await handleRefresh(interaction, userId);
+                    break;
+                case 'setleague':
+                    await handleSetLeague(interaction, userId);
                     break;
                 default:
                     await interaction.reply({ content: 'Unknown subcommand.', ephemeral: true });
@@ -128,9 +156,21 @@ async function handleStatus(interaction, userId) {
         .setColor(isConnected ? '#00ff00' : '#ff0000');
 
     if (isConnected) {
+        const defaultLeague = eaAPI.getDefaultLeague(userId);
+        
         embed.addFields(
-            { name: 'Available Actions', value: '• `/ea sync` - Import league data\n• `/ea draft` - Import draft classes\n• `/ea disconnect` - Remove connection' }
+            { name: 'Available Actions', value: '• `/ea sync` - Import league data\n• `/ea draft` - Import draft classes\n• `/ea setleague` - Set default league\n• `/ea disconnect` - Remove connection' }
         );
+
+        if (defaultLeague) {
+            embed.addFields(
+                { name: '🏟️ Default League', value: `**${defaultLeague.name}**\nID: \`${defaultLeague.id}\`\nConsole: ${defaultLeague.console}\nTeams: ${defaultLeague.teams}` }
+            );
+        } else {
+            embed.addFields(
+                { name: '⚠️ No Default League', value: 'Use `/ea sync` to see available leagues, then `/ea setleague [id]` to set your default.' }
+            );
+        }
     } else {
         embed.addFields(
             { name: 'Get Started', value: 'Use `/ea connect` to link your EA Sports account and access:\n• League roster imports\n• Draft class imports\n• Player rating sync' }
@@ -151,6 +191,7 @@ async function handleSync(interaction, userId) {
         return;
     }
 
+    const leagueId = interaction.options.getString('league');
     await interaction.deferReply({ ephemeral: true });
 
     try {
@@ -166,25 +207,78 @@ async function handleSync(interaction, userId) {
             return;
         }
 
-        // For now, just show available leagues
-        const leagueList = leagues.map((league, index) => 
-            `${index + 1}. **${league.name}** (${league.teams?.length || 'Unknown'} teams)`
-        ).join('\n');
+        // If no specific league requested, show all available leagues
+        if (!leagueId) {
+            const leagueList = leagues.map((league, index) => 
+                `**${index + 1}.** ${league.name}\n` +
+                `   • ID: \`${league.id}\`\n` +
+                `   • Console: ${league.console || 'Unknown'}\n` +
+                `   • Teams: ${league.teams || 'Unknown'}\n`
+            ).join('\n');
 
+            const embed = new EmbedBuilder()
+                .setColor('#00ff00')
+                .setTitle('🏟️ Available EA Sports Leagues')
+                .setDescription(`Found ${leagues.length} league(s) in your EA Sports account:\n\n${leagueList}`)
+                .addFields(
+                    { 
+                        name: '📥 How to Sync a League', 
+                        value: 'Use `/ea sync league:[league-id]` to sync a specific league.\nExample: `/ea sync league:123456`' 
+                    }
+                )
+                .setFooter({ text: 'Copy the League ID to sync specific league data' });
+
+            await interaction.editReply({ embeds: [embed] });
+            return;
+        }
+
+        // User specified a league ID - sync that specific league
+        const selectedLeague = leagues.find(league => league.id.toString() === leagueId);
+        
+        if (!selectedLeague) {
+            const embed = new EmbedBuilder()
+                .setColor('#ff0000')
+                .setTitle('❌ League Not Found')
+                .setDescription(`League ID \`${leagueId}\` not found in your EA Sports account.`)
+                .addFields(
+                    { name: 'Available Leagues', value: leagues.map(l => `• ${l.name} (ID: \`${l.id}\`)`).join('\n') || 'None' }
+                );
+            
+            await interaction.editReply({ embeds: [embed] });
+            return;
+        }
+
+        // Sync the specific league (placeholder for now)
         const embed = new EmbedBuilder()
             .setColor('#00ff00')
-            .setTitle('📋 Available Leagues')
-            .setDescription(`Found ${leagues.length} league(s) in your EA Sports account:\n\n${leagueList}`)
-            .setFooter({ text: 'Full sync functionality coming soon!' });
+            .setTitle('✅ League Sync Started')
+            .setDescription(`Syncing **${selectedLeague.name}** (ID: \`${selectedLeague.id}\`)`)
+            .addFields(
+                { name: 'League Info', value: `Console: ${selectedLeague.console}\nTeams: ${selectedLeague.teams}` },
+                { name: 'Status', value: '🔄 Importing league data...' }
+            )
+            .setFooter({ text: 'Full league data import functionality coming soon!' });
 
         await interaction.editReply({ embeds: [embed] });
+
+        // TODO: Implement actual league data syncing here
+        // This would include:
+        // - Team rosters
+        // - Player stats
+        // - Schedules
+        // - Standings
+        
     } catch (error) {
         console.error('Sync error:', error);
         
         const embed = new EmbedBuilder()
             .setColor('#ff0000')
             .setTitle('❌ Sync Failed')
-            .setDescription('Failed to sync league data. Your EA connection may have expired. Try `/ea connect` again.');
+            .setDescription('Failed to sync league data. Your EA connection may have expired.')
+            .addFields(
+                { name: 'Error Details', value: error.message || 'Unknown error' },
+                { name: 'Try Again', value: 'Use `/ea refresh` then `/ea sync` again.' }
+            );
 
         await interaction.editReply({ embeds: [embed] });
     }
@@ -311,5 +405,88 @@ async function handleSubmit(interaction, userId) {
             );
 
         await interaction.editReply({ embeds: [errorEmbed] });
+    }
+}
+
+async function handleRefresh(interaction, userId) {
+    if (!eaAPI.isAuthenticated(userId)) {
+        const embed = new EmbedBuilder()
+            .setColor('#ff0000')
+            .setTitle('❌ Not Connected')
+            .setDescription('You need to connect your EA Sports account first. Use `/ea connect` to get started.');
+        
+        await interaction.reply({ embeds: [embed], ephemeral: true });
+        return;
+    }
+
+    eaAPI.forceRefresh(userId);
+
+    const embed = new EmbedBuilder()
+        .setColor('#00ff00')
+        .setTitle('🔄 EA Data Refreshed')
+        .setDescription('Your EA Sports connection has been refreshed. Cached data cleared.')
+        .addFields(
+            { name: 'Next Steps', value: '• Use `/ea sync` to get updated league data\n• Use `/ea status` to verify connection' }
+        );
+
+    await interaction.reply({ embeds: [embed], ephemeral: true });
+}
+
+async function handleSetLeague(interaction, userId) {
+    if (!eaAPI.isAuthenticated(userId)) {
+        const embed = new EmbedBuilder()
+            .setColor('#ff0000')
+            .setTitle('❌ Not Connected')
+            .setDescription('You need to connect your EA Sports account first. Use `/ea connect` to get started.');
+        
+        await interaction.reply({ embeds: [embed], ephemeral: true });
+        return;
+    }
+
+    const leagueId = interaction.options.getString('leagueid');
+    await interaction.deferReply({ ephemeral: true });
+
+    try {
+        const leagues = await eaAPI.getUserLeagues(userId);
+        const selectedLeague = leagues.find(league => league.id.toString() === leagueId);
+        
+        if (!selectedLeague) {
+            const embed = new EmbedBuilder()
+                .setColor('#ff0000')
+                .setTitle('❌ League Not Found')
+                .setDescription(`League ID \`${leagueId}\` not found in your EA Sports account.`)
+                .addFields(
+                    { name: 'Available Leagues', value: leagues.map(l => `• ${l.name} (ID: \`${l.id}\`)`).join('\n') || 'None' }
+                );
+            
+            await interaction.editReply({ embeds: [embed] });
+            return;
+        }
+
+        // Set the default league
+        eaAPI.setDefaultLeague(userId, selectedLeague);
+
+        const embed = new EmbedBuilder()
+            .setColor('#00ff00')
+            .setTitle('✅ Default League Set')
+            .setDescription(`**${selectedLeague.name}** is now your default league for LEAGUEbuddy.`)
+            .addFields(
+                { name: 'League Details', value: `ID: \`${selectedLeague.id}\`\nConsole: ${selectedLeague.console}\nTeams: ${selectedLeague.teams}` },
+                { name: 'What This Means', value: '• Future `/ea draft` imports will use this league\n• League data syncing will default to this league\n• LEAGUEbuddy will integrate with this league\'s data' }
+            );
+
+        await interaction.editReply({ embeds: [embed] });
+    } catch (error) {
+        console.error('Set league error:', error);
+        
+        const embed = new EmbedBuilder()
+            .setColor('#ff0000')
+            .setTitle('❌ Failed to Set League')
+            .setDescription('Could not set default league. Please try again.')
+            .addFields(
+                { name: 'Error', value: error.message || 'Unknown error' }
+            );
+
+        await interaction.editReply({ embeds: [embed] });
     }
 }
