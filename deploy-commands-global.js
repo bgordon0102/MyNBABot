@@ -28,7 +28,8 @@ async function loadCommandsForDeployment() {
             const fileURL = pathToFileURL(filePath).href;
 
             try {
-                const command = await import(fileURL);
+                const imported = await import(fileURL);
+                const command = imported.default || imported; // Support both default and named exports
 
                 if ('data' in command) {
                     commands.push(command.data.toJSON());

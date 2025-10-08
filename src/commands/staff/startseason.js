@@ -185,7 +185,7 @@ export function resetSeasonData(seasonno, guild, caller = 'unknown') {
         writeJSON(prospectBoards.pre, preseasonData);
         writeJSON(prospectBoards.mid, midseasonData);
         writeJSON(prospectBoards.final, finalData);
-        
+
         const recruitingFile = `./CUS01/2k26_CUS01 - Recruiting.json`;
         const topPerformerFile = `./CUS01/2k26_CUS01 - Top Performer.json`;
         let recruitingData = safeReadJSON(path.resolve(process.cwd(), recruitingFile.replace('./', '')), []);
