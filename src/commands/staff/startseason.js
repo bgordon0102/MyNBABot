@@ -152,8 +152,12 @@ export function resetSeasonData(seasonno, guild, caller = 'unknown') {
     writeJSON(TEAMS_FILE, staticTeams);
     console.log('[startseason] Wrote teams.json');
 
-    // Use the active draft class from DraftClassManager
+    // Auto-select draft class based on season number (Season 1 → CUS01, Season 2 → CUS02, etc.)
     try {
+        console.log(`[startseason] Setting draft class for season ${seasonno}`);
+        const activeClass = DraftClassManager.setActiveClassForSeason(seasonno);
+        console.log(`[startseason] Using draft class: ${activeClass.id} (${activeClass.name})`);
+        
         const prospectBoards = DraftClassManager.getCurrentProspectBoards();
         let preseasonData = safeReadJSON(path.resolve(process.cwd(), prospectBoards.pre.replace('./', '')), []);
         let midseasonData = safeReadJSON(path.resolve(process.cwd(), prospectBoards.mid.replace('./', '')), []);

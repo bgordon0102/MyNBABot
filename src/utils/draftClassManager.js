@@ -73,6 +73,55 @@ export class DraftClassManager {
     }
 
     /**
+     * Get draft class for a specific season (Season 1 → CUS01, Season 2 → CUS02, etc.)
+     */
+    static getClassForSeason(seasonNumber) {
+        const classId = `CUS${seasonNumber.toString().padStart(2, '0')}`;
+        const config = this.getAvailableClasses();
+        
+        // Check if the class exists
+        const existingClass = config.availableClasses.find(c => c.id === classId);
+        if (existingClass) {
+            return existingClass;
+        }
+
+        // Auto-create the class if it doesn't exist
+        console.log(`Auto-creating draft class ${classId} for season ${seasonNumber}`);
+        return this.createClassForSeason(seasonNumber);
+    }
+
+    /**
+     * Auto-create a draft class for a season if it doesn't exist
+     */
+    static createClassForSeason(seasonNumber) {
+        const classId = `CUS${seasonNumber.toString().padStart(2, '0')}`;
+        const newClass = {
+            id: classId,
+            name: `2026 Custom Class ${seasonNumber.toString().padStart(2, '0')}`,
+            folder: classId,
+            year: "2k26",
+            active: false
+        };
+
+        const config = this.getAvailableClasses();
+        config.availableClasses.push(newClass);
+        
+        // Save the updated config
+        fs.writeFileSync(DRAFT_CLASSES_FILE, JSON.stringify(config, null, 2));
+        
+        return newClass;
+    }
+
+    /**
+     * Set active class based on season number (Season 1 → CUS01, etc.)
+     */
+    static setActiveClassForSeason(seasonNumber) {
+        const targetClass = this.getClassForSeason(seasonNumber);
+        this.setCurrentClass(targetClass.id);
+        return targetClass;
+    }
+
+    /**
      * Set the active draft class
      */
     static setCurrentClass(classId) {
