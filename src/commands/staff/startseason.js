@@ -2,6 +2,7 @@ import { SlashCommandBuilder, PermissionFlagsBits } from 'discord.js';
 import fs from 'fs';
 import path from 'path';
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, MessageFlags } from 'discord.js';
+import { DraftClassManager } from '../../utils/draftClassManager.js';
 
 const DATA_DIR = path.resolve(process.cwd(), 'data');
 const COACHROLEMAP_FILE = path.join(DATA_DIR, 'coachRoleMap.json');
@@ -151,28 +152,47 @@ export function resetSeasonData(seasonno, guild, caller = 'unknown') {
     writeJSON(TEAMS_FILE, staticTeams);
     console.log('[startseason] Wrote teams.json');
 
-    // Use CUS02 files for season 2, otherwise default to CUS01
-    let classDir = seasonno === 2 ? 'CUS02' : 'CUS01';
-    const prospectBoards = {
-        pre: `./${classDir}/2k26_${classDir} - Preseason Big Board.json`,
-        mid: `./${classDir}/2k26_${classDir} - Midseason Big Board.json`,
-        final: `./${classDir}/2k26_${classDir} - Final Big Board.json`
-    };
-    let preseasonData = safeReadJSON(path.resolve(process.cwd(), prospectBoards.pre.replace('./', '')), []);
-    let midseasonData = safeReadJSON(path.resolve(process.cwd(), prospectBoards.mid.replace('./', '')), []);
-    let finalData = safeReadJSON(path.resolve(process.cwd(), prospectBoards.final.replace('./', '')), []);
-    writeJSON(path.join(DATA_DIR, 'prospectBoards.json'), prospectBoards);
-    writeJSON(prospectBoards.pre, preseasonData);
-    writeJSON(prospectBoards.mid, midseasonData);
-    writeJSON(prospectBoards.final, finalData);
+    // Use the active draft class from DraftClassManager
+    try {
+        const prospectBoards = DraftClassManager.getCurrentProspectBoards();
+        let preseasonData = safeReadJSON(path.resolve(process.cwd(), prospectBoards.pre.replace('./', '')), []);
+        let midseasonData = safeReadJSON(path.resolve(process.cwd(), prospectBoards.mid.replace('./', '')), []);
+        let finalData = safeReadJSON(path.resolve(process.cwd(), prospectBoards.final.replace('./', '')), []);
+        writeJSON(path.join(DATA_DIR, 'prospectBoards.json'), prospectBoards);
+        writeJSON(prospectBoards.pre, preseasonData);
+        writeJSON(prospectBoards.mid, midseasonData);
+        writeJSON(prospectBoards.final, finalData);
 
-    // Recruiting and Top Performer files
-    const recruitingFile = `./${classDir}/2k26_${classDir} - Recruiting.json`;
-    const topPerformerFile = `./${classDir}/2k26_${classDir} - Top Performer.json`;
-    let recruitingData = safeReadJSON(path.resolve(process.cwd(), recruitingFile.replace('./', '')), []);
-    let topPerformerData = safeReadJSON(path.resolve(process.cwd(), topPerformerFile.replace('./', '')), []);
-    writeJSON(path.join(DATA_DIR, 'recruiting.json'), recruitingData);
-    writeJSON(path.join(DATA_DIR, 'top_performer.json'), topPerformerData);
+        // Recruiting and Top Performer files
+        const recruitingFile = DraftClassManager.getCurrentRecruitingFile();
+        const topPerformerFile = DraftClassManager.getCurrentTopPerformerFile();
+        let recruitingData = safeReadJSON(path.resolve(process.cwd(), recruitingFile.replace('./', '')), []);
+        let topPerformerData = safeReadJSON(path.resolve(process.cwd(), topPerformerFile.replace('./', '')), []);
+        writeJSON(path.join(DATA_DIR, 'recruiting.json'), recruitingData);
+        writeJSON(path.join(DATA_DIR, 'top_performer.json'), topPerformerData);
+    } catch (error) {
+        console.error('Error setting up draft class files:', error);
+        // Fallback to CUS01 if draft class system fails
+        const prospectBoards = {
+            pre: `./CUS01/2k26_CUS01 - Preseason Big Board.json`,
+            mid: `./CUS01/2k26_CUS01 - Midseason Big Board.json`,
+            final: `./CUS01/2k26_CUS01 - Final Big Board.json`
+        };
+        let preseasonData = safeReadJSON(path.resolve(process.cwd(), prospectBoards.pre.replace('./', '')), []);
+        let midseasonData = safeReadJSON(path.resolve(process.cwd(), prospectBoards.mid.replace('./', '')), []);
+        let finalData = safeReadJSON(path.resolve(process.cwd(), prospectBoards.final.replace('./', '')), []);
+        writeJSON(path.join(DATA_DIR, 'prospectBoards.json'), prospectBoards);
+        writeJSON(prospectBoards.pre, preseasonData);
+        writeJSON(prospectBoards.mid, midseasonData);
+        writeJSON(prospectBoards.final, finalData);
+        
+        const recruitingFile = `./CUS01/2k26_CUS01 - Recruiting.json`;
+        const topPerformerFile = `./CUS01/2k26_CUS01 - Top Performer.json`;
+        let recruitingData = safeReadJSON(path.resolve(process.cwd(), recruitingFile.replace('./', '')), []);
+        let topPerformerData = safeReadJSON(path.resolve(process.cwd(), topPerformerFile.replace('./', '')), []);
+        writeJSON(path.join(DATA_DIR, 'recruiting.json'), recruitingData);
+        writeJSON(path.join(DATA_DIR, 'top_performer.json'), topPerformerData);
+    }
 
     // Standings
     const standings = {};
