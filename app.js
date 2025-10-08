@@ -94,6 +94,11 @@ client.interactions.set('submit_score_modal', { execute: submitScore.handleModal
 client.interactions.set('approve_score', { execute: i => submitScore.handleApproval(i, true) });
 client.interactions.set('deny_score', { execute: i => submitScore.handleApproval(i, false) });
 
+// Register playoff standings handlers
+import * as enterPlayoffStandings from './src/interactions/enter_playoff_standings.js';
+client.interactions.set('enter_playoff_standings', enterPlayoffStandings);
+client.interactions.set('playoff_standings_modal', { execute: enterPlayoffStandings.handleModal });
+
 // Bot clientReady event (Discord.js v15+)
 client.once('clientReady', (readyClient) => {
   console.log('🏀 LEAGUEbuddy is online!');
