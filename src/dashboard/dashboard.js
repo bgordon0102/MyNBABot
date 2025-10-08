@@ -48,16 +48,62 @@ app.post('/admin/sync/connect', async (req, res) => {
     try {
         const { userId } = req.body;
 
-        // Generate EA Sports login URL
-        const loginUrl = eaAPI.generateLoginUrl();
+        // Use the exact same method as snallabot - startAuthFlow
+        // This creates the callback server on 127.0.0.1 and handles everything
+        const tempUserId = 'dashboard_user';
+        console.log('🔄 Starting EA Sports authentication flow (snallabot method)...');
+
+        // Start the auth flow in the background and return immediately
+        eaAPI.startAuthFlow(tempUserId)
+            .then(result => {
+                console.log('✅ EA Sports authentication completed successfully!');
+            })
+            .catch(error => {
+                console.error('❌ EA Sports authentication failed:', error);
+            });
 
         res.json({
             success: true,
-            loginUrl: loginUrl,
-            message: 'Please complete EA Sports authentication in the new window'
+            message: 'EA Sports authentication started. Please complete the login in the browser window that opened.'
         });
     } catch (error) {
         console.error('EA connect error:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+
+// Route to handle manual authorization code submission (snallabot method)
+app.post('/admin/sync/submit-code', async (req, res) => {
+    try {
+        const { code, userId } = req.body;
+
+        if (!code) {
+            return res.status(400).json({ success: false, error: 'Authorization code is required' });
+        }
+
+        // Exchange the code for tokens
+        const tokenResponse = await eaAPI.exchangeCodeForToken(code);
+
+        if (tokenResponse && tokenResponse.access_token) {
+            // Store the token with dashboard user ID
+            const tempUserId = 'dashboard_user';
+            eaAPI.tokens.set(tempUserId, {
+                accessToken: tokenResponse.access_token,
+                refreshToken: tokenResponse.refresh_token,
+                expiresAt: Date.now() + (tokenResponse.expires_in * 1000)
+            });
+            eaAPI.saveTokens();
+
+            res.json({
+                success: true,
+                message: 'EA Sports authentication completed successfully!'
+            });
+        } else {
+            throw new Error('Failed to exchange code for tokens');
+        }
+    } catch (error) {
+        console.error('Code submission error:', error);
         res.status(500).json({ success: false, error: error.message });
     }
 });
@@ -67,7 +113,7 @@ app.post('/admin/sync/leagues', async (req, res) => {
         const { userId, console, maddenVersion } = req.body;
 
         // Get user's leagues based on console and version settings
-        const leagues = await eaAPI.getUserLeagues(userId);
+        const leagues = await eaAPI.getUserLeagues(userId, console, maddenVersion);
 
         res.json({
             success: true,

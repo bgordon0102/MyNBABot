@@ -147,7 +147,7 @@ async function handleConnect(interaction, userId) {
 
     const embed = new EmbedBuilder()
         .setColor('#0099ff')
-        .setTitle('🔗 Connect to EA Sports')
+        .setTitle('🏈 Connect to EA Sports')
         .setDescription('**Follow these steps to connect your EA Sports account (exactly like snallabot):**')
         .addFields(
             { name: '📋 Instructions', value: '1. **Click the link below** to start EA Sports login\n2. Use your **normal EA account credentials** \n3. After login, you\'ll see a blank page with a URL starting with `http://127.0.0.1/success`\n4. **This blank page is normal and expected!**\n5. Copy the **entire URL** from your address bar\n6. Paste it back here using `/ea submit [url]`' },
@@ -165,7 +165,7 @@ async function handleStatus(interaction, userId) {
     const isConnected = eaAPI.isAuthenticated(userId);
 
     const embed = new EmbedBuilder()
-        .setTitle('🔗 EA Sports Connection Status')
+        .setTitle('🏈 EA Sports Connection Status')
         .setDescription(isConnected ? '✅ **Connected** - Your EA Sports account is linked!' : '❌ **Not Connected** - Use `/ea connect` to link your account')
         .setColor(isConnected ? '#00ff00' : '#ff0000');
 
@@ -326,7 +326,7 @@ async function handleDraft(interaction, userId) {
 
         const embed = new EmbedBuilder()
             .setColor('#00ff00')
-            .setTitle('🏀 Draft Class Import')
+            .setTitle('� Draft Class Import')
             .setDescription(`Successfully imported ${year} draft class with ${draftClass.players?.length || 0} players!`)
             .addFields(
                 { name: 'Year', value: year, inline: true },
@@ -518,7 +518,7 @@ async function handleDashboard(interaction) {
 
     const embed = new EmbedBuilder()
         .setColor('#0099ff')
-        .setTitle('🌐 EA Sports Admin Dashboard')
+        .setTitle('� EA Sports Admin Dashboard')
         .setDescription('**Recommended Setup Method for Madden 26**\n\n' +
             'Since EA has not released a companion app for Madden 26 yet, ' +
             'use the admin dashboard to connect your league.')

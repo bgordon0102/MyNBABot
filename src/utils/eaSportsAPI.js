@@ -49,6 +49,11 @@ class EASportsAPI {
         }
     }
 
+    // Generate EA Sports login URL
+    generateLoginUrl() {
+        return EA_LOGIN_URL;
+    }
+
     // Start OAuth flow - exactly like snallabot
     async startAuthFlow(userId) {
         const callbackPort = 3000;
@@ -155,8 +160,8 @@ class EASportsAPI {
 
             const server = app.listen(callbackPort, () => {
                 console.log(`EA OAuth setup server running on http://127.0.0.1:${callbackPort}`);
-                // Open browser to setup page - exactly like snallabot
-                open(`http://127.0.0.1:${callbackPort}`);
+                // Open browser to EA Sports login page - exactly like snallabot
+                open(EA_LOGIN_URL);
             });
 
             // Timeout after 5 minutes
@@ -199,7 +204,7 @@ class EASportsAPI {
     }
 
     // Get user's Madden leagues - using real EA Sports API
-    async getUserLeagues(userId) {
+    async getUserLeagues(userId, userConsole = null, maddenVersion = null) {
         const token = await this.getValidToken(userId);
         if (!token) throw new Error('No valid EA Sports token found. Please authenticate first.');
 
@@ -238,17 +243,36 @@ class EASportsAPI {
             );
 
             const entitlements = entitlementsResponse.data?.entitlements?.entitlement || [];
+
+            // Debug: Log all entitlements to see what's available
+            console.log('🔍 Available EA Sports entitlements:');
+            entitlements.forEach(e => {
+                console.log(`  - ${e.entitlementTag || 'No tag'} (${e.displayName || 'No name'})`);
+            });
+
+            // Try to find Madden entitlements (be more flexible with the matching)
             const maddenEntitlements = entitlements.filter(e =>
-                e.entitlementTag && e.entitlementTag.includes('MADDEN_26')
+                e.entitlementTag && (
+                    e.entitlementTag.includes('MADDEN_26') ||
+                    e.entitlementTag.includes('MADDEN_25') ||
+                    e.entitlementTag.includes('MADDEN') ||
+                    (e.displayName && e.displayName.toLowerCase().includes('madden'))
+                )
             );
 
+            console.log(`🎮 Found ${maddenEntitlements.length} Madden entitlements`);
+
             if (maddenEntitlements.length === 0) {
-                return [];
+                console.log('⚠️ No specific Madden entitlements found, but proceeding with ONLINE_ACCESS');
+                console.log('🔄 Attempting to fetch leagues anyway (EA might not have Madden 26 entitlements ready)');
+                // Don't return empty - continue with available entitlements
             }
 
-            // Step 3: Get personas for Madden
+            // Step 3: Get personas for Madden (or use all entitlements if no Madden-specific ones)
             const maddenPersonas = [];
-            for (const entitlement of maddenEntitlements) {
+            const entitlementsToCheck = maddenEntitlements.length > 0 ? maddenEntitlements : entitlements;
+
+            for (const entitlement of entitlementsToCheck) {
                 try {
                     const personaResponse = await axios.get(
                         `https://gateway.ea.com/proxy/identity/pids/${pid}/personas?status=ACTIVE`,
@@ -274,15 +298,142 @@ class EASportsAPI {
                 return [];
             }
 
-            // For now, return the persona info - full Blaze integration would require more work
-            return maddenPersonas.map(persona => ({
-                id: persona.personaId,
-                name: `${persona.displayName}'s League`,
-                console: persona.namespaceName,
-                teams: 'Unknown',
-                week: 'Unknown',
-                season: 2025
-            }));
+            // Show all personas for debugging, then filter
+            console.log(`🔍 DEBUG: All available personas in EA account:`);
+            maddenPersonas.forEach(persona => {
+                console.log(`  📋 ${persona.displayName} | Console: ${persona.namespaceName} | ID: ${persona.personaId}`);
+            });
+
+            let filteredPersonas = maddenPersonas;
+
+            if (userConsole && maddenVersion) {
+                console.log(`🎯 Filtering for console: ${userConsole}, Madden version: ${maddenVersion}`);
+
+                // Map user-friendly console names to EA namespace names
+                // Note: cem_ea_id appears to be used for newer/cross-platform leagues
+                const consoleMap = {
+                    'PS5': ['ps5', 'playstation5', 'cem_ea_id', 'ps4', 'playstation'],
+                    'XBOX': ['xbox', 'xboxone', 'xboxseriesx', 'xbox360', 'cem_ea_id'],
+                    'PC': ['pc', 'origin', 'steam', 'cem_ea_id']
+                };
+
+                const expectedConsoles = consoleMap[userConsole] || [userConsole.toLowerCase()];
+
+                filteredPersonas = maddenPersonas.filter(persona => {
+                    const namespaceName = persona.namespaceName?.toLowerCase() || '';
+                    const matchesConsole = expectedConsoles.some(expectedConsole =>
+                        namespaceName.includes(expectedConsole.toLowerCase())
+                    );
+
+                    console.log(`  � Persona: ${persona.displayName}, Console: ${namespaceName}, Matches: ${matchesConsole}`);
+                    return matchesConsole;
+                });
+
+                console.log(`🎯 Filtered to ${filteredPersonas.length} personas for ${userConsole}`);
+
+                // If no matches and user selected PS5, also show cem_ea_id personas as they might be PS5
+                if (filteredPersonas.length === 0 && userConsole === 'PS5') {
+                    console.log(`⚠️  No PS5 personas found, including cem_ea_id personas as fallback`);
+                    filteredPersonas = maddenPersonas.filter(p =>
+                        p.namespaceName?.toLowerCase().includes('cem_ea_id') ||
+                        p.namespaceName?.toLowerCase().includes('ps')
+                    );
+                }
+            }
+
+            // Try to get actual Connected Franchise Mode leagues instead of just personas
+            console.log(`🏈 Attempting to fetch Connected Franchise Mode leagues...`);
+
+            try {
+                // Get the user's PID for CFM API calls
+                const pid = personasResponse.data.pid_id;
+
+                // Try multiple CFM API endpoints that snallabot might use
+                let cfmResponse = null;
+                const cfmEndpoints = [
+                    `https://gateway.ea.com/proxy/identity/pids/${pid}/cfm/leagues`,
+                    `https://api.madden.ea.com/cfm/${pid}/leagues`,
+                    `https://proclubs.ea.com/api/nhl/clubs/search?platform=common&clubId=${pid}`
+                ];
+
+                for (const endpoint of cfmEndpoints) {
+                    try {
+                        console.log(`🔍 Trying CFM endpoint: ${endpoint}`);
+                        cfmResponse = await axios.get(endpoint, {
+                            headers: {
+                                "User-Agent": "Dalvik/2.1.0 (Linux; U; Android 13; sdk_gphone_x86_64 Build/TE1A.220922.031)",
+                                "Authorization": `Bearer ${token.access_token}`,
+                                "Accept": "application/json"
+                            }
+                        });
+                        console.log(`✅ CFM endpoint worked: ${endpoint}`);
+                        break;
+                    } catch (endpointError) {
+                        console.log(`❌ CFM endpoint failed: ${endpoint} - ${endpointError.message}`);
+                        continue;
+                    }
+                }
+
+                const cfmLeagues = cfmResponse.data?.leagues || [];
+                console.log(`🏆 Found ${cfmLeagues.length} Connected Franchise Mode leagues`);
+
+                cfmLeagues.forEach(league => {
+                    console.log(`  🏈 CFM League: ${league.leagueName} | ID: ${league.leagueId} | Console: ${league.platform}`);
+                });
+
+                if (cfmLeagues.length > 0) {
+                    // Return actual CFM leagues with proper filtering
+                    let filteredLeagues = cfmLeagues;
+
+                    if (userConsole) {
+                        const platformMap = {
+                            'PS5': ['ps5', 'playstation5', 'ps4'],
+                            'XBOX': ['xbox', 'xboxone', 'xboxseriesx'],
+                            'PC': ['pc', 'origin', 'steam']
+                        };
+
+                        const expectedPlatforms = platformMap[userConsole] || [userConsole.toLowerCase()];
+
+                        filteredLeagues = cfmLeagues.filter(league => {
+                            const platform = league.platform?.toLowerCase() || '';
+                            return expectedPlatforms.some(expected =>
+                                platform.includes(expected.toLowerCase())
+                            );
+                        });
+                    }
+
+                    return filteredLeagues.map(league => ({
+                        id: league.leagueId,
+                        name: league.leagueName,
+                        console: league.platform,
+                        teams: league.teamCount || 'Unknown',
+                        week: league.currentWeek || 'Unknown',
+                        season: league.season || (maddenVersion ? `Madden ${maddenVersion}` : '2025')
+                    }));
+                }
+            } catch (cfmError) {
+                console.log(`⚠️ All CFM API endpoints failed, falling back to personas: ${cfmError.message}`);
+            }
+
+            // Fallback to persona info if CFM API fails
+            // Add better detection for current leagues
+            return filteredPersonas.map(persona => {
+                const isLikelyCurrentLeague = persona.namespaceName === 'cem_ea_id' ||
+                    persona.displayName.includes('_') ||
+                    parseInt(persona.personaId) > 900000000; // Higher IDs likely newer
+
+                return {
+                    id: persona.personaId,
+                    name: `${persona.displayName}'s League`,
+                    console: persona.namespaceName === 'cem_ea_id' ?
+                        `${userConsole || 'Unknown'} (Cross-Platform)` :
+                        persona.namespaceName,
+                    teams: 'Unknown',
+                    week: 'Unknown',
+                    season: maddenVersion ? `Madden ${maddenVersion}` : 2025,
+                    isCurrentLeague: isLikelyCurrentLeague
+                };
+            });
 
         } catch (error) {
             console.error('Failed to get user leagues:', error.response?.data || error.message);
@@ -334,12 +485,22 @@ class EASportsAPI {
 
     // Get valid token (refresh if needed)
     async getValidToken(userId) {
-        const token = this.tokens.get(userId);
-        if (!token) return null;
+        console.log(`🔍 Looking for token for userId: ${userId}`);
+        console.log(`🔍 Available tokens:`, Array.from(this.tokens.keys()));
 
-        // Check if token is expired
-        if (Date.now() >= token.expires_at) {
+        const token = this.tokens.get(userId);
+        if (!token) {
+            console.log(`❌ No token found for userId: ${userId}`);
+            return null;
+        }
+
+        console.log(`✅ Token found for ${userId}:`, Object.keys(token));
+
+        // Check if token is expired (handle both expires_at and expiresAt)
+        const expiresAt = token.expires_at || token.expiresAt;
+        if (expiresAt && Date.now() >= expiresAt) {
             try {
+                console.log(`🔄 Token expired, refreshing...`);
                 const newToken = await this.refreshToken(token.refresh_token);
                 this.tokens.set(userId, newToken);
                 this.saveTokens();
@@ -352,6 +513,7 @@ class EASportsAPI {
             }
         }
 
+        console.log(`✅ Token is valid for ${userId}`);
         return token;
     }
 

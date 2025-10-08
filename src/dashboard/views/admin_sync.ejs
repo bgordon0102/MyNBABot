@@ -9,6 +9,11 @@
     </title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
+        body {
+            background: linear-gradient(135deg, #FFD700 0%, #000000 100%);
+            min-height: 100vh;
+        }
+
         .step {
             display: none;
         }
@@ -27,19 +32,24 @@
             flex: 1;
             text-align: center;
             position: relative;
+            color: #000;
         }
 
         .step-indicator .step-item.completed .step-number {
-            background-color: #28a745;
+            background: linear-gradient(45deg, #228B22, #32CD32);
+            box-shadow: 0 3px 10px rgba(50, 205, 50, 0.3);
         }
 
         .step-indicator .step-item.active .step-number {
-            background-color: #007bff;
+            background: linear-gradient(45deg, #FFD700, #FFC107);
+            color: #000;
+            font-weight: bold;
+            box-shadow: 0 3px 10px rgba(255, 215, 0, 0.4);
         }
 
         .step-number {
-            width: 30px;
-            height: 30px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             background-color: #6c757d;
             color: white;
@@ -47,20 +57,110 @@
             align-items: center;
             justify-content: center;
             margin-bottom: 0.5rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .card {
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: none;
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        .card-header {
+            background: linear-gradient(45deg, #000000, #333333);
+            color: #FFD700;
+            border-radius: 15px 15px 0 0 !important;
+            border: none;
+            padding: 1.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #FFD700, #FFC107);
+            border: none;
+            color: #000;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(45deg, #FFC107, #FFD700);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+            color: #000;
+        }
+
+        .btn-success {
+            background: linear-gradient(45deg, #228B22, #32CD32);
+            border: none;
+            color: #FFF;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .btn-success:hover {
+            background: linear-gradient(45deg, #32CD32, #228B22);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(50, 205, 50, 0.4);
+            color: #FFF;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(45deg, #6c757d, #495057);
+            border: none;
+            color: #FFF;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: linear-gradient(45deg, #495057, #6c757d);
+            transform: translateY(-2px);
+            color: #FFF;
+        }
+
+        .alert-success {
+            background: linear-gradient(45deg, #d4edda, #c3e6cb);
+            border: 2px solid #28a745;
+            color: #155724;
+        }
+
+        .alert-danger {
+            background: linear-gradient(45deg, #f8d7da, #f5c6cb);
+            border: 2px solid #dc3545;
+            color: #721c24;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #FFD700;
+            box-shadow: 0 0 0 0.2rem rgba(255, 215, 0, 0.25);
+        }
+
+        h4 {
+            color: #000;
+            font-weight: bold;
+        }
+
+        .list-group-item.active {
+            background: linear-gradient(45deg, #FFD700, #FFC107);
+            border-color: #FFD700;
+            color: #000;
+            font-weight: bold;
         }
     </style>
 </head>
 
-<body class="bg-light">
+<body>
     <div class="container mt-5">
         <div class="row justify-content-center">
             <div class="col-md-8">
                 <div class="card">
                     <div class="card-header">
                         <h2 class="text-center">
-                            <%= title %>
+                            🏈 <%= title %>
                         </h2>
-                        <p class="text-center text-muted mb-0">
+                        <p class="text-center mb-0" style="color: #FFD700; opacity: 0.9;">
                             <%= message %>
                         </p>
                     </div>
@@ -87,7 +187,7 @@
 
                         <!-- Step 1: League Settings -->
                         <div class="step active" id="step-1">
-                            <h4>Step 1: League Settings</h4>
+                            <h4>🏈 Step 1: League Settings</h4>
                             <p>First, please set your console and Madden version. This helps us find the correct league.
                             </p>
 
@@ -118,33 +218,34 @@
                                     selecting "Copy User ID"</div>
                             </div>
 
-                            <button type="button" class="btn btn-primary" onclick="nextStep(1)">Next: Connect to EA
+                            <button type="button" class="btn btn-primary" onclick="nextStep(1)">🚀 Next: Connect to EA
                                 Sports</button>
                         </div>
 
                         <!-- Step 2: EA Sports Connection -->
                         <div class="step" id="step-2">
-                            <h4>Step 2: Connect to EA Sports</h4>
+                            <h4>🔗 Step 2: Connect to EA Sports</h4>
                             <p>Connect your EA Sports account to access your Madden leagues.</p>
 
                             <div class="text-center mb-3">
                                 <button type="button" class="btn btn-success btn-lg" onclick="connectEA()">
-                                    <i class="fas fa-link"></i> Connect to EA Sports
+                                    🏈 Connect to EA Sports
                                 </button>
                             </div>
 
                             <div id="ea-status" class="alert" style="display: none;"></div>
 
                             <div class="d-flex justify-content-between">
-                                <button type="button" class="btn btn-secondary" onclick="prevStep(2)">Previous</button>
+                                <button type="button" class="btn btn-secondary" onclick="prevStep(2)">⬅️
+                                    Previous</button>
                                 <button type="button" class="btn btn-primary" id="step-2-next" onclick="nextStep(2)"
-                                    disabled>Next: Select League</button>
+                                    disabled>🚀 Next: Select League</button>
                             </div>
                         </div>
 
                         <!-- Step 3: League Selection -->
                         <div class="step" id="step-3">
-                            <h4>Step 3: Select Your League</h4>
+                            <h4>🏆 Step 3: Select Your League</h4>
                             <p>Choose the Madden league you want to connect to LEAGUEbuddy.</p>
 
                             <div id="leagues-loading" style="display: none;">
@@ -159,17 +260,18 @@
                             <div id="leagues-list"></div>
 
                             <div class="d-flex justify-content-between mt-3">
-                                <button type="button" class="btn btn-secondary" onclick="prevStep(3)">Previous</button>
+                                <button type="button" class="btn btn-secondary" onclick="prevStep(3)">⬅️
+                                    Previous</button>
                                 <button type="button" class="btn btn-primary" id="step-3-next" onclick="nextStep(3)"
-                                    disabled>Complete Setup</button>
+                                    disabled>🏆 Complete Setup</button>
                             </div>
                         </div>
 
                         <!-- Step 4: Complete -->
                         <div class="step" id="step-4">
-                            <h4>🎉 Setup Complete!</h4>
+                            <h4>� Setup Complete!</h4>
                             <div class="alert alert-success">
-                                <h5>Your league is now connected to LEAGUEbuddy!</h5>
+                                <h5>🎉 Your league is now connected to LEAGUEbuddy!</h5>
                                 <p>You can now use the following Discord commands:</p>
                                 <ul>
                                     <li><code>/ea status</code> - Check connection status</li>
@@ -179,9 +281,10 @@
                             </div>
 
                             <div class="text-center">
-                                <button type="button" class="btn btn-primary btn-lg" onclick="location.reload()">Setup
+                                <button type="button" class="btn btn-primary btn-lg" onclick="location.reload()">🔄
+                                    Setup
                                     Another League</button>
-                                <a href="/" class="btn btn-secondary btn-lg ms-2">Return to Dashboard</a>
+                                <a href="/" class="btn btn-secondary btn-lg ms-2">🏠 Return to Dashboard</a>
                             </div>
                         </div>
                     </div>
@@ -248,6 +351,12 @@
             try {
                 const userId = document.getElementById('user-id').value;
 
+                // Show connecting status
+                const statusDiv = document.getElementById('ea-status');
+                statusDiv.className = 'alert alert-info';
+                statusDiv.style.display = 'block';
+                statusDiv.innerHTML = '<strong>🔄 Starting EA Sports authentication...</strong><br>A browser window will open automatically. Please complete the login process.';
+
                 const response = await fetch('/admin/sync/connect', {
                     method: 'POST',
                     headers: {
@@ -259,26 +368,16 @@
                 const result = await response.json();
 
                 if (result.success) {
-                    // Open EA login in new window
-                    const popup = window.open(result.loginUrl, 'ea-login', 'width=600,height=700');
-
-                    // Show status
-                    const statusDiv = document.getElementById('ea-status');
-                    statusDiv.className = 'alert alert-info';
-                    statusDiv.style.display = 'block';
-                    statusDiv.innerHTML = '<strong>EA Login Window Opened</strong><br>Please complete authentication in the popup window.';
-
-                    // Check for popup completion
-                    const checkClosed = setInterval(() => {
-                        if (popup.closed) {
-                            clearInterval(checkClosed);
-                            // Assume success if popup was closed
-                            eaConnected = true;
-                            statusDiv.className = 'alert alert-success';
-                            statusDiv.innerHTML = '<strong>✅ EA Sports Connected!</strong><br>You can now proceed to league selection.';
-                            document.getElementById('step-2-next').disabled = false;
-                        }
-                    }, 1000);
+                    // Update status to show manual code submission method (like snallabot)
+                    statusDiv.innerHTML = `
+                        <strong>🌐 EA Sports Login Opened</strong><br>
+                        After completing EA login, you'll be redirected to a page that can't load.<br>
+                        <strong>Copy the URL from that page and paste it below:</strong><br>
+                        <div class="mt-2">
+                            <input type="text" class="form-control" id="auth-code-input" placeholder="Paste the redirect URL here (127.0.0.1/success?code=...)" style="font-size: 12px;">
+                            <button type="button" class="btn btn-success btn-sm mt-2" onclick="submitAuthCode()">Submit Authorization Code</button>
+                        </div>
+                    `;
                 } else {
                     throw new Error(result.error);
                 }
@@ -287,6 +386,92 @@
                 statusDiv.className = 'alert alert-danger';
                 statusDiv.style.display = 'block';
                 statusDiv.innerHTML = `<strong>Connection Failed</strong><br>${error.message}`;
+            }
+        }
+
+        async function submitAuthCode() {
+            try {
+                const authUrl = document.getElementById('auth-code-input').value;
+                const statusDiv = document.getElementById('ea-status');
+
+                if (!authUrl) {
+                    alert('Please paste the redirect URL');
+                    return;
+                }
+
+                // Extract the code from the URL
+                let code;
+                if (authUrl.includes('code=')) {
+                    code = authUrl.split('code=')[1].split('&')[0];
+                } else {
+                    alert('Invalid URL. Please make sure you copied the full redirect URL.');
+                    return;
+                }
+
+                statusDiv.className = 'alert alert-info';
+                statusDiv.innerHTML = '<strong>🔄 Processing authorization code...</strong>';
+
+                const response = await fetch('/admin/sync/submit-code', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        code: code,
+                        userId: 'dashboard_user'
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    eaConnected = true;
+                    statusDiv.className = 'alert alert-success';
+                    statusDiv.innerHTML = '<strong>✅ EA Sports Connected Successfully!</strong><br>Authentication completed. You can now proceed to league selection.';
+                    document.getElementById('step-2-next').disabled = false;
+                } else {
+                    throw new Error(result.error);
+                }
+            } catch (error) {
+                const statusDiv = document.getElementById('ea-status');
+                statusDiv.className = 'alert alert-danger';
+                statusDiv.innerHTML = `<strong>❌ Failed to process code</strong><br>${error.message}`;
+            }
+        }
+
+        async function checkEAConnection() {
+            try {
+                const tempUserId = 'dashboard_user';
+                const statusDiv = document.getElementById('ea-status');
+
+                // Check if we have stored tokens by trying to get leagues
+                const response = await fetch('/admin/sync/leagues', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        userId: tempUserId,
+                        console: document.getElementById('console-select').value,
+                        maddenVersion: document.getElementById('madden-version').value
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    eaConnected = true;
+                    statusDiv.className = 'alert alert-success';
+                    statusDiv.innerHTML = '<strong>✅ EA Sports Connected Successfully!</strong><br>Authentication completed. You can now proceed to league selection.';
+                    document.getElementById('step-2-next').disabled = false;
+                } else {
+                    statusDiv.className = 'alert alert-warning';
+                    statusDiv.innerHTML = '<strong>⏳ Not connected yet</strong><br>Please complete the EA Sports login process in the browser window, then try again.';
+                }
+            } catch (error) {
+                const statusDiv = document.getElementById('ea-status');
+                statusDiv.className = 'alert alert-warning';
+                statusDiv.innerHTML = '<strong>⏳ Connection still in progress</strong><br>Please complete the EA Sports login, then try checking again.';
             }
         }
 
@@ -340,9 +525,11 @@
 
             let html = '<div class="row">';
             leagues.forEach((league, index) => {
+                // Escape league name to prevent JavaScript string issues
+                const escapedName = league.name.replace(/'/g, "\\'").replace(/"/g, '\\"');
                 html += `
                     <div class="col-md-6 mb-3">
-                        <div class="card league-card" onclick="selectLeague('${league.id}', '${league.name}', ${index})">
+                        <div class="card league-card" onclick="selectLeague('${league.id}', '${escapedName}', ${index})">
                             <div class="card-body">
                                 <h5 class="card-title">${league.name}</h5>
                                 <p class="card-text">
@@ -378,16 +565,34 @@
         }
 
         function selectLeague(leagueId, leagueName, index) {
-            // Remove previous selection
-            document.querySelectorAll('.league-card').forEach(card => {
-                card.classList.remove('selected');
-            });
+            console.log('🏈 League selected:', { leagueId, leagueName, index });
+            
+            try {
+                // Remove previous selection
+                document.querySelectorAll('.league-card').forEach(card => {
+                    card.classList.remove('selected');
+                });
 
-            // Add selection to clicked card
-            document.querySelectorAll('.league-card')[index].classList.add('selected');
+                // Add selection to clicked card
+                const selectedCard = document.querySelectorAll('.league-card')[index];
+                if (selectedCard) {
+                    selectedCard.classList.add('selected');
+                    console.log('✅ League card selected successfully');
+                } else {
+                    console.error('❌ Could not find league card at index:', index);
+                }
 
-            selectedLeague = { id: leagueId, name: leagueName };
-            document.getElementById('step-3-next').disabled = false;
+                selectedLeague = { id: leagueId, name: leagueName };
+                const nextButton = document.getElementById('step-3-next');
+                if (nextButton) {
+                    nextButton.disabled = false;
+                    console.log('✅ Complete Setup button enabled');
+                } else {
+                    console.error('❌ Could not find step-3-next button');
+                }
+            } catch (error) {
+                console.error('❌ Error in selectLeague:', error);
+            }
         }
 
         async function completeSetup() {
