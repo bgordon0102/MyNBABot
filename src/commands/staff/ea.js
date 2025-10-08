@@ -70,6 +70,11 @@ export default {
                         .setDescription('The EA Sports League ID to set as default')
                         .setRequired(true)
                 )
+        )
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName('dashboard')
+                .setDescription('Get link to the EA Sports admin dashboard (recommended for Madden 26)')
         ),
 
     async execute(interaction) {
@@ -101,6 +106,9 @@ export default {
                     break;
                 case 'setleague':
                     await handleSetLeague(interaction, userId);
+                    break;
+                case 'dashboard':
+                    await handleDashboard(interaction);
                     break;
                 default:
                     await interaction.reply({ content: 'Unknown subcommand.', ephemeral: true });
@@ -503,4 +511,34 @@ async function handleSetLeague(interaction, userId) {
 
         await interaction.editReply({ embeds: [embed] });
     }
+}
+
+async function handleDashboard(interaction) {
+    const dashboardUrl = process.env.DASHBOARD_URL || 'http://localhost:3000';
+
+    const embed = new EmbedBuilder()
+        .setColor('#0099ff')
+        .setTitle('🌐 EA Sports Admin Dashboard')
+        .setDescription('**Recommended Setup Method for Madden 26**\n\n' +
+            'Since EA has not released a companion app for Madden 26 yet, ' +
+            'use the admin dashboard to connect your league.')
+        .addFields(
+            { name: '🔗 Dashboard Link', value: `[Open Admin Dashboard](${dashboardUrl}/admin/sync)` },
+            {
+                name: '📋 Setup Steps', value:
+                    '1. **Set Console & Version** - Choose your platform and Madden 26\n' +
+                    '2. **Connect EA Sports** - Authenticate your account\n' +
+                    '3. **Select League** - Choose from your available leagues\n' +
+                    '4. **Complete Setup** - Start using bot commands'
+            },
+            {
+                name: '✨ After Setup', value:
+                    '• `/ea status` - Check connection\n' +
+                    '• `/ea sync` - Import league data\n' +
+                    '• `/ea refresh` - Clear cache'
+            }
+        )
+        .setFooter({ text: 'This method works better than mobile API for Madden 26' });
+
+    await interaction.reply({ embeds: [embed], ephemeral: true });
 }
