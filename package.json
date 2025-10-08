@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "node app.js",
+    "build": "echo 'No build step required'",
     "deploy": "node deploy-commands.js",
     "dev": "node --watch app.js"
   },
