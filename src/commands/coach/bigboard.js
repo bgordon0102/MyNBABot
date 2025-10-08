@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 
 export const data = new SlashCommandBuilder()
-    .setName('bigboard')
+    .setName('dev-bigboard')
     .setDescription('View and manage your personal draft big board (reorder your scouted players)');
 
 export async function execute(interaction) {

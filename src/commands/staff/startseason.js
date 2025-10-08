@@ -271,7 +271,7 @@ function generateWeekBasedSchedule(teams, gameno) {
 
 // Discord command builder and execute function
 export const data = new SlashCommandBuilder()
-    .setName('startseason')
+    .setName('dev-startseason')
     .setDescription('Start a new NBA 2K season. If data exists, you will be prompted to confirm reset.')
     .addIntegerOption(option =>
         option.setName('seasonno')

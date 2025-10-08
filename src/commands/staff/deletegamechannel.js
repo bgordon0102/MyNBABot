@@ -6,7 +6,7 @@ import path from 'path';
 const SEASON_FILE = './data/2k/season.json';
 
 export const data = new SlashCommandBuilder()
-    .setName('deletegamechannel')
+    .setName('dev-deletegamechannel')
     .setDescription('Delete all game channels for a selected week (Discord only, JSON remains intact).')
     .addIntegerOption(option =>
         option.setName('week')

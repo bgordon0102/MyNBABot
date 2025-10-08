@@ -1,7 +1,7 @@
 import { SlashCommandBuilder, PermissionFlagsBits } from 'discord.js';
 
 export const data = new SlashCommandBuilder()
-    .setName('createcoachoffices')
+    .setName('dev-createcoachoffices')
     .setDescription("Create a 'Coach's Office' category and private channels for each coach role.")
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator);
 

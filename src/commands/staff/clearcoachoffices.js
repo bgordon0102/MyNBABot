@@ -1,7 +1,7 @@
 import { SlashCommandBuilder, PermissionFlagsBits } from 'discord.js';
 
 export const data = new SlashCommandBuilder()
-    .setName('clearcoachoffices')
+    .setName('dev-clearcoachoffices')
     .setDescription("Delete the 'Coach's Office' category and all its channels.")
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator);
 

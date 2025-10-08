@@ -7,7 +7,7 @@ const maddenDataManager = new DataManager('madden'); // Use Madden-specific data
 
 export default {
     data: new SlashCommandBuilder()
-        .setName('ea')
+        .setName('dev-ea')
         .setDescription('EA Sports integration commands')
         .addSubcommand(subcommand =>
             subcommand
@@ -90,17 +90,29 @@ export default {
         // Reply immediately with a loading message to prevent timeout
         try {
             const loadingEmbed = new EmbedBuilder()
-                .setColor('#FFA500') 
+                .setColor('#FFA500')
                 .setTitle('🏈 Processing EA Sports Command...')
                 .setDescription(`⚡ Executing \`/ea ${subcommand}\`...`);
-            
+
             await interaction.reply({ embeds: [loadingEmbed], flags: 64 });
             console.log(`✅ Successfully replied to interaction for ${subcommand}`);
         } catch (error) {
             console.error('Failed to reply to EA command:', error);
+            // Don't throw the error - handle it gracefully to prevent app.js from trying to reply
+            try {
+                if (!interaction.replied && !interaction.deferred) {
+                    await interaction.reply({
+                        content: 'EA Sports command failed to start. Please try again.',
+                        flags: 64
+                    });
+                }
+            } catch (fallbackError) {
+                console.error('Fallback reply also failed:', fallbackError);
+            }
             return;
         }
 
+        // Execute the command - wrap everything to prevent errors from bubbling to app.js
         try {
             switch (subcommand) {
                 case 'status':
@@ -132,18 +144,10 @@ export default {
         } catch (error) {
             console.error('EA Sports command error:', error);
 
+            // Handle the error without throwing it back to app.js
             try {
                 const errorMessage = `EA Sports command failed: ${error.message || 'Unknown error'}`;
-
-                // Check if we can still respond to the interaction
-                if (interaction.deferred || interaction.replied) {
-                    if (interaction.deferred && !interaction.replied) {
-                        await interaction.editReply({ content: errorMessage });
-                    }
-                } else {
-                    // Try to send immediate reply if not deferred yet
-                    await interaction.reply({ content: errorMessage, ephemeral: true });
-                }
+                await interaction.editReply({ content: errorMessage });
             } catch (replyError) {
                 console.error('Failed to send error reply:', replyError);
             }

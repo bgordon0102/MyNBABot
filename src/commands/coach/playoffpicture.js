@@ -73,7 +73,7 @@ function getPlayoffData() {
 }
 
 export const data = new SlashCommandBuilder()
-    .setName('playoffpicture')
+    .setName('dev-playoffpicture')
     .setDescription('Show the current NBA-style playoff bracket and play-in teams for each conference.');
 
 export async function execute(interaction) {

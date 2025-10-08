@@ -103,13 +103,24 @@ client.interactions.set('playoff_standings_modal', { execute: enterPlayoffStandi
 client.once('clientReady', (readyClient) => {
   console.log('🏀 LEAGUEbuddy is online!');
   console.log(`📊 Logged in as ${readyClient.user.tag}`);
-  console.log(`🏟️  Serving ${readyClient.guilds.cache.size} server(s)`);
+  console.log(`� Bot User ID: ${readyClient.user.id}`);
+  console.log(`🔑 Expected Client ID from .env: ${process.env.CLIENT_ID}`);
+  console.log(`�🏟️  Serving ${readyClient.guilds.cache.size} server(s)`);
   console.log(`⚡ Loaded ${client.commands.size} commands`);
 });
 
 // Handle interactions (commands and autocomplete)
 client.on('interactionCreate', async interaction => {
+  const now = new Date();
+  const timeDiff = now - new Date(interaction.createdAt);
   console.log(`[INTERACTION EVENT] type: ${interaction.type}, id: ${interaction.id}, createdAt: ${interaction.createdAt}, user: ${interaction.user?.tag || interaction.user?.id}`);
+  console.log(`⏱️ Processing delay: ${timeDiff}ms (received ${timeDiff < 3000 ? 'within' : 'AFTER'} 3s timeout)`);
+
+  // If this is a slash command, try immediate acknowledgment
+  if (interaction.isChatInputCommand()) {
+    console.log(`🚀 IMMEDIATE: Attempting to acknowledge interaction ${interaction.id} for /${interaction.commandName}`);
+  }
+
   // Handle autocomplete interactions
   if (interaction.isAutocomplete()) {
     const command = client.commands.get(interaction.commandName);

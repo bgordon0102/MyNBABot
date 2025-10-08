@@ -3,7 +3,7 @@ import { DraftClassManager } from '../../utils/draftClassManager.js';
 
 export default {
     data: new SlashCommandBuilder()
-        .setName('draftclass')
+        .setName('dev-draftclass')
         .setDescription('View or manually switch draft classes (auto-set by season)')
         .addStringOption(option =>
             option

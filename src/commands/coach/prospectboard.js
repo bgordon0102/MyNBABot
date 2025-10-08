@@ -11,7 +11,7 @@ function readJSON(file) {
 }
 
 export const data = new SlashCommandBuilder()
-    .setName('prospectboard')
+    .setName('dev-prospectboard')
     .setDescription('View the prospect board')
     .addStringOption(option =>
         option.setName('board')

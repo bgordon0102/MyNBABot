@@ -68,7 +68,7 @@ function getStandings() {
 }
 
 export const data = new SlashCommandBuilder()
-    .setName('standings')
+    .setName('dev-standings')
     .setDescription('Show NBA-style conference standings');
 
 export async function execute(interaction) {

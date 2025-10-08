@@ -1,7 +1,7 @@
 import { SlashCommandBuilder, PermissionFlagsBits } from 'discord.js';
 
 export const data = new SlashCommandBuilder()
-  .setName('clearmessages')
+  .setName('dev-clearmessages')
   .setDescription('Clear messages in the current channel.')
   .addStringOption(option =>
     option.setName('amount')

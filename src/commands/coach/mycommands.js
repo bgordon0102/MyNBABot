@@ -1,7 +1,7 @@
 import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
 
 export const data = new SlashCommandBuilder()
-    .setName('mycommands')
+    .setName('dev-mycommands')
     .setDescription('Shows a list of commands available to you.');
 
 export async function execute(interaction) {

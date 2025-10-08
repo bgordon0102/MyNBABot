@@ -6,7 +6,7 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export const data = new SlashCommandBuilder()
-    .setName('generaterandomscores')
+    .setName('dev-generaterandomscores')
     .setDescription('Generate random approved scores for all games up to a given week')
     .addIntegerOption(option =>
         option.setName('week')

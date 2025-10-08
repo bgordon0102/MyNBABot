@@ -200,7 +200,7 @@ function getWinnerOfPlayinFinal(confPlayin) {
 }
 
 export const data = new SlashCommandBuilder()
-    .setName('advanceplayoff')
+    .setName('dev-advanceplayoff')
     .setDescription('Advance to the next playoff phase and create game channels')
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels);
 

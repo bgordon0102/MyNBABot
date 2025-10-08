@@ -9,7 +9,7 @@ const NBA_TEAMS = [
 const STAFF_ROLES = ['Commish', 'Schedule Tracker', 'Gameplay Mod', 'Trade Committee', 'Head Coach'];
 
 export const data = new SlashCommandBuilder()
-    .setName('assignrole')
+    .setName('dev-assignrole')
     .setDescription('Assign up to two roles to a user quickly.')
     .addUserOption(option =>
         option.setName('user')

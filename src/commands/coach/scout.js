@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 
 export const data = new SlashCommandBuilder()
-    .setName('scout')
+    .setName('dev-scout')
     .setDescription('Scout a player from the current big board');
 
 export async function execute(interaction) {

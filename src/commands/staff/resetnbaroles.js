@@ -13,7 +13,7 @@ function delay(ms) {
 }
 
 export const data = new SlashCommandBuilder()
-  .setName('resetnbaroles')
+  .setName('dev-resetnbaroles')
   .setDescription('Delete existing NBA roles and recreate them properly.')
   .setDefaultMemberPermissions(PermissionFlagsBits.Administrator);
 

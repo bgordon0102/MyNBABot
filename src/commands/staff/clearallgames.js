@@ -1,7 +1,7 @@
 import { SlashCommandBuilder, PermissionFlagsBits, ChannelType, EmbedBuilder } from 'discord.js';
 
 export const data = new SlashCommandBuilder()
-    .setName('clearallgames')
+    .setName('dev-clearallgames')
     .setDescription('Delete ALL game channels and categories (Week Games, Playoffs, etc.)')
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator);
 

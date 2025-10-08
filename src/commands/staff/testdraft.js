@@ -2,7 +2,7 @@ import { SlashCommandBuilder } from 'discord.js';
 
 export default {
     data: new SlashCommandBuilder()
-        .setName('testdraft')
+        .setName('dev-testdraft')
         .setDescription('Test draft class functionality'),
 
     async execute(interaction) {

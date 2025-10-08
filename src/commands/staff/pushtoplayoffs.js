@@ -141,7 +141,7 @@ function createPlayoffBracket(eastStandings, westStandings) {
 }
 
 export const data = new SlashCommandBuilder()
-    .setName('pushtoplayoffs')
+    .setName('dev-pushtoplayoffs')
     .setDescription('Initialize playoffs after regular season completion')
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels);
 
