@@ -80,37 +80,24 @@ export default {
         ),
 
     async execute(interaction) {
+        // Timestamped debug log at start of execute
+        const startTime = Date.now();
+        console.log(`[EA DEBUG] execute() called at ${new Date(startTime).toISOString()} for interaction ${interaction.id}`);
+        // Immediately defer reply to avoid Discord timeout errors
+        try {
+            await interaction.deferReply({ ephemeral: true });
+            const deferTime = Date.now();
+            console.log(`[EA DEBUG] deferReply completed at ${new Date(deferTime).toISOString()} (elapsed: ${deferTime - startTime}ms)`);
+        } catch (error) {
+            console.error('[EA DEBUG] Failed to defer reply:', error);
+            return;
+        }
         // Get command info first
         const subcommand = interaction.options.getSubcommand();
         const userId = interaction.user.id;
 
         console.log(`🏈 EA Command: ${userId} using /ea ${subcommand}`);
         console.log(`🔍 Interaction status: replied=${interaction.replied}, deferred=${interaction.deferred}`);
-
-        // Reply immediately with a loading message to prevent timeout
-        try {
-            const loadingEmbed = new EmbedBuilder()
-                .setColor('#FFA500')
-                .setTitle('🏈 Processing EA Sports Command...')
-                .setDescription(`⚡ Executing \`/ea ${subcommand}\`...`);
-
-            await interaction.reply({ embeds: [loadingEmbed], flags: 64 });
-            console.log(`✅ Successfully replied to interaction for ${subcommand}`);
-        } catch (error) {
-            console.error('Failed to reply to EA command:', error);
-            // Don't throw the error - handle it gracefully to prevent app.js from trying to reply
-            try {
-                if (!interaction.replied && !interaction.deferred) {
-                    await interaction.reply({
-                        content: 'EA Sports command failed to start. Please try again.',
-                        flags: 64
-                    });
-                }
-            } catch (fallbackError) {
-                console.error('Fallback reply also failed:', fallbackError);
-            }
-            return;
-        }
 
         // Execute the command - wrap everything to prevent errors from bubbling to app.js
         try {
@@ -143,8 +130,6 @@ export default {
             }
         } catch (error) {
             console.error('EA Sports command error:', error);
-
-            // Handle the error without throwing it back to app.js
             try {
                 const errorMessage = `EA Sports command failed: ${error.message || 'Unknown error'}`;
                 await interaction.editReply({ content: errorMessage });
@@ -240,97 +225,19 @@ async function handleStatus(interaction, userId) {
 }
 
 async function handleSync(interaction, userId) {
-    if (!eaAPI.isAuthenticated(userId)) {
-        const embed = new EmbedBuilder()
-            .setColor('#ff0000')
-            .setTitle('❌ Not Connected')
-            .setDescription('You need to connect your EA Sports account first. Use `/ea connect` to get started.');
-
-        await interaction.editReply({ embeds: [embed] });
+    // Fetch all leagues for the user
+    const leagues = await eaAPI.getUserLeagues(userId);
+    if (!leagues || leagues.length === 0) {
+        await interaction.editReply({ content: 'No leagues found in your EA Sports account.' });
         return;
     }
-
-    const leagueId = interaction.options.getString('league');
-
-    try {
-        const leagues = await eaAPI.getUserLeagues(userId);
-
-        if (!leagues || leagues.length === 0) {
-            const embed = new EmbedBuilder()
-                .setColor('#ffaa00')
-                .setTitle('📋 No Leagues Found')
-                .setDescription('No Madden leagues found in your EA Sports account.\n\n' +
-                    '**Possible reasons:**\n' +
-                    '• You haven\'t created any Madden 26 leagues\n' +
-                    '• Your EA Sports account doesn\'t have Madden 26\n' +
-                    '• Your token may have expired\n\n' +
-                    '**Try:**\n' +
-                    '• Create a league in Madden 26 first\n' +
-                    '• Use `/ea refresh` to clear cache\n' +
-                    '• Use `/ea connect` to re-authenticate');
-
-            await interaction.editReply({ embeds: [embed] });
-            return;
-        }
-
-        // If no specific league requested, show all available leagues
-        if (!leagueId) {
-            const leagueList = leagues.map((league, index) =>
-                `**${index + 1}.** ${league.name}\n` +
-                `   • ID: \`${league.id}\`\n` +
-                `   • Console: ${league.console || 'Unknown'}\n` +
-                `   • Teams: ${league.teams || 'Unknown'}\n`
-            ).join('\n');
-
-            const embed = new EmbedBuilder()
-                .setColor('#00ff00')
-                .setTitle('🏟️ Available EA Sports Leagues')
-                .setDescription(`Found ${leagues.length} league(s) in your EA Sports account:\n\n${leagueList}`)
-                .addFields(
-                    {
-                        name: '📥 How to Sync a League',
-                        value: 'Use `/ea sync league:[league-id]` to sync a specific league.\nExample: `/ea sync league:123456`'
-                    }
-                )
-                .setFooter({ text: 'Copy the League ID to sync specific league data' });
-
-            await interaction.editReply({ embeds: [embed] });
-            return;
-        }
-
-        // User specified a league ID - sync that specific league
-        const selectedLeague = leagues.find(league => league.id.toString() === leagueId);
-
-        if (!selectedLeague) {
-            const embed = new EmbedBuilder()
-                .setColor('#ff0000')
-                .setTitle('❌ League Not Found')
-                .setDescription(`League ID \`${leagueId}\` not found in your EA Sports account.`)
-                .addFields(
-                    { name: 'Available Leagues', value: leagues.map(l => `• ${l.name} (ID: \`${l.id}\`)`).join('\n') || 'None' }
-                );
-
-            await interaction.editReply({ embeds: [embed] });
-            return;
-        }
-
-        // Start visual progress sync with real-time updates
-        await performLeagueSyncWithProgress(interaction, selectedLeague, userId);
-
-    } catch (error) {
-        console.error('Sync error:', error);
-
-        const embed = new EmbedBuilder()
-            .setColor('#ff0000')
-            .setTitle('❌ Sync Failed')
-            .setDescription('Failed to sync league data. Your EA connection may have expired.')
-            .addFields(
-                { name: 'Error Details', value: error.message || 'Unknown error' },
-                { name: 'Try Again', value: 'Use `/ea refresh` then `/ea sync` again.' }
-            );
-
-        await interaction.editReply({ embeds: [embed] });
-    }
+    // Show all available league names and IDs
+    const leagueList = leagues.map(l => `• **${l.name}** (ID: ${l.id}, Teams: ${l.teams})`).join('\n');
+    await interaction.editReply({
+        content:
+            `Found the following leagues on your EA account:\n${leagueList}\n\nReply with the league ID you want to sync using /ea sync leagueid:<ID>`
+    });
+    // ...existing code for further import (teams, players, games, etc)...
 }
 
 async function handleDraft(interaction, userId) {

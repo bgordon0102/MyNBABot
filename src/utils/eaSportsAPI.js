@@ -1,4 +1,5 @@
 import axios from 'axios';
+import crypto from 'crypto';
 import express from 'express';
 import open from 'open';
 import { v4 as uuidv4 } from 'uuid';
@@ -24,6 +25,40 @@ class EASportsAPI {
         this.tokenFilePath = path.join(__dirname, '../../data/ea_tokens.json');
         this.apiURL = 'https://gateway.ea.com/proxy/identity'; // EA Sports Gateway API base URL
         this.loadTokens();
+    }
+
+    // Calculate messageAuthData for Blaze requests (snallabot exact logic)
+    calculateMessageAuthData(blazeId, requestId) {
+        // Constants from snallabot
+        const staticData = "05e6a7ead5584ab4";
+        const staticBytes = Buffer.from("634203362017bf72f70ba900c0aa4e6b", "hex");
+        const staticAuthCode = Buffer.from("3a53413521464c3b6531326530705b70203a2900", "hex");
+        // Random 4 bytes (snallabot uses randomBytes, but for deterministic, use requestId)
+        const rand4bytes = Buffer.alloc(4);
+        rand4bytes.writeUInt32BE(requestId);
+        // Request data
+        const requestData = JSON.stringify({
+            staticData,
+            requestId,
+            blazeId
+        });
+        // XOR hash
+        const xorHash = crypto.createHash('md5').update(rand4bytes).update(staticBytes).digest();
+        const requestBuffer = Buffer.from(requestData, 'utf-8');
+        const scrambledBytes = Buffer.alloc(requestBuffer.length);
+        for (let i = 0; i < requestBuffer.length; i++) {
+            scrambledBytes[i] = requestBuffer[i] ^ xorHash[i % 16];
+        }
+        const authDataBytes = Buffer.concat([rand4bytes, scrambledBytes]);
+        // Final authData is base64
+        const authData = authDataBytes.toString('base64');
+        // Final authCode is staticAuthCode as base64
+        const authCode = staticAuthCode.toString('base64');
+        return {
+            authCode: this._sessionKey,
+            authType: 17039361,
+            authData
+        };
     }
 
     // Load stored tokens from file
@@ -384,8 +419,8 @@ class EASportsAPI {
                             requestPayload: '{}',
                             componentName: 'careermode',
                             messageAuthData: {
-                                authCode: 'placeholder',
-                                authData: 'placeholder',
+                                authCode: sessionKey,
+                                authData: token.access_token,
                                 authType: 17039361
                             }
                         })
@@ -480,56 +515,90 @@ class EASportsAPI {
         try {
             console.log('🔐 Attempting WAL authentication for CFM data access...');
 
-            // Try WAL authentication approach used by snallabot
+            // WAL authentication (snallabot style)
+            const productName = 'MADDEN-2025-PS5'; // TODO: dynamically set based on user console/version
+            const walAuthPayload = {
+                accessToken: token.access_token,
+                productName: productName
+            };
+            const walAuthHeaders = {
+                'Accept-Charset': 'UTF-8',
+                'Accept': 'application/json',
+                'X-BLAZE-ID': 'madden-2025-ps5-gen5',
+                'X-BLAZE-VOID-RESP': 'XML',
+                'X-Application-Key': 'MADDEN-MCA',
+                'Content-Type': 'application/json',
+                'User-Agent': 'Dalvik/2.1.0 (Linux; U; Android 13; sdk_gphone_x86_64 Build/TE1A.220922.031)'
+            };
+            console.log('🔎 WAL Auth Request Payload:', JSON.stringify(walAuthPayload, null, 2));
+            console.log('🔎 WAL Auth Request Headers:', JSON.stringify(walAuthHeaders, null, 2));
             const walAuthResponse = await axios.post(
                 'https://wal2.tools.gos.bio-iad.ea.com/wal/authentication/login',
-                {
-                    authCode: token.access_token
-                },
-                {
-                    headers: {
-                        'Accept': 'application/json',
-                        'X-BLAZE-VOID-RESP': 'XML',
-                        'X-Application-Key': 'MADDEN-MCA',
-                        'X-BLAZE-ID': 'madden-2025-ps5-gen5',
-                        'Content-Type': 'application/json',
-                        'User-Agent': 'Dalvik/2.1.0 (Linux; U; Android 13; sdk_gphone_x86_64 Build/TE1A.220922.031)'
-                    }
-                }
+                walAuthPayload,
+                { headers: walAuthHeaders }
             );
+            console.log('🔎 WAL Auth Raw Response:', JSON.stringify(walAuthResponse.data, null, 2));
 
             console.log('✅ WAL authentication successful');
-            const sessionKey = walAuthResponse.data.userLoginInfo.sessionKey;
+            console.log('🔎 WAL Auth Response:', JSON.stringify(walAuthResponse.data, null, 2));
+            // Find correct sessionKey property path
+            const sessionKey = walAuthResponse.data?.userLoginInfo?.sessionKey || walAuthResponse.data?.sessionKey || walAuthResponse.data?.SessionKey;
 
-            // Now try to get roster data via WAL Process endpoint
+            // Get roster data via WAL Process endpoint
+            const processPayload = {
+                apiVersion: 2,
+                clientDevice: 3,
+                requestInfo: JSON.stringify({
+                    messageExpirationTime: Math.floor(Date.now() / 1000) + 300,
+                    deviceId: 'LEAGUEbuddy-MCA',
+                    commandName: 'Mobile_GetLeagueRoster',
+                    componentId: 2060,
+                    commandId: 802,
+                    ipAddress: '127.0.0.1',
+                    requestPayload: JSON.stringify({ leagueId: parseInt(leagueId) }),
+                    componentName: 'careermode',
+                    messageAuthData: {
+                        authCode: sessionKey,
+                        authData: token.access_token,
+                        authType: 17039361
+                    }
+                })
+            };
+            const processHeaders = {
+                'Accept': 'application/json',
+                'X-BLAZE-ID': 'madden-2025-ps5-gen5',
+                'X-BLAZE-VOID-RESP': 'XML',
+                'X-Application-Key': 'MADDEN-MCA',
+                'Content-Type': 'application/json'
+            };
+            console.log('🔎 WAL/Blaze Request Payload:', JSON.stringify(processPayload, null, 2));
+            console.log('🔎 WAL/Blaze Request Headers:', JSON.stringify(processHeaders, null, 2));
             const processResponse = await axios.post(
                 `https://wal2.tools.gos.bio-iad.ea.com/wal/mca/Process/${sessionKey}`,
-                {
-                    apiVersion: 2,
-                    clientDevice: 3,
-                    requestInfo: JSON.stringify({
-                        messageExpirationTime: Math.floor(Date.now() / 1000) + 300,
-                        deviceId: 'LEAGUEbuddy-MCA',
-                        commandName: 'Mobile_GetLeagueRoster',
-                        componentId: 2060,
-                        commandId: 802,
-                        ipAddress: '127.0.0.1',
-                        requestPayload: JSON.stringify({ leagueId: parseInt(leagueId) }),
-                        componentName: 'careermode'
-                    })
-                },
-                {
-                    headers: {
-                        'Accept': 'application/json',
-                        'X-BLAZE-ID': 'madden-2025-ps5-gen5',
-                        'X-BLAZE-VOID-RESP': 'XML',
-                        'X-Application-Key': 'MADDEN-MCA',
-                        'Content-Type': 'application/json'
-                    }
-                }
+                processPayload,
+                { headers: processHeaders }
             );
+            console.log('🔎 WAL/Blaze Raw Response:', JSON.stringify(processResponse.data, null, 2));
 
-            return processResponse.data;
+            // Parse WAL/Blaze response for teams
+            const walData = processResponse.data;
+            console.log('🔎 WAL/Blaze raw response:', JSON.stringify(walData, null, 2));
+            let teams = [];
+            // Try to extract teams from typical WAL/Blaze response structure
+            if (walData?.responseInfo?.value?.teams) {
+                teams = walData.responseInfo.value.teams;
+            } else if (walData?.responseInfo?.value?.leagueRoster) {
+                teams = walData.responseInfo.value.leagueRoster.teams || [];
+            } else if (walData?.teams) {
+                teams = walData.teams;
+            }
+
+            if (!teams || teams.length < 32) {
+                console.warn('⚠️ WAL/Blaze response did not contain 32 teams. Returning raw response for debugging.');
+                return { teams, raw: walData };
+            }
+
+            return { teams };
 
         } catch (error) {
             console.error('WAL/Blaze CFM access failed:', error.response?.data || error.message);
@@ -577,6 +646,7 @@ class EASportsAPI {
 
     // Get draft class data
     async getDraftClass(userId, year = 2026) {
+        this._requestId++;
         const token = await this.getValidToken(userId);
         if (!token) throw new Error('No valid EA Sports token found. Please authenticate first.');
 

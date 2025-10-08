@@ -1,1 +1,722 @@
-[]
+[
+  {
+    "gameId": "1-1",
+    "week": 1,
+    "homeTeam": 1,
+    "awayTeam": 2,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2025-10-15T19:25:20.287Z"
+  },
+  {
+    "gameId": "1-2",
+    "week": 1,
+    "homeTeam": 3,
+    "awayTeam": 4,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2025-10-15T19:25:20.287Z"
+  },
+  {
+    "gameId": "1-3",
+    "week": 1,
+    "homeTeam": 5,
+    "awayTeam": 6,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2025-10-15T19:25:20.287Z"
+  },
+  {
+    "gameId": "1-4",
+    "week": 1,
+    "homeTeam": 7,
+    "awayTeam": 8,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2025-10-15T19:25:20.287Z"
+  },
+  {
+    "gameId": "2-1",
+    "week": 2,
+    "homeTeam": 1,
+    "awayTeam": 2,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2025-10-22T19:25:20.287Z"
+  },
+  {
+    "gameId": "2-2",
+    "week": 2,
+    "homeTeam": 3,
+    "awayTeam": 4,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2025-10-22T19:25:20.287Z"
+  },
+  {
+    "gameId": "2-3",
+    "week": 2,
+    "homeTeam": 5,
+    "awayTeam": 6,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2025-10-22T19:25:20.287Z"
+  },
+  {
+    "gameId": "2-4",
+    "week": 2,
+    "homeTeam": 7,
+    "awayTeam": 8,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2025-10-22T19:25:20.287Z"
+  },
+  {
+    "gameId": "3-1",
+    "week": 3,
+    "homeTeam": 1,
+    "awayTeam": 2,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2025-10-29T19:25:20.287Z"
+  },
+  {
+    "gameId": "3-2",
+    "week": 3,
+    "homeTeam": 3,
+    "awayTeam": 4,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2025-10-29T19:25:20.287Z"
+  },
+  {
+    "gameId": "3-3",
+    "week": 3,
+    "homeTeam": 5,
+    "awayTeam": 6,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2025-10-29T19:25:20.287Z"
+  },
+  {
+    "gameId": "3-4",
+    "week": 3,
+    "homeTeam": 7,
+    "awayTeam": 8,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2025-10-29T19:25:20.287Z"
+  },
+  {
+    "gameId": "4-1",
+    "week": 4,
+    "homeTeam": 1,
+    "awayTeam": 2,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2025-11-05T19:25:20.287Z"
+  },
+  {
+    "gameId": "4-2",
+    "week": 4,
+    "homeTeam": 3,
+    "awayTeam": 4,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2025-11-05T19:25:20.287Z"
+  },
+  {
+    "gameId": "4-3",
+    "week": 4,
+    "homeTeam": 5,
+    "awayTeam": 6,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2025-11-05T19:25:20.287Z"
+  },
+  {
+    "gameId": "4-4",
+    "week": 4,
+    "homeTeam": 7,
+    "awayTeam": 8,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2025-11-05T19:25:20.287Z"
+  },
+  {
+    "gameId": "5-1",
+    "week": 5,
+    "homeTeam": 1,
+    "awayTeam": 2,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2025-11-12T19:25:20.287Z"
+  },
+  {
+    "gameId": "5-2",
+    "week": 5,
+    "homeTeam": 3,
+    "awayTeam": 4,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2025-11-12T19:25:20.287Z"
+  },
+  {
+    "gameId": "5-3",
+    "week": 5,
+    "homeTeam": 5,
+    "awayTeam": 6,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2025-11-12T19:25:20.287Z"
+  },
+  {
+    "gameId": "5-4",
+    "week": 5,
+    "homeTeam": 7,
+    "awayTeam": 8,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2025-11-12T19:25:20.287Z"
+  },
+  {
+    "gameId": "6-1",
+    "week": 6,
+    "homeTeam": 1,
+    "awayTeam": 2,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2025-11-19T19:25:20.287Z"
+  },
+  {
+    "gameId": "6-2",
+    "week": 6,
+    "homeTeam": 3,
+    "awayTeam": 4,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2025-11-19T19:25:20.287Z"
+  },
+  {
+    "gameId": "6-3",
+    "week": 6,
+    "homeTeam": 5,
+    "awayTeam": 6,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2025-11-19T19:25:20.287Z"
+  },
+  {
+    "gameId": "6-4",
+    "week": 6,
+    "homeTeam": 7,
+    "awayTeam": 8,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2025-11-19T19:25:20.287Z"
+  },
+  {
+    "gameId": "7-1",
+    "week": 7,
+    "homeTeam": 1,
+    "awayTeam": 2,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2025-11-26T19:25:20.287Z"
+  },
+  {
+    "gameId": "7-2",
+    "week": 7,
+    "homeTeam": 3,
+    "awayTeam": 4,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2025-11-26T19:25:20.287Z"
+  },
+  {
+    "gameId": "7-3",
+    "week": 7,
+    "homeTeam": 5,
+    "awayTeam": 6,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2025-11-26T19:25:20.287Z"
+  },
+  {
+    "gameId": "7-4",
+    "week": 7,
+    "homeTeam": 7,
+    "awayTeam": 8,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2025-11-26T19:25:20.287Z"
+  },
+  {
+    "gameId": "8-1",
+    "week": 8,
+    "homeTeam": 1,
+    "awayTeam": 2,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2025-12-03T19:25:20.287Z"
+  },
+  {
+    "gameId": "8-2",
+    "week": 8,
+    "homeTeam": 3,
+    "awayTeam": 4,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2025-12-03T19:25:20.287Z"
+  },
+  {
+    "gameId": "8-3",
+    "week": 8,
+    "homeTeam": 5,
+    "awayTeam": 6,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2025-12-03T19:25:20.287Z"
+  },
+  {
+    "gameId": "8-4",
+    "week": 8,
+    "homeTeam": 7,
+    "awayTeam": 8,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2025-12-03T19:25:20.287Z"
+  },
+  {
+    "gameId": "9-1",
+    "week": 9,
+    "homeTeam": 1,
+    "awayTeam": 2,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2025-12-10T19:25:20.287Z"
+  },
+  {
+    "gameId": "9-2",
+    "week": 9,
+    "homeTeam": 3,
+    "awayTeam": 4,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2025-12-10T19:25:20.287Z"
+  },
+  {
+    "gameId": "9-3",
+    "week": 9,
+    "homeTeam": 5,
+    "awayTeam": 6,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2025-12-10T19:25:20.288Z"
+  },
+  {
+    "gameId": "9-4",
+    "week": 9,
+    "homeTeam": 7,
+    "awayTeam": 8,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2025-12-10T19:25:20.288Z"
+  },
+  {
+    "gameId": "10-1",
+    "week": 10,
+    "homeTeam": 1,
+    "awayTeam": 2,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2025-12-17T19:25:20.288Z"
+  },
+  {
+    "gameId": "10-2",
+    "week": 10,
+    "homeTeam": 3,
+    "awayTeam": 4,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2025-12-17T19:25:20.288Z"
+  },
+  {
+    "gameId": "10-3",
+    "week": 10,
+    "homeTeam": 5,
+    "awayTeam": 6,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2025-12-17T19:25:20.288Z"
+  },
+  {
+    "gameId": "10-4",
+    "week": 10,
+    "homeTeam": 7,
+    "awayTeam": 8,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2025-12-17T19:25:20.288Z"
+  },
+  {
+    "gameId": "11-1",
+    "week": 11,
+    "homeTeam": 1,
+    "awayTeam": 2,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2025-12-24T19:25:20.288Z"
+  },
+  {
+    "gameId": "11-2",
+    "week": 11,
+    "homeTeam": 3,
+    "awayTeam": 4,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2025-12-24T19:25:20.288Z"
+  },
+  {
+    "gameId": "11-3",
+    "week": 11,
+    "homeTeam": 5,
+    "awayTeam": 6,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2025-12-24T19:25:20.288Z"
+  },
+  {
+    "gameId": "11-4",
+    "week": 11,
+    "homeTeam": 7,
+    "awayTeam": 8,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2025-12-24T19:25:20.288Z"
+  },
+  {
+    "gameId": "12-1",
+    "week": 12,
+    "homeTeam": 1,
+    "awayTeam": 2,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2025-12-31T19:25:20.288Z"
+  },
+  {
+    "gameId": "12-2",
+    "week": 12,
+    "homeTeam": 3,
+    "awayTeam": 4,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2025-12-31T19:25:20.288Z"
+  },
+  {
+    "gameId": "12-3",
+    "week": 12,
+    "homeTeam": 5,
+    "awayTeam": 6,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2025-12-31T19:25:20.288Z"
+  },
+  {
+    "gameId": "12-4",
+    "week": 12,
+    "homeTeam": 7,
+    "awayTeam": 8,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2025-12-31T19:25:20.288Z"
+  },
+  {
+    "gameId": "13-1",
+    "week": 13,
+    "homeTeam": 1,
+    "awayTeam": 2,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2026-01-07T19:25:20.288Z"
+  },
+  {
+    "gameId": "13-2",
+    "week": 13,
+    "homeTeam": 3,
+    "awayTeam": 4,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2026-01-07T19:25:20.288Z"
+  },
+  {
+    "gameId": "13-3",
+    "week": 13,
+    "homeTeam": 5,
+    "awayTeam": 6,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2026-01-07T19:25:20.288Z"
+  },
+  {
+    "gameId": "13-4",
+    "week": 13,
+    "homeTeam": 7,
+    "awayTeam": 8,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2026-01-07T19:25:20.288Z"
+  },
+  {
+    "gameId": "14-1",
+    "week": 14,
+    "homeTeam": 1,
+    "awayTeam": 2,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2026-01-14T19:25:20.288Z"
+  },
+  {
+    "gameId": "14-2",
+    "week": 14,
+    "homeTeam": 3,
+    "awayTeam": 4,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2026-01-14T19:25:20.288Z"
+  },
+  {
+    "gameId": "14-3",
+    "week": 14,
+    "homeTeam": 5,
+    "awayTeam": 6,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2026-01-14T19:25:20.288Z"
+  },
+  {
+    "gameId": "14-4",
+    "week": 14,
+    "homeTeam": 7,
+    "awayTeam": 8,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2026-01-14T19:25:20.288Z"
+  },
+  {
+    "gameId": "15-1",
+    "week": 15,
+    "homeTeam": 1,
+    "awayTeam": 2,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2026-01-21T19:25:20.288Z"
+  },
+  {
+    "gameId": "15-2",
+    "week": 15,
+    "homeTeam": 3,
+    "awayTeam": 4,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2026-01-21T19:25:20.288Z"
+  },
+  {
+    "gameId": "15-3",
+    "week": 15,
+    "homeTeam": 5,
+    "awayTeam": 6,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2026-01-21T19:25:20.288Z"
+  },
+  {
+    "gameId": "15-4",
+    "week": 15,
+    "homeTeam": 7,
+    "awayTeam": 8,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2026-01-21T19:25:20.288Z"
+  },
+  {
+    "gameId": "16-1",
+    "week": 16,
+    "homeTeam": 1,
+    "awayTeam": 2,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2026-01-28T19:25:20.288Z"
+  },
+  {
+    "gameId": "16-2",
+    "week": 16,
+    "homeTeam": 3,
+    "awayTeam": 4,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2026-01-28T19:25:20.288Z"
+  },
+  {
+    "gameId": "16-3",
+    "week": 16,
+    "homeTeam": 5,
+    "awayTeam": 6,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2026-01-28T19:25:20.288Z"
+  },
+  {
+    "gameId": "16-4",
+    "week": 16,
+    "homeTeam": 7,
+    "awayTeam": 8,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2026-01-28T19:25:20.288Z"
+  },
+  {
+    "gameId": "17-1",
+    "week": 17,
+    "homeTeam": 1,
+    "awayTeam": 2,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2026-02-04T19:25:20.288Z"
+  },
+  {
+    "gameId": "17-2",
+    "week": 17,
+    "homeTeam": 3,
+    "awayTeam": 4,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2026-02-04T19:25:20.288Z"
+  },
+  {
+    "gameId": "17-3",
+    "week": 17,
+    "homeTeam": 5,
+    "awayTeam": 6,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2026-02-04T19:25:20.288Z"
+  },
+  {
+    "gameId": "17-4",
+    "week": 17,
+    "homeTeam": 7,
+    "awayTeam": 8,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2026-02-04T19:25:20.288Z"
+  },
+  {
+    "gameId": "18-1",
+    "week": 18,
+    "homeTeam": 1,
+    "awayTeam": 2,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2026-02-11T19:25:20.288Z"
+  },
+  {
+    "gameId": "18-2",
+    "week": 18,
+    "homeTeam": 3,
+    "awayTeam": 4,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2026-02-11T19:25:20.288Z"
+  },
+  {
+    "gameId": "18-3",
+    "week": 18,
+    "homeTeam": 5,
+    "awayTeam": 6,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2026-02-11T19:25:20.288Z"
+  },
+  {
+    "gameId": "18-4",
+    "week": 18,
+    "homeTeam": 7,
+    "awayTeam": 8,
+    "homeScore": null,
+    "awayScore": null,
+    "isCompleted": false,
+    "gameDate": "2026-02-11T19:25:20.288Z"
+  }
+]
