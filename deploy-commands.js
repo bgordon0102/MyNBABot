@@ -65,7 +65,8 @@ async function deployCommands() {
       );
       console.log(`✅ Successfully registered ${data.length} guild commands!`);
     } catch (guildError) {
-      console.log('⚠️ Guild deployment failed, trying global deployment...');
+      console.log('⚠️ Guild deployment failed:', guildError.message);
+      console.log('Trying global deployment...');
       // Fallback to global deployment (takes up to 1 hour to sync)
       data = await rest.put(
         Routes.applicationCommands(process.env.CLIENT_ID),
@@ -73,7 +74,7 @@ async function deployCommands() {
       );
       console.log(`✅ Successfully registered ${data.length} global commands!`);
     }
-    
+
     console.log('🏀 LEAGUEbuddy commands are ready to use!');
 
   } catch (error) {

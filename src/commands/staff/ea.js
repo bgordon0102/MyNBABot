@@ -85,46 +85,29 @@ export default {
         const userId = interaction.user.id;
 
         console.log(`🏈 EA Command: ${userId} using /ea ${subcommand}`);
+        console.log(`🔍 Interaction status: replied=${interaction.replied}, deferred=${interaction.deferred}`);
 
-        // For simple commands, reply immediately without deferring
-        if (subcommand === 'status' || subcommand === 'connect' || subcommand === 'disconnect') {
-            try {
-                // Use immediate reply for simple commands
-                const embed = new EmbedBuilder().setColor('#0099ff').setTitle('🏈 Processing EA Sports Command...');
-                await interaction.reply({ embeds: [embed], ephemeral: true });
-                
-                // Then edit the reply with actual content
-                await this.handleSimpleCommand(interaction, subcommand, userId);
-                return;
-            } catch (error) {
-                console.error('EA command failed:', error);
-                try {
-                    await interaction.reply({ content: 'EA Sports command failed. Please try again.', ephemeral: true });
-                } catch (fallbackError) {
-                    console.error('Failed to send error message:', fallbackError);
-                }
-                return;
-            }
-        }
-
-        // For complex commands (sync, draft), use defer pattern
+        // Reply immediately with a loading message to prevent timeout
         try {
-            await interaction.deferReply({ flags: 64 });
+            const loadingEmbed = new EmbedBuilder()
+                .setColor('#FFA500') 
+                .setTitle('🏈 Processing EA Sports Command...')
+                .setDescription(`⚡ Executing \`/ea ${subcommand}\`...`);
+            
+            await interaction.reply({ embeds: [loadingEmbed], flags: 64 });
+            console.log(`✅ Successfully replied to interaction for ${subcommand}`);
         } catch (error) {
-            console.error('Failed to defer EA command reply:', error);
-            try {
-                await interaction.reply({ 
-                    content: 'EA Sports sync command failed to initialize. Please try again.', 
-                    ephemeral: true 
-                });
-            } catch (replyError) {
-                console.error('Failed to send fallback reply:', replyError);
-            }
+            console.error('Failed to reply to EA command:', error);
             return;
         }
 
         try {
             switch (subcommand) {
+                case 'status':
+                case 'connect':
+                case 'disconnect':
+                    await this.handleSimpleCommand(interaction, subcommand, userId);
+                    break;
                 case 'sync':
                     await handleSync(interaction, userId);
                     break;
@@ -144,7 +127,7 @@ export default {
                     await handleDashboard(interaction);
                     break;
                 default:
-                    await interaction.editReply({ content: 'Unknown subcommand.', flags: 64 });
+                    await interaction.editReply({ content: 'Unknown subcommand.' });
             }
         } catch (error) {
             console.error('EA Sports command error:', error);
