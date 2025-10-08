@@ -37,20 +37,20 @@ function validateTeams(teamsList) {
     if (!teamsData) {
         throw new Error('Could not read teams data');
     }
-    
+
     const validTeamNames = teamsData.map(team => team.name);
     const invalidTeams = [];
-    
+
     for (const team of teamsList) {
         if (!validTeamNames.includes(team)) {
             invalidTeams.push(team);
         }
     }
-    
+
     if (invalidTeams.length > 0) {
         throw new Error(`Invalid team names: ${invalidTeams.join(', ')}`);
     }
-    
+
     return true;
 }
 
@@ -85,7 +85,7 @@ export async function execute(interaction) {
         modal.addComponents(eastRow, westRow);
 
         await interaction.showModal(modal);
-        
+
     } catch (error) {
         console.error('Error showing playoff standings modal:', error);
         await interaction.reply({
@@ -102,7 +102,7 @@ export async function handleModal(interaction) {
     try {
         const eastStandings = interaction.fields.getTextInputValue('east_standings').trim();
         const westStandings = interaction.fields.getTextInputValue('west_standings').trim();
-        
+
         // Parse and validate standings
         const parseStandings = (standingsText) => {
             return standingsText.split(',')
@@ -113,10 +113,10 @@ export async function handleModal(interaction) {
                 })
                 .filter(team => team.length > 0);
         };
-        
+
         const eastTeams = parseStandings(eastStandings);
         const westTeams = parseStandings(westStandings);
-        
+
         // Validate team counts
         if (eastTeams.length !== 15) {
             return interaction.reply({
@@ -124,14 +124,14 @@ export async function handleModal(interaction) {
                 ephemeral: true
             });
         }
-        
+
         if (westTeams.length !== 15) {
             return interaction.reply({
                 content: `❌ Western Conference must have exactly 15 teams. You provided ${westTeams.length}.`,
                 ephemeral: true
             });
         }
-        
+
         // Validate team names
         try {
             validateTeams([...eastTeams, ...westTeams]);
@@ -141,7 +141,7 @@ export async function handleModal(interaction) {
                 ephemeral: true
             });
         }
-        
+
         // Check for duplicates
         const allTeams = [...eastTeams, ...westTeams];
         const uniqueTeams = new Set(allTeams);
@@ -151,13 +151,13 @@ export async function handleModal(interaction) {
                 ephemeral: true
             });
         }
-        
+
         // Create playoff bracket
         const bracket = createPlayoffBracket(eastStandings, westStandings);
-        
+
         // Save playoff bracket
         writeJSON(PLAYOFFS_FILE, bracket);
-        
+
         // Also update playoffpicture.json for compatibility
         const playoffPictureData = {
             lastUpdated: new Date().toISOString(),
@@ -174,57 +174,57 @@ export async function handleModal(interaction) {
                 all_standings: bracket.conferences.west.standings
             }
         };
-        
+
         const playoffPictureFile = path.join(DATA_DIR, 'playoffpicture.json');
         writeJSON(playoffPictureFile, playoffPictureData);
-        
+
         // Create success embed
         const embed = new EmbedBuilder()
             .setColor('#00FF00')
             .setTitle('🏀 Playoffs Initialized Successfully!')
             .setDescription('Regular season standings have been recorded and playoff bracket created.')
             .addFields(
-                { 
-                    name: '🏆 Eastern Conference Playoff Teams (1-6)', 
-                    value: eastTeams.slice(0, 6).map((team, i) => `${i + 1}. ${team}`).join('\n'), 
-                    inline: true 
+                {
+                    name: '🏆 Eastern Conference Playoff Teams (1-6)',
+                    value: eastTeams.slice(0, 6).map((team, i) => `${i + 1}. ${team}`).join('\n'),
+                    inline: true
                 },
-                { 
-                    name: '🏆 Western Conference Playoff Teams (1-6)', 
-                    value: westTeams.slice(0, 6).map((team, i) => `${i + 1}. ${team}`).join('\n'), 
-                    inline: true 
+                {
+                    name: '🏆 Western Conference Playoff Teams (1-6)',
+                    value: westTeams.slice(0, 6).map((team, i) => `${i + 1}. ${team}`).join('\n'),
+                    inline: true
                 },
-                { 
-                    name: '\u200B', 
-                    value: '\u200B', 
-                    inline: false 
+                {
+                    name: '\u200B',
+                    value: '\u200B',
+                    inline: false
                 },
-                { 
-                    name: '🎯 Eastern Conference Play-In (7-10)', 
-                    value: eastTeams.slice(6, 10).map((team, i) => `${i + 7}. ${team}`).join('\n'), 
-                    inline: true 
+                {
+                    name: '🎯 Eastern Conference Play-In (7-10)',
+                    value: eastTeams.slice(6, 10).map((team, i) => `${i + 7}. ${team}`).join('\n'),
+                    inline: true
                 },
-                { 
-                    name: '🎯 Western Conference Play-In (7-10)', 
-                    value: westTeams.slice(6, 10).map((team, i) => `${i + 7}. ${team}`).join('\n'), 
-                    inline: true 
+                {
+                    name: '🎯 Western Conference Play-In (7-10)',
+                    value: westTeams.slice(6, 10).map((team, i) => `${i + 7}. ${team}`).join('\n'),
+                    inline: true
                 },
-                { 
-                    name: '\u200B', 
-                    value: '\u200B', 
-                    inline: false 
+                {
+                    name: '\u200B',
+                    value: '\u200B',
+                    inline: false
                 },
-                { 
-                    name: '📋 Next Steps', 
-                    value: '• Use `/playoffs` command to manage tournament\n• Start with Play-In Tournament games\n• Seeds 1-6 await Play-In results', 
-                    inline: false 
+                {
+                    name: '📋 Next Steps',
+                    value: '• Use `/playoffs` command to manage tournament\n• Start with Play-In Tournament games\n• Seeds 1-6 await Play-In results',
+                    inline: false
                 }
             )
             .setFooter({ text: 'Playoff bracket saved to data/playoffs.json' })
             .setTimestamp();
-        
+
         await interaction.reply({ embeds: [embed] });
-        
+
     } catch (error) {
         console.error('Error processing playoff standings:', error);
         await interaction.reply({

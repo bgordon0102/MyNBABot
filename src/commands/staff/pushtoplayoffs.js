@@ -37,40 +37,40 @@ function areAllWeek18GamesComplete() {
     const scheduleData = readJSON(SCHEDULE_FILE);
     const scoresData = readJSON(SCORES_FILE);
     const seasonData = readJSON(SEASON_FILE);
-    
+
     if (!scheduleData || !scoresData || !seasonData) {
         return { complete: false, reason: 'Missing data files' };
     }
-    
+
     // Check if we're at week 18 or later
     if (seasonData.currentWeek < 18) {
         return { complete: false, reason: `Current week is ${seasonData.currentWeek}, must be week 18 or later` };
     }
-    
+
     // Find all Week 18 games
     const week18Games = scheduleData.filter(game => game.week === 18);
-    
+
     if (week18Games.length === 0) {
         return { complete: false, reason: 'No Week 18 games found in schedule' };
     }
-    
+
     // Check if all Week 18 games have scores submitted and approved
     for (const game of week18Games) {
-        const gameScore = scoresData.find(score => 
-            score.week === 18 && 
-            score.homeTeam === game.homeTeam && 
+        const gameScore = scoresData.find(score =>
+            score.week === 18 &&
+            score.homeTeam === game.homeTeam &&
             score.awayTeam === game.awayTeam
         );
-        
+
         if (!gameScore) {
             return { complete: false, reason: `Missing score for ${game.awayTeam} @ ${game.homeTeam}` };
         }
-        
+
         if (!gameScore.approved) {
             return { complete: false, reason: `Score not approved for ${game.awayTeam} @ ${game.homeTeam}` };
         }
     }
-    
+
     return { complete: true, totalGames: week18Games.length };
 }
 
@@ -86,18 +86,18 @@ function createPlayoffBracket(eastStandings, westStandings) {
             })
             .filter(team => team.length > 0);
     };
-    
+
     const eastTeams = parseStandings(eastStandings);
     const westTeams = parseStandings(westStandings);
-    
+
     if (eastTeams.length !== 15) {
         throw new Error(`Eastern Conference must have exactly 15 teams, got ${eastTeams.length}`);
     }
-    
+
     if (westTeams.length !== 15) {
         throw new Error(`Western Conference must have exactly 15 teams, got ${westTeams.length}`);
     }
-    
+
     // Create bracket structure
     const bracket = {
         createdAt: new Date().toISOString(),
@@ -136,7 +136,7 @@ function createPlayoffBracket(eastStandings, westStandings) {
         },
         status: 'playin_ready' // playin_ready -> playin_complete -> playoffs_active -> complete
     };
-    
+
     return bracket;
 }
 
@@ -154,10 +154,10 @@ export async function execute(interaction) {
                 ephemeral: true
             });
         }
-        
+
         // Check if all Week 18 games are complete
         const gameCheck = areAllWeek18GamesComplete();
-        
+
         if (!gameCheck.complete) {
             const embed = new EmbedBuilder()
                 .setColor('#FF0000')
@@ -166,10 +166,10 @@ export async function execute(interaction) {
                 .addFields(
                     { name: 'Issue', value: gameCheck.reason, inline: false }
                 );
-                
+
             return interaction.reply({ embeds: [embed], ephemeral: true });
         }
-        
+
         // Check if playoffs already exist
         if (fs.existsSync(PLAYOFFS_FILE)) {
             const existingPlayoffs = readJSON(PLAYOFFS_FILE);
@@ -182,11 +182,11 @@ export async function execute(interaction) {
                         { name: 'Status', value: existingPlayoffs.status || 'Unknown', inline: true },
                         { name: 'Created', value: existingPlayoffs.createdAt ? new Date(existingPlayoffs.createdAt).toLocaleDateString() : 'Unknown', inline: true }
                     );
-                    
+
                 return interaction.reply({ embeds: [embed], ephemeral: true });
             }
         }
-        
+
         // Show success embed with button to enter standings
         const embed = new EmbedBuilder()
             .setColor('#00FF00')
@@ -197,7 +197,7 @@ export async function execute(interaction) {
                 { name: '📝 Next Step', value: 'Enter final standings for both conferences', inline: false },
                 { name: '📋 Format', value: 'Enter teams in order: "1. Team Name, 2. Team Name, ..."', inline: false }
             );
-        
+
         const button = new ActionRowBuilder()
             .addComponents(
                 new ButtonBuilder()
@@ -206,9 +206,9 @@ export async function execute(interaction) {
                     .setStyle(ButtonStyle.Primary)
                     .setEmoji('📊')
             );
-        
+
         await interaction.reply({ embeds: [embed], components: [button] });
-        
+
     } catch (error) {
         console.error('Error in pushtoplayoffs command:', error);
         await interaction.reply({

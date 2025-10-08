@@ -78,10 +78,10 @@ export const data = new SlashCommandBuilder()
 
 export async function execute(interaction) {
     await interaction.deferReply({ ephemeral: true });
-    
+
     // Check if playoffs have been finalized
     const playoffData = getPlayoffData();
-    
+
     if (playoffData && playoffData.regular_season_complete) {
         // Show finalized playoff bracket
         return showFinalizedPlayoffs(interaction, playoffData);
@@ -94,40 +94,40 @@ export async function execute(interaction) {
 // Show finalized playoff bracket
 async function showFinalizedPlayoffs(interaction, playoffData) {
     const { conferences, playin_tournament, status } = playoffData;
-    
+
     // Helper function to format playoff teams
     function formatPlayoffTeams(teams) {
         return teams.map((team, idx) => `${idx + 1}. ${team}`).join('\n') || 'TBD';
     }
-    
+
     // Helper function to format play-in teams
     function formatPlayinTeams(teams) {
         return teams.map((team, idx) => `${idx + 7}. ${team}`).join('\n') || 'TBD';
     }
-    
+
     // Helper function to format play-in matchups
     function formatPlayinMatchups(conf) {
         const tourney = playin_tournament[conf];
         let matchups = [];
-        
+
         if (tourney["7v8"]) {
             const match = tourney["7v8"];
             matchups.push(`7️⃣ ${match.higher_seed} vs 8️⃣ ${match.lower_seed} ${match.winner ? `✅ **${match.winner}**` : ''}`);
         }
-        
+
         if (tourney["9v10"]) {
             const match = tourney["9v10"];
             matchups.push(`9️⃣ ${match.higher_seed} vs 🔟 ${match.lower_seed} ${match.winner ? `✅ **${match.winner}**` : ''}`);
         }
-        
+
         if (tourney["loser_7v8_vs_winner_9v10"] && tourney["loser_7v8_vs_winner_9v10"].team1) {
             const match = tourney["loser_7v8_vs_winner_9v10"];
             matchups.push(`${match.team1} vs ${match.team2} ${match.winner ? `✅ **${match.winner}**` : ''}`);
         }
-        
+
         return matchups.join('\n') || 'Matchups TBD';
     }
-    
+
     const statusEmoji = {
         'playin_ready': '🎯',
         'playin_active': '⚡',
@@ -135,29 +135,29 @@ async function showFinalizedPlayoffs(interaction, playoffData) {
         'playoffs_active': '🏀',
         'complete': '🏆'
     };
-    
+
     const eastEmbed = new EmbedBuilder()
         .setTitle(`${statusEmoji[status] || '🏀'} Eastern Conference - ${status.replace('_', ' ').toUpperCase()}`)
         .addFields(
-            { 
-                name: '🏆 Playoff Teams (Seeds 1-6)', 
-                value: formatPlayoffTeams(conferences.east.playoffs), 
-                inline: true 
+            {
+                name: '🏆 Playoff Teams (Seeds 1-6)',
+                value: formatPlayoffTeams(conferences.east.playoffs),
+                inline: true
             },
-            { 
-                name: '🎯 Play-In Teams (Seeds 7-10)', 
-                value: formatPlayinTeams(conferences.east.playin), 
-                inline: true 
+            {
+                name: '🎯 Play-In Teams (Seeds 7-10)',
+                value: formatPlayinTeams(conferences.east.playin),
+                inline: true
             },
-            { 
-                name: '\u200B', 
-                value: '\u200B', 
-                inline: false 
+            {
+                name: '\u200B',
+                value: '\u200B',
+                inline: false
             },
-            { 
-                name: 'Play-In Tournament Matchups', 
-                value: formatPlayinMatchups('east'), 
-                inline: false 
+            {
+                name: 'Play-In Tournament Matchups',
+                value: formatPlayinMatchups('east'),
+                inline: false
             }
         )
         .setColor(0x1D428A)
@@ -166,25 +166,25 @@ async function showFinalizedPlayoffs(interaction, playoffData) {
     const westEmbed = new EmbedBuilder()
         .setTitle(`${statusEmoji[status] || '🏀'} Western Conference - ${status.replace('_', ' ').toUpperCase()}`)
         .addFields(
-            { 
-                name: '🏆 Playoff Teams (Seeds 1-6)', 
-                value: formatPlayoffTeams(conferences.west.playoffs), 
-                inline: true 
+            {
+                name: '🏆 Playoff Teams (Seeds 1-6)',
+                value: formatPlayoffTeams(conferences.west.playoffs),
+                inline: true
             },
-            { 
-                name: '🎯 Play-In Teams (Seeds 7-10)', 
-                value: formatPlayinTeams(conferences.west.playin), 
-                inline: true 
+            {
+                name: '🎯 Play-In Teams (Seeds 7-10)',
+                value: formatPlayinTeams(conferences.west.playin),
+                inline: true
             },
-            { 
-                name: '\u200B', 
-                value: '\u200B', 
-                inline: false 
+            {
+                name: '\u200B',
+                value: '\u200B',
+                inline: false
             },
-            { 
-                name: 'Play-In Tournament Matchups', 
-                value: formatPlayinMatchups('west'), 
-                inline: false 
+            {
+                name: 'Play-In Tournament Matchups',
+                value: formatPlayinMatchups('west'),
+                inline: false
             }
         )
         .setColor(0xE03A3E)
@@ -199,14 +199,14 @@ async function showCurrentProjection(interaction) {
     if (!standings) {
         return await interaction.editReply('Standings data not available.');
     }
-    
+
     const east = getPlayoffPicture(standings.east);
     const west = getPlayoffPicture(standings.west);
-    
+
     function getTeamName(arr, idx) {
         return arr[idx] ? arr[idx].team : 'TBD';
     }
-    
+
     // Playoff matchups: 1 vs 8, 2 vs 7, 3 vs 6, 4 vs 5 (NBA format)
     function playoffMatchups(conf) {
         return [
@@ -216,7 +216,7 @@ async function showCurrentProjection(interaction) {
             `4️⃣ ${getTeamName(conf, 3)} vs 5️⃣ ${getTeamName(conf, 4)}`
         ].join('\n');
     }
-    
+
     // Play-In matchups: 7 vs 10, 8 vs 9
     function playinMatchups(conf) {
         return [
