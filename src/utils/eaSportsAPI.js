@@ -404,6 +404,7 @@ class EASportsAPI {
                 console.log('✅ WAL authentication successful');
 
                 // Get leagues using Mobile_GetMyLeagues command (like snallabot)
+
                 const cfmResponse = await axios.post(
                     `https://wal2.tools.gos.bio-iad.ea.com/wal/mca/Process/${sessionKey}`,
                     {
@@ -437,6 +438,8 @@ class EASportsAPI {
                     }
                 );
 
+                // Deep debug: log full raw WAL response
+                console.log('[EA DEBUG] WAL/Blaze raw response:', JSON.stringify(cfmResponse.data, null, 2));
                 console.log('✅ Got CFM leagues via WAL system');
 
                 // Parse WAL response format (like snallabot)
@@ -444,7 +447,7 @@ class EASportsAPI {
                 console.log(`🏆 Found ${walResponse.length} Connected Franchise Mode leagues via WAL`);
 
                 walResponse.forEach(league => {
-                    console.log(`  🏈 CFM League: ${league.leagueName} | ID: ${league.leagueId} | Year: ${league.calendarYear}`);
+                    console.log(`[EA DEBUG] League: Name="${league.leagueName}" | ID=${league.leagueId} | Year=${league.calendarYear} | Members=${league.numMembers} | Platform=${league.platform || 'Unknown'}`);
                 });
 
                 if (walResponse.length > 0) {

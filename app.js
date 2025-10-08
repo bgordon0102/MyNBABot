@@ -1,6 +1,7 @@
 console.log('DEBUG: Bot startup log from app.js');
 import { Client, GatewayIntentBits, Collection } from 'discord.js';
 import { fileURLToPath, pathToFileURL } from 'url';
+import { refreshAllEaTokens } from './src/utils/eaTokenRefresher.js';
 import { dirname, join } from 'path';
 import { readdirSync } from 'fs';
 import dotenv from 'dotenv';
@@ -285,6 +286,13 @@ process.on('unhandledRejection', error => {
 
 // Load commands and interactions, then start the bot
 async function startBot() {
+  // Refresh EA tokens on startup
+  refreshAllEaTokens();
+
+  // Optionally, refresh every 3 hours
+  setInterval(() => {
+    refreshAllEaTokens();
+  }, 3 * 60 * 60 * 1000); // every 3 hours
   try {
     console.log('🔄 Loading LEAGUEbuddy commands...');
     await loadCommands();
