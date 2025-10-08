@@ -37,6 +37,17 @@ export default {
             subcommand
                 .setName('disconnect')
                 .setDescription('Disconnect your EA Sports account')
+        )
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName('submit')
+                .setDescription('Submit the EA Sports callback URL to complete connection')
+                .addStringOption(option =>
+                    option
+                        .setName('url')
+                        .setDescription('The URL from the blank EA page (starts with http://127.0.0.1/success)')
+                        .setRequired(true)
+                )
         ),
 
     async execute(interaction) {
@@ -59,6 +70,9 @@ export default {
                     break;
                 case 'disconnect':
                     await handleDisconnect(interaction, userId);
+                    break;
+                case 'submit':
+                    await handleSubmit(interaction, userId);
                     break;
                 default:
                     await interaction.reply({ content: 'Unknown subcommand.', ephemeral: true });
@@ -94,42 +108,15 @@ async function handleConnect(interaction, userId) {
         .setTitle('🔗 Connect to EA Sports')
         .setDescription('**Follow these steps to connect your EA Sports account (exactly like snallabot):**')
         .addFields(
-            { name: '📋 Instructions', value: '1. A browser window will open with setup instructions\n2. Click "Login to EA" and use your **normal EA account credentials**\n3. After login, you\'ll see a blank page with a URL starting with `http://127.0.0.1`\n4. **This is normal and expected!**\n5. Copy the entire URL and paste it in the setup page\n6. Click "Submit URL" to complete the connection' },
-            { name: '🔒 Security Note', value: 'LEAGUEbuddy does **NOT** store your EA credentials. It only stores secure authentication tokens.' },
-            { name: '⚠️ Important', value: 'Each EA login URL can only be used once. If it fails, start over.' }
+            { name: '📋 Instructions', value: '1. **Click the link below** to start EA Sports login\n2. Use your **normal EA account credentials** \n3. After login, you\'ll see a blank page with a URL starting with `http://127.0.0.1/success`\n4. **This blank page is normal and expected!**\n5. Copy the **entire URL** from your address bar\n6. Paste it back here using `/ea submit [url]`' },
+            { name: '🔗 EA Sports Login', value: '[**Click Here to Login to EA Sports**](https://accounts.ea.com/connect/auth?hide_create=true&release_type=prod&response_type=code&redirect_uri=http://127.0.0.1/success&client_id=MCA_25_COMP_APP&machineProfileKey=444d362e8e067fe2&authentication_source=317239)' },
+            { name: '🔒 Security Note', value: 'LEAGUEbuddy does **NOT** store your EA credentials. Only secure OAuth tokens.' },
+            { name: '⚠️ Important', value: 'Each login URL can only be used once. If it fails, run `/ea connect` again.' }
         )
-        .setFooter({ text: 'Opening EA Sports setup page...' });
+        .setFooter({ text: 'Click the login link above to start!' });
 
     await interaction.reply({ embeds: [embed], ephemeral: true });
 
-    try {
-        // Start the OAuth flow exactly like snallabot
-        const result = await eaAPI.startAuthFlow(userId);
-        
-        if (result.success) {
-            const successEmbed = new EmbedBuilder()
-                .setColor('#00ff00')
-                .setTitle('✅ Successfully Connected!')
-                .setDescription(result.message)
-                .addFields(
-                    { name: 'What\'s Next?', value: '• Use `/ea sync` to import your league data\n• Use `/ea draft` to import draft classes\n• Use `/ea status` to check your connection' }
-                );
-
-            await interaction.followUp({ embeds: [successEmbed], ephemeral: true });
-        }
-    } catch (error) {
-        console.error('EA connection error:', error);
-        
-        const errorEmbed = new EmbedBuilder()
-            .setColor('#ff0000')
-            .setTitle('❌ Connection Failed')
-            .setDescription('Failed to connect to EA Sports. Please try again.')
-            .addFields(
-                { name: 'Common Issues', value: '• Make sure you completed the login process\n• Check that you didn\'t close the browser too early\n• Verify your EA account credentials are correct' }
-            );
-
-        await interaction.followUp({ embeds: [errorEmbed], ephemeral: true });
-    }
 }
 
 async function handleStatus(interaction, userId) {
@@ -266,4 +253,63 @@ async function handleDisconnect(interaction, userId) {
         );
 
     await interaction.reply({ embeds: [embed], ephemeral: true });
+}
+
+async function handleSubmit(interaction, userId) {
+    const rawUrl = interaction.options.getString('url');
+    
+    if (!rawUrl || !rawUrl.includes('127.0.0.1/success')) {
+        const embed = new EmbedBuilder()
+            .setColor('#ff0000')
+            .setTitle('❌ Invalid URL')
+            .setDescription('Please provide the complete URL from the EA Sports redirect page.')
+            .addFields(
+                { name: 'Expected Format', value: '`http://127.0.0.1/success?code=ABC123...`' },
+                { name: 'Try Again', value: 'Use `/ea connect` to get a new login link.' }
+            );
+        
+        await interaction.reply({ embeds: [embed], ephemeral: true });
+        return;
+    }
+
+    await interaction.deferReply({ ephemeral: true });
+
+    try {
+        // Extract the authorization code from the URL
+        const searchParams = rawUrl.substring(rawUrl.indexOf("?"));
+        const eaCodeParams = new URLSearchParams(searchParams);
+        const code = eaCodeParams.get("code");
+        
+        if (!code) {
+            throw new Error('No authorization code found in URL');
+        }
+
+        // Exchange code for tokens
+        const token = await eaAPI.exchangeCodeForToken(code);
+        eaAPI.tokens.set(userId, token);
+        eaAPI.saveTokens();
+
+        const successEmbed = new EmbedBuilder()
+            .setColor('#00ff00')
+            .setTitle('✅ Successfully Connected to EA Sports!')
+            .setDescription('Your EA Sports account is now linked to LEAGUEbuddy!')
+            .addFields(
+                { name: 'What\'s Next?', value: '• Use `/ea sync` to import your league data\n• Use `/ea draft` to import draft classes\n• Use `/ea status` to check your connection' }
+            );
+
+        await interaction.editReply({ embeds: [successEmbed] });
+    } catch (error) {
+        console.error('EA token exchange error:', error);
+        
+        const errorEmbed = new EmbedBuilder()
+            .setColor('#ff0000')
+            .setTitle('❌ Connection Failed')
+            .setDescription('Failed to connect to EA Sports. Please try again.')
+            .addFields(
+                { name: 'Error Details', value: error.message || 'Unknown error occurred' },
+                { name: 'Try Again', value: 'Use `/ea connect` to get a new login link.' }
+            );
+
+        await interaction.editReply({ embeds: [errorEmbed] });
+    }
 }
