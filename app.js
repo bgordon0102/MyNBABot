@@ -273,18 +273,14 @@ client.on('interactionCreate', async interaction => {
     console.log(`✅ ${interaction.user.username} successfully used /${interaction.commandName}`);
   } catch (error) {
     console.error(`❌ Error executing ${interaction.commandName}:`, error);
-
     const errorMessage = 'There was an error while executing this command!';
-
     try {
-      if (interaction.replied || interaction.deferred) {
-        await interaction.editReply({ content: errorMessage });
-      } else {
+      if (!interaction.replied && !interaction.deferred) {
         await interaction.reply({
           content: errorMessage,
           flags: 64 // MessageFlags.Ephemeral
         });
-      }
+      } // else: do not send another reply/edit, command handler should have already responded
     } catch (replyError) {
       console.error('❌ Failed to send error message:', replyError);
     }

@@ -2,6 +2,7 @@ import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
 import EASportsAPI from '../../utils/eaSportsAPI.js';
 import { DataManager } from '../../utils/dataManager.js';
 import eaExportManager from '../../utils/eaExportManager.js';
+import { fetchEAData } from "../../utils/ea.js"; // adjust import to your EA fetch logic
 
 const eaAPI = new EASportsAPI();
 const maddenDataManager = new DataManager('madden'); // Use Madden-specific data folder
@@ -94,57 +95,63 @@ const eaSyncCommand = {
         ),
 
     async execute(interaction) {
-        // Always defer reply IMMEDIATELY to avoid Discord timeout errors
-        await interaction.deferReply({ ephemeral: true });
-        // Timestamped debug log at start of execute
-        const startTime = Date.now();
-        console.log(`[EA DEBUG] execute() called at ${new Date(startTime).toISOString()} for interaction ${interaction.id}`);
-        const deferTime = Date.now();
-        console.log(`[EA DEBUG] deferReply completed at ${new Date(deferTime).toISOString()} (elapsed: ${deferTime - startTime}ms)`);
-        // Get command info first
-        const subcommand = interaction.options.getSubcommand();
-        const userId = interaction.user.id;
+        // Defer the reply at the start (ephemeral)
+        await interaction.deferReply({ flags: 64 });
 
-        console.log(`🏈 EA Command: ${userId} using /ea ${subcommand}`);
-        console.log(`🔍 Interaction status: replied=${interaction.replied}, deferred=${interaction.deferred}`);
-
-        // Execute the command - wrap everything to prevent errors from bubbling to app.js
         try {
-            switch (subcommand) {
-                case 'status':
-                case 'connect':
-                case 'disconnect':
-                    await this.handleSimpleCommand(interaction, subcommand, userId);
-                    break;
-                case 'sync':
-                    await handleSync(interaction, userId);
-                    break;
-                case 'draft':
-                    await handleDraft(interaction, userId);
-                    break;
-                case 'submit':
-                    await handleSubmit(interaction, userId);
-                    break;
-                case 'refresh':
-                    await handleRefresh(interaction, userId);
-                    break;
-                case 'setleague':
-                    await handleSetLeague(interaction, userId);
-                    break;
-                case 'dashboard':
-                    await handleDashboard(interaction);
-                    break;
-                default:
-                    await interaction.editReply({ content: 'Unknown subcommand.' });
+            // Timestamped debug log at start of execute
+            const startTime = Date.now();
+            console.log(`[EA DEBUG] execute() called at ${new Date(startTime).toISOString()} for interaction ${interaction.id}`);
+            const deferTime = Date.now();
+            console.log(`[EA DEBUG] deferReply completed at ${new Date(deferTime).toISOString()} (elapsed: ${deferTime - startTime}ms)`);
+            // Get command info first
+            const subcommand = interaction.options.getSubcommand();
+            const userId = interaction.user.id;
+
+            console.log(`🏈 EA Command: ${userId} using /ea ${subcommand}`);
+            console.log(`🔍 Interaction status: replied=${interaction.replied}, deferred=${interaction.deferred}`);
+
+            // Execute the command - wrap everything to prevent errors from bubbling to app.js
+            try {
+                switch (subcommand) {
+                    case 'status':
+                    case 'connect':
+                    case 'disconnect':
+                        await this.handleSimpleCommand(interaction, subcommand, userId);
+                        break;
+                    case 'sync':
+                        await handleSync(interaction, userId);
+                        break;
+                    case 'draft':
+                        await handleDraft(interaction, userId);
+                        break;
+                    case 'submit':
+                        await handleSubmit(interaction, userId);
+                        break;
+                    case 'refresh':
+                        await handleRefresh(interaction, userId);
+                        break;
+                    case 'setleague':
+                        await handleSetLeague(interaction, userId);
+                        break;
+                    case 'dashboard':
+                        await handleDashboard(interaction);
+                        break;
+                    default:
+                        await interaction.editReply({ content: 'Unknown subcommand.' });
+                }
+            } catch (error) {
+                console.error('EA Sports command error:', error);
+                try {
+                    const errorMessage = `EA Sports command failed: ${error.message || 'Unknown error'}`;
+                    await interaction.editReply({ content: errorMessage });
+                } catch (replyError) {
+                    console.error('Failed to send error reply:', replyError);
+                }
             }
         } catch (error) {
-            console.error('EA Sports command error:', error);
-            try {
-                const errorMessage = `EA Sports command failed: ${error.message || 'Unknown error'}`;
-                await interaction.editReply({ content: errorMessage });
-            } catch (replyError) {
-                console.error('Failed to send error reply:', replyError);
-            }
+            console.error('Error in /dev-ea command:', error);
+            await interaction.editReply({ content: 'An unexpected error occurred. Please try again later.' });
         }
     },
 
@@ -234,10 +241,8 @@ async function handleStatus(interaction, userId) {
 }
 
 async function handleSync(interaction, userId) {
-    // Use eaExportManager for modular, batched, cached EA API calls
     let replyContent = '';
     try {
-        // Only use editReply for all further responses
         const loadingEmbed = new EmbedBuilder()
             .setTitle('Syncing EA Sports League...')
             .setDescription('Importing league, teams, rosters, schedule, playoffs, free agents, and all stats. This may take a moment.')
@@ -245,6 +250,10 @@ async function handleSync(interaction, userId) {
         await interaction.editReply({ embeds: [loadingEmbed] });
 
         const token = await eaAPI.getValidToken(userId);
+        if (!token || !token.userId) {
+            await interaction.editReply({ content: "❌ No valid EA Sports token found. Please use `/dev-ea connect` to link your account." });
+            return;
+        }
         const leagueId = interaction.options.getString('league');
         if (!leagueId) {
             replyContent = 'Please specify a league ID.';
@@ -283,9 +292,16 @@ async function handleSync(interaction, userId) {
                 { name: 'Stats', value: statTypes.map(st => `${st}: ${Object.keys(stats[st]).length} weeks`).join(', ') }
             );
         await interaction.editReply({ embeds: [embed] });
+        await interaction.editReply({ content: '✅ EA data loaded' });
+        return;
     } catch (err) {
         replyContent = `Error syncing league data: ${err && err.message ? err.message : err}`;
-        await interaction.editReply({ content: replyContent });
+        if (!interaction.replied && !interaction.deferred) {
+            await interaction.reply({ content: replyContent, ephemeral: true });
+        } else {
+            await interaction.editReply({ content: replyContent });
+        }
+        return;
     }
 }
 

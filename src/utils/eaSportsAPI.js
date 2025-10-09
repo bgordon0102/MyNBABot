@@ -264,338 +264,165 @@ class EASportsAPI {
         }
     }
 
-    async fetchLeagueInfo(userId, leagueId) {
-        try {
-            const token = await this.getValidToken(userId);
-            EASportsAPI.logToFile(`[EA DEBUG] fetchLeagueInfo called for userId: ${userId}, leagueId: ${leagueId}, token: ${JSON.stringify(token)}`);
-            const sessionKey = await this.getSessionKey(token);
-            EASportsAPI.logToFile(`[EA DEBUG] fetchLeagueInfo sessionKey: ${sessionKey}`);
-            const payload = {
-                apiVersion: 2,
-                clientDevice: 3,
-                requestInfo: JSON.stringify({
-                    messageExpirationTime: Math.floor(Date.now() / 1000) + 300,
-                    deviceId: 'LEAGUEbuddy-MCA',
-                    commandName: 'Mobile_GetLeague',
-                    componentId: 2060,
-                    commandId: 802,
-                    ipAddress: '127.0.0.1',
-                    requestPayload: { leagueId, includeTeamData: false },
-                    componentName: 'careermode',
-                    messageAuthData: {
-                        authCode: sessionKey,
-                        authData: token.access_token,
-                        authType: 17039362
+    // Persona cache and fallback
+    static personaCache = new Map();
+    static defaultPersona = { id: 'unknown', name: 'Unknown', leagues: [] };
+    static getPersona(discordUserId) {
+        return EASportsAPI.personaCache.get(discordUserId) || EASportsAPI.defaultPersona;
+    }
+    static async walBlazeRequest(endpoint, payload, token, sessionKey, retries = 3, backoff = 200) {
+        for (let attempt = 0; attempt < retries; attempt++) {
+            try {
+                const now = Math.floor(Date.now() / 1000);
+                const requestPayload = {
+                    deviceId: 'LEAGUEbuddy',
+                    componentId: 'LEAGUEbuddy',
+                    componentName: 'LEAGUEbuddy',
+                    messageAuthData: token.access_token,
+                    messageExpirationTime: now + 300,
+                    authData: token.access_token,
+                    authCode: sessionKey,
+                    requestPayload: JSON.stringify(payload || {})
+                };
+                const response = await axios.post(endpoint, requestPayload, {
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-BLAZE-ID': 'madden-2026-ps5-gen5',
+                        'X-BLAZE-VOID-RESP': 'XML',
+                        'X-Application-Key': 'MADDEN26-MCA',
+                        'Content-Type': 'application/json',
+                        'User-Agent': 'Dalvik/2.1.0 (Linux; U; Android 13; sdk_gphone_x86_64 Build/TE1A.220922.031)'
                     }
-                })
-            };
-            const headers = {
-                'Accept': 'application/json',
-                'X-BLAZE-ID': 'madden-2026-ps5-gen5',
-                'X-BLAZE-VOID-RESP': 'XML',
-                'X-Application-Key': 'MADDEN26-MCA',
-                'Content-Type': 'application/json',
-                'User-Agent': 'Dalvik/2.1.0 (Linux; U; Android 13; sdk_gphone_x86_64 Build/TE1A.220922.031)'
-            };
-            const response = await axios.post(
-                `https://wal3.tools.gos.bio-iad.ea.com/wal/mca/Process/${sessionKey}`,
-                payload,
-                { headers }
-            );
-            EASportsAPI.logToFile(`[EA DEBUG] fetchLeagueInfo response: ${JSON.stringify(response.data)}`);
-            return response.data;
-        } catch (error) {
-            EASportsAPI.logToFile(`[EA ERROR] fetchLeagueInfo failed: ${error.message}`);
-            throw error;
+                });
+                return response.data;
+            } catch (err) {
+                if (attempt < retries - 1 && (err.response?.status === 429 || err.response?.status === 500 || err.code === 'ECONNRESET')) {
+                    await new Promise(res => setTimeout(res, backoff * Math.pow(2, attempt)));
+                    continue;
+                }
+                throw err;
+            }
         }
     }
-
+    async fetchAllTeamRosters(userId, leagueId, teamIds, token, sessionKey) {
+        const results = {};
+        const concurrency = 3;
+        let idx = 0;
+        async function nextBatch() {
+            const batch = teamIds.slice(idx, idx + concurrency);
+            await Promise.all(batch.map(async teamId => {
+                results[teamId] = await EASportsAPI.walBlazeRequest('Mobile_GetTeamRoster', { teamId, leagueId }, token, sessionKey);
+            }));
+            idx += concurrency;
+            if (idx < teamIds.length) {
+                await new Promise(res => setTimeout(res, 100)); // 100ms stagger
+                await nextBatch();
+            }
+        }
+        await nextBatch();
+        return results;
+    }
     async fetchTeams(userId, leagueId) {
-        try {
-            const token = await this.getValidToken(userId);
-            EASportsAPI.logToFile(`[EA DEBUG] fetchTeams called for userId: ${userId}, leagueId: ${leagueId}, token: ${JSON.stringify(token)}`);
-            const sessionKey = await this.getSessionKey(token);
-            EASportsAPI.logToFile(`[EA DEBUG] fetchTeams sessionKey: ${sessionKey}`);
-            const payload = {
-                apiVersion: 2,
-                clientDevice: 3,
-                requestInfo: JSON.stringify({
-                    messageExpirationTime: Math.floor(Date.now() / 1000) + 300,
-                    deviceId: 'LEAGUEbuddy-MCA',
-                    commandName: 'Mobile_GetLeague',
-                    componentId: 2060,
-                    commandId: 802,
-                    ipAddress: '127.0.0.1',
-                    requestPayload: { leagueId, includeTeamData: true },
-                    componentName: 'careermode',
-                    messageAuthData: {
-                        authCode: sessionKey,
-                        authData: token.access_token,
-                        authType: 17039362
-                    }
-                })
-            };
-            const headers = {
-                'Accept': 'application/json',
-                'X-BLAZE-ID': 'madden-2026-ps5-gen5',
-                'X-BLAZE-VOID-RESP': 'XML',
-                'X-Application-Key': 'MADDEN26-MCA',
-                'Content-Type': 'application/json',
-                'User-Agent': 'Dalvik/2.1.0 (Linux; U; Android 13; sdk_gphone_x86_64 Build/TE1A.220922.031)'
-            };
-            const response = await axios.post(
-                `https://wal3.tools.gos.bio-iad.ea.com/wal/mca/Process/${sessionKey}`,
-                payload,
-                { headers }
-            );
-            EASportsAPI.logToFile(`[EA DEBUG] fetchTeams response: ${JSON.stringify(response.data)}`);
-            return response.data;
-        } catch (error) {
-            EASportsAPI.logToFile(`[EA ERROR] fetchTeams failed: ${error.message}`);
-            throw error;
+        const token = await this.getValidToken(userId);
+        const persona = EASportsAPI.getPersona(userId);
+        if (persona === EASportsAPI.defaultPersona) {
+            EASportsAPI.logToFile(`[EA DEBUG] Persona fallback used for userId: ${userId}`);
         }
+        EASportsAPI.logToFile(`[EA DEBUG] fetchTeams called for userId: ${userId}, leagueId: ${leagueId}, token: ${JSON.stringify(token)}, persona: ${JSON.stringify(persona)}`);
+        const sessionKey = await this.getSessionKey(token);
+        const payload = { leagueId, includeTeamData: true };
+        const result = await EASportsAPI.walBlazeRequest('https://wal3.tools.gos.bio-iad.ea.com/wal/mca/Process/' + sessionKey, payload, token, sessionKey);
+        if (persona === EASportsAPI.defaultPersona) {
+            result.personaStatus = 'fallback';
+        }
+        return result;
     }
-
     async fetchTeamRoster(userId, leagueId, teamId) {
-        try {
-            const token = await this.getValidToken(userId);
-            EASportsAPI.logToFile(`[EA DEBUG] fetchTeamRoster called for userId: ${userId}, leagueId: ${leagueId}, teamId: ${teamId}, token: ${JSON.stringify(token)}`);
-            const sessionKey = await this.getSessionKey(token);
-            EASportsAPI.logToFile(`[EA DEBUG] fetchTeamRoster sessionKey: ${sessionKey}`);
-            const payload = {
-                apiVersion: 2,
-                clientDevice: 3,
-                requestInfo: JSON.stringify({
-                    messageExpirationTime: Math.floor(Date.now() / 1000) + 300,
-                    deviceId: 'LEAGUEbuddy-MCA',
-                    commandName: 'Mobile_GetLeagueRoster',
-                    componentId: 2060,
-                    commandId: 802,
-                    ipAddress: '127.0.0.1',
-                    requestPayload: { leagueId, teamId },
-                    componentName: 'careermode',
-                    messageAuthData: {
-                        authCode: sessionKey,
-                        authData: token.access_token,
-                        authType: 17039362
-                    }
-                })
-            };
-            const headers = {
-                'Accept': 'application/json',
-                'X-BLAZE-ID': 'madden-2026-ps5-gen5',
-                'X-BLAZE-VOID-RESP': 'XML',
-                'X-Application-Key': 'MADDEN26-MCA',
-                'Content-Type': 'application/json',
-                'User-Agent': 'Dalvik/2.1.0 (Linux; U; Android 13; sdk_gphone_x86_64 Build/TE1A.220922.031)'
-            };
-            const response = await axios.post(
-                `https://wal3.tools.gos.bio-iad.ea.com/wal/mca/Process/${sessionKey}`,
-                payload,
-                { headers }
-            );
-            EASportsAPI.logToFile(`[EA DEBUG] fetchTeamRoster response: ${JSON.stringify(response.data)}`);
-            return response.data;
-        } catch (error) {
-            EASportsAPI.logToFile(`[EA ERROR] fetchTeamRoster failed: ${error.message}`);
-            throw error;
+        const token = await this.getValidToken(userId);
+        const persona = EASportsAPI.getPersona(userId);
+        if (persona === EASportsAPI.defaultPersona) {
+            EASportsAPI.logToFile(`[EA DEBUG] Persona fallback used for userId: ${userId}`);
         }
+        EASportsAPI.logToFile(`[EA DEBUG] fetchTeamRoster called for userId: ${userId}, leagueId: ${leagueId}, teamId: ${teamId}, token: ${JSON.stringify(token)}, persona: ${JSON.stringify(persona)}`);
+        const sessionKey = await this.getSessionKey(token);
+        const payload = { leagueId, teamId };
+        const result = await EASportsAPI.walBlazeRequest('https://wal3.tools.gos.bio-iad.ea.com/wal/mca/Process/' + sessionKey, payload, token, sessionKey);
+        if (persona === EASportsAPI.defaultPersona) {
+            result.personaStatus = 'fallback';
+        }
+        return result;
     }
-
     async fetchSchedule(userId, leagueId) {
-        try {
-            const token = await this.getValidToken(userId);
-            EASportsAPI.logToFile(`[EA DEBUG] fetchSchedule called for userId: ${userId}, leagueId: ${leagueId}, token: ${JSON.stringify(token)}`);
-            const sessionKey = await this.getSessionKey(token);
-            EASportsAPI.logToFile(`[EA DEBUG] fetchSchedule sessionKey: ${sessionKey}`);
-            const payload = {
-                apiVersion: 2,
-                clientDevice: 3,
-                requestInfo: JSON.stringify({
-                    messageExpirationTime: Math.floor(Date.now() / 1000) + 300,
-                    deviceId: 'LEAGUEbuddy-MCA',
-                    commandName: 'Mobile_GetSchedule',
-                    componentId: 2060,
-                    commandId: 810,
-                    ipAddress: '127.0.0.1',
-                    requestPayload: { leagueId },
-                    componentName: 'careermode',
-                    messageAuthData: {
-                        authCode: sessionKey,
-                        authData: token.access_token,
-                        authType: 17039362
-                    }
-                })
-            };
-            const headers = {
-                'Accept': 'application/json',
-                'X-BLAZE-ID': 'madden-2026-ps5-gen5',
-                'X-BLAZE-VOID-RESP': 'XML',
-                'X-Application-Key': 'MADDEN26-MCA',
-                'Content-Type': 'application/json',
-                'User-Agent': 'Dalvik/2.1.0 (Linux; U; Android 13; sdk_gphone_x86_64 Build/TE1A.220922.031)'
-            };
-            const response = await axios.post(
-                `https://wal3.tools.gos.bio-iad.ea.com/wal/mca/Process/${sessionKey}`,
-                payload,
-                { headers }
-            );
-            EASportsAPI.logToFile(`[EA DEBUG] fetchSchedule response: ${JSON.stringify(response.data)}`);
-            return response.data;
-        } catch (error) {
-            EASportsAPI.logToFile(`[EA ERROR] fetchSchedule failed: ${error.message}`);
-            throw error;
+        const token = await this.getValidToken(userId);
+        const persona = EASportsAPI.getPersona(userId);
+        if (persona === EASportsAPI.defaultPersona) {
+            EASportsAPI.logToFile(`[EA DEBUG] Persona fallback used for userId: ${userId}`);
         }
+        EASportsAPI.logToFile(`[EA DEBUG] fetchSchedule called for userId: ${userId}, leagueId: ${leagueId}, token: ${JSON.stringify(token)}, persona: ${JSON.stringify(persona)}`);
+        const sessionKey = await this.getSessionKey(token);
+        const payload = { leagueId };
+        const result = await EASportsAPI.walBlazeRequest('https://wal3.tools.gos.bio-iad.ea.com/wal/mca/Process/' + sessionKey, payload, token, sessionKey);
+        if (persona === EASportsAPI.defaultPersona) {
+            result.personaStatus = 'fallback';
+        }
+        return result;
     }
-
     async fetchPlayoffs(userId, leagueId) {
-        try {
-            const token = await this.getValidToken(userId);
-            EASportsAPI.logToFile(`[EA DEBUG] fetchPlayoffs called for userId: ${userId}, leagueId: ${leagueId}, token: ${JSON.stringify(token)}`);
-            const sessionKey = await this.getSessionKey(token);
-            EASportsAPI.logToFile(`[EA DEBUG] fetchPlayoffs sessionKey: ${sessionKey}`);
-            const payload = {
-                apiVersion: 2,
-                clientDevice: 3,
-                requestInfo: JSON.stringify({
-                    messageExpirationTime: Math.floor(Date.now() / 1000) + 300,
-                    deviceId: 'LEAGUEbuddy-MCA',
-                    commandName: 'Mobile_GetPlayoffBracket',
-                    componentId: 2060,
-                    commandId: 811,
-                    ipAddress: '127.0.0.1',
-                    requestPayload: { leagueId },
-                    componentName: 'careermode',
-                    messageAuthData: {
-                        authCode: sessionKey,
-                        authData: token.access_token,
-                        authType: 17039362
-                    }
-                })
-            };
-            const headers = {
-                'Accept': 'application/json',
-                'X-BLAZE-ID': 'madden-2026-ps5-gen5',
-                'X-BLAZE-VOID-RESP': 'XML',
-                'X-Application-Key': 'MADDEN26-MCA',
-                'Content-Type': 'application/json',
-                'User-Agent': 'Dalvik/2.1.0 (Linux; U; Android 13; sdk_gphone_x86_64 Build/TE1A.220922.031)'
-            };
-            const response = await axios.post(
-                `https://wal3.tools.gos.bio-iad.ea.com/wal/mca/Process/${sessionKey}`,
-                payload,
-                { headers }
-            );
-            EASportsAPI.logToFile(`[EA DEBUG] fetchPlayoffs response: ${JSON.stringify(response.data)}`);
-            return response.data;
-        } catch (error) {
-            EASportsAPI.logToFile(`[EA ERROR] fetchPlayoffs failed: ${error.message}`);
-            throw error;
+        const token = await this.getValidToken(userId);
+        const persona = EASportsAPI.getPersona(userId);
+        if (persona === EASportsAPI.defaultPersona) {
+            EASportsAPI.logToFile(`[EA DEBUG] Persona fallback used for userId: ${userId}`);
         }
+        EASportsAPI.logToFile(`[EA DEBUG] fetchPlayoffs called for userId: ${userId}, leagueId: ${leagueId}, token: ${JSON.stringify(token)}, persona: ${JSON.stringify(persona)}`);
+        const sessionKey = await this.getSessionKey(token);
+        const payload = { leagueId };
+        const result = await EASportsAPI.walBlazeRequest('https://wal3.tools.gos.bio-iad.ea.com/wal/mca/Process/' + sessionKey, payload, token, sessionKey);
+        if (persona === EASportsAPI.defaultPersona) {
+            result.personaStatus = 'fallback';
+        }
+        return result;
     }
-
     async fetchFreeAgents(userId, leagueId) {
-        try {
-            const token = await this.getValidToken(userId);
-            EASportsAPI.logToFile(`[EA DEBUG] fetchFreeAgents called for userId: ${userId}, leagueId: ${leagueId}, token: ${JSON.stringify(token)}`);
-            const sessionKey = await this.getSessionKey(token);
-            EASportsAPI.logToFile(`[EA DEBUG] fetchFreeAgents sessionKey: ${sessionKey}`);
-            const payload = {
-                apiVersion: 2,
-                clientDevice: 3,
-                requestInfo: JSON.stringify({
-                    messageExpirationTime: Math.floor(Date.now() / 1000) + 300,
-                    deviceId: 'LEAGUEbuddy-MCA',
-                    commandName: 'Mobile_GetFreeAgents',
-                    componentId: 2060,
-                    commandId: 812,
-                    ipAddress: '127.0.0.1',
-                    requestPayload: { leagueId, returnFreeAgents: true },
-                    componentName: 'careermode',
-                    messageAuthData: {
-                        authCode: sessionKey,
-                        authData: token.access_token,
-                        authType: 17039362
-                    }
-                })
-            };
-            const headers = {
-                'Accept': 'application/json',
-                'X-BLAZE-ID': 'madden-2026-ps5-gen5',
-                'X-BLAZE-VOID-RESP': 'XML',
-                'X-Application-Key': 'MADDEN26-MCA',
-                'Content-Type': 'application/json',
-                'User-Agent': 'Dalvik/2.1.0 (Linux; U; Android 13; sdk_gphone_x86_64 Build/TE1A.220922.031)'
-            };
-            const response = await axios.post(
-                `https://wal3.tools.gos.bio-iad.ea.com/wal/mca/Process/${sessionKey}`,
-                payload,
-                { headers }
-            );
-            EASportsAPI.logToFile(`[EA DEBUG] fetchFreeAgents response: ${JSON.stringify(response.data)}`);
-            return response.data;
-        } catch (error) {
-            EASportsAPI.logToFile(`[EA ERROR] fetchFreeAgents failed: ${error.message}`);
-            throw error;
+        const token = await this.getValidToken(userId);
+        const persona = EASportsAPI.getPersona(userId);
+        if (persona === EASportsAPI.defaultPersona) {
+            EASportsAPI.logToFile(`[EA DEBUG] Persona fallback used for userId: ${userId}`);
         }
+        EASportsAPI.logToFile(`[EA DEBUG] fetchFreeAgents called for userId: ${userId}, leagueId: ${leagueId}, token: ${JSON.stringify(token)}, persona: ${JSON.stringify(persona)}`);
+        const sessionKey = await this.getSessionKey(token);
+        const payload = { leagueId, returnFreeAgents: true };
+        const result = await EASportsAPI.walBlazeRequest('https://wal3.tools.gos.bio-iad.ea.com/wal/mca/Process/' + sessionKey, payload, token, sessionKey);
+        if (persona === EASportsAPI.defaultPersona) {
+            result.personaStatus = 'fallback';
+        }
+        return result;
     }
-
     async fetchWeeklyStats(userId, leagueId, statType, week) {
-        try {
-            const token = await this.getValidToken(userId);
-            EASportsAPI.logToFile(`[EA DEBUG] fetchWeeklyStats called for userId: ${userId}, leagueId: ${leagueId}, statType: ${statType}, week: ${week}, token: ${JSON.stringify(token)}`);
-            const sessionKey = await this.getSessionKey(token);
-            EASportsAPI.logToFile(`[EA DEBUG] fetchWeeklyStats sessionKey: ${sessionKey}`);
-            // Stat command mapping
-            const statCommandMap = {
-                passing: { commandName: 'Mobile_GetWeeklyPassingStats', commandId: 803 },
-                rushing: { commandName: 'Mobile_GetWeeklyRushingStats', commandId: 804 },
-                receiving: { commandName: 'Mobile_GetWeeklyReceivingStats', commandId: 805 },
-                defense: { commandName: 'Mobile_GetWeeklyDefensiveStats', commandId: 806 },
-                punting: { commandName: 'Mobile_GetWeeklyPuntingStats', commandId: 807 },
-                kicking: { commandName: 'Mobile_GetWeeklyKickingStats', commandId: 808 },
-                teamStats: { commandName: 'Mobile_GetWeeklyTeamStats', commandId: 809 }
-            };
-            const statCmd = statCommandMap[statType];
-            if (!statCmd) throw new Error('Invalid stat type');
-            const payload = {
-                apiVersion: 2,
-                clientDevice: 3,
-                requestInfo: JSON.stringify({
-                    messageExpirationTime: Math.floor(Date.now() / 1000) + 300,
-                    deviceId: 'LEAGUEbuddy-MCA',
-                    commandName: statCmd.commandName,
-                    componentId: 2060,
-                    commandId: statCmd.commandId,
-                    ipAddress: '127.0.0.1',
-                    requestPayload: { leagueId, week },
-                    componentName: 'careermode',
-                    messageAuthData: {
-                        authCode: sessionKey,
-                        authData: token.access_token,
-                        authType: 17039362
-                    }
-                })
-            };
-            const headers = {
-                'Accept': 'application/json',
-                'X-BLAZE-ID': 'madden-2026-ps5-gen5',
-                'X-BLAZE-VOID-RESP': 'XML',
-                'X-Application-Key': 'MADDEN26-MCA',
-                'Content-Type': 'application/json',
-                'User-Agent': 'Dalvik/2.1.0 (Linux; U; Android 13; sdk_gphone_x86_64 Build/TE1A.220922.031)'
-            };
-            const response = await axios.post(
-                `https://wal3.tools.gos.bio-iad.ea.com/wal/mca/Process/${sessionKey}`,
-                payload,
-                { headers }
-            );
-            EASportsAPI.logToFile(`[EA DEBUG] fetchWeeklyStats response: ${JSON.stringify(response.data)}`);
-            return response.data;
-        } catch (error) {
-            EASportsAPI.logToFile(`[EA ERROR] fetchWeeklyStats failed: ${error.message}`);
-            throw error;
+        const token = await this.getValidToken(userId);
+        const persona = EASportsAPI.getPersona(userId);
+        if (persona === EASportsAPI.defaultPersona) {
+            EASportsAPI.logToFile(`[EA DEBUG] Persona fallback used for userId: ${userId}`);
         }
+        EASportsAPI.logToFile(`[EA DEBUG] fetchWeeklyStats called for userId: ${userId}, leagueId: ${leagueId}, statType: ${statType}, week: ${week}, token: ${JSON.stringify(token)}, persona: ${JSON.stringify(persona)}`);
+        const sessionKey = await this.getSessionKey(token);
+        // Stat command mapping
+        const statCommandMap = {
+            passing: { commandName: 'Mobile_GetWeeklyPassingStats', commandId: 803 },
+            rushing: { commandName: 'Mobile_GetWeeklyRushingStats', commandId: 804 },
+            receiving: { commandName: 'Mobile_GetWeeklyReceivingStats', commandId: 805 },
+            defense: { commandName: 'Mobile_GetWeeklyDefensiveStats', commandId: 806 },
+            punting: { commandName: 'Mobile_GetWeeklyPuntingStats', commandId: 807 },
+            kicking: { commandName: 'Mobile_GetWeeklyKickingStats', commandId: 808 },
+            teamStats: { commandName: 'Mobile_GetWeeklyTeamStats', commandId: 809 }
+        };
+        const statCmd = statCommandMap[statType];
+        if (!statCmd) throw new Error('Invalid stat type');
+        const payload = { leagueId, week, statType: statCmd.commandName };
+        const result = await EASportsAPI.walBlazeRequest('https://wal3.tools.gos.bio-iad.ea.com/wal/mca/Process/' + sessionKey, payload, token, sessionKey);
+        if (persona === EASportsAPI.defaultPersona) {
+            result.personaStatus = 'fallback';
+        }
+        return result;
     }
 }
 
