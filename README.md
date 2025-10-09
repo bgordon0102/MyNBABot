@@ -2,6 +2,8 @@
 
 A Discord bot for managing basketball league operations, recruiting, and team management.
 
+> **Ready to contribute?** Check out [CONTRIBUTING.md](CONTRIBUTING.md) to get started!
+
 ## Features
 
 - **Staff Commands**: Administrative functions for league staff
@@ -70,6 +72,23 @@ LEAGUEbuddy/
 ## Development
 
 This bot uses Discord.js v14 and ES modules. Add new commands by creating files in the appropriate `src/commands/` subdirectory.
+
+### Available Scripts
+
+- `npm start` - Start the bot
+- `npm run dev` - Start the bot with auto-reload (using Node.js --watch)
+- `npm run deploy` - Deploy commands to Discord
+
+### Project Status
+
+✅ **Active Development** - The project is actively maintained and accepting contributions.
+
+- 28 Staff and Coach commands implemented
+- 17 Interaction handlers (buttons, modals, select menus)
+- JSON-based data persistence for league management
+- Role-based access control
+
+For detailed development instructions, see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 
