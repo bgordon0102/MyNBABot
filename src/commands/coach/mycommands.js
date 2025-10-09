@@ -51,8 +51,6 @@ export async function execute(interaction) {
             .setFooter({ text: 'Coach access only' });
     }
 
-    await interaction.reply({
-        embeds: [embed],
-        flags: 64 // MessageFlags.Ephemeral
-    });
+    await interaction.deferReply({ ephemeral: true });
+    await interaction.editReply({ embeds: [embed] });
 }

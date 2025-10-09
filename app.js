@@ -1,3 +1,4 @@
+import { EASportsAPI } from './src/utils/eaSportsAPI.js';
 console.log('DEBUG: Bot startup log from app.js');
 import { Client, GatewayIntentBits, Collection } from 'discord.js';
 import { fileURLToPath, pathToFileURL } from 'url';
@@ -288,6 +289,8 @@ process.on('unhandledRejection', error => {
 async function startBot() {
   // Refresh EA tokens on startup
   refreshAllEaTokens();
+  // Test EA debug file logging on startup
+  EASportsAPI.logToFile('[EA DEBUG] Bot startup test log: If you see this, ea_debug.log is working.');
 
   // Optionally, refresh every 3 hours
   setInterval(() => {

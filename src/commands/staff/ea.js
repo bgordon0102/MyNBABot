@@ -226,15 +226,47 @@ async function handleStatus(interaction, userId) {
 
 async function handleSync(interaction, userId) {
     // Fetch all leagues for the user
-    const leagues = await eaAPI.getUserLeagues(userId);
-    if (!leagues || leagues.length === 0) {
-        await interaction.editReply({ content: 'No leagues found in your EA Sports account.' });
-        return;
+    let replyContent = '';
+    try {
+        const leagues = await eaAPI.getUserLeagues(userId);
+        if (!leagues || leagues.length === 0) {
+            replyContent = 'No leagues found in your EA Sports account.';
+            console.log('[EA DEBUG] handleSync: No leagues found.');
+        } else {
+            // Check if a specific league ID was provided
+            const leagueId = interaction.options.getString('league');
+            if (leagueId) {
+                console.log(`[EA DEBUG] handleSync received leagueId: ${leagueId}`);
+                // Find the league object by ID
+                const selectedLeague = leagues.find(l => String(l.id) === String(leagueId));
+                if (!selectedLeague) {
+                    replyContent = `No league found with ID: ${leagueId}`;
+                    console.log(`[EA DEBUG] handleSync: No league found with ID: ${leagueId}`);
+                } else {
+                    // Fetch latest league details (including teams) using EA API
+                    // This will trigger Mobile_GetLeague in eaSportsAPI.js
+                    const detailedLeagues = await eaAPI.getUserLeagues(userId); // Should return with teams populated
+                    const leagueDetails = detailedLeagues.find(l => String(l.id) === String(leagueId));
+                    if (!leagueDetails) {
+                        replyContent = `Could not load details for league ID: ${leagueId}`;
+                        console.log(`[EA DEBUG] handleSync: Could not load details for league ID: ${leagueId}`);
+                    } else {
+                        console.log(`[EA DEBUG] handleSync found league details for ID: ${leagueId}`);
+                        replyContent = `**${leagueDetails.name}** (ID: ${leagueDetails.id})\nConsole: ${leagueDetails.console}\nTeams: ${leagueDetails.teams}\nWeek: ${leagueDetails.week}\nSeason: ${leagueDetails.season}`;
+                    }
+                }
+            } else {
+                // Show all available league names and IDs
+                const leagueList = leagues.map(l => `• **${l.name}** (ID: ${l.id}, Teams: ${l.teams})`).join('\n');
+                replyContent = `Found the following leagues on your EA account:\n${leagueList}`;
+                console.log('[EA DEBUG] handleSync: Showing league list.');
+            }
+        }
+    } catch (err) {
+        replyContent = `Error fetching league data: ${err && err.message ? err.message : err}`;
+        console.log(`[EA DEBUG] handleSync: Exception - ${err && err.stack ? err.stack : err}`);
     }
-    // Show all available league names and IDs
-    const leagueList = leagues.map(l => `• **${l.name}** (ID: ${l.id}, Teams: ${l.teams})`).join('\n');
-    await interaction.editReply({ content: `Found the following leagues on your EA account:\n${leagueList}` });
-    // ...existing code for further import (teams, players, games, etc)...
+    await interaction.editReply({ content: replyContent });
 }
 
 async function handleDraft(interaction, userId) {

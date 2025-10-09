@@ -18,7 +18,7 @@ const CLIENT_ID = "MCA_25_COMP_APP";
 const MACHINE_KEY = "444d362e8e067fe2";
 const EA_LOGIN_URL = `https://accounts.ea.com/connect/auth?hide_create=true&release_type=prod&response_type=code&redirect_uri=${REDIRECT_URL}&client_id=${CLIENT_ID}&machineProfileKey=${MACHINE_KEY}&authentication_source=${AUTH_SOURCE}`;
 
-class EASportsAPI {
+export class EASportsAPI {
     // File-based logger for EA debug logs
     static logToFile(message) {
         const logPath = path.join(process.cwd(), 'ea_debug.log');
@@ -456,11 +456,15 @@ class EASportsAPI {
                 // Parse WAL response format (like snallabot)
                 const walResponse = cfmResponse.data?.responseInfo?.value?.leagues || [];
                 console.log(`🏆 Found ${walResponse.length} Connected Franchise Mode leagues via WAL`);
+                EASportsAPI.logToFile(`[EA DEBUG] WAL/Blaze league array length: ${walResponse.length}`);
+                EASportsAPI.logToFile(`[EA DEBUG] About to enter Mobile_GetLeague loop if leagues exist.`);
 
                 if (walResponse.length === 0) {
                     console.warn('[EA DEBUG] WAL/Blaze response contained no leagues. Fallback to persona mapping will be used.');
+                    EASportsAPI.logToFile(`[EA DEBUG] WAL/Blaze response contained no leagues. Fallback to persona mapping will be used.`);
                 } else {
                     // For each league, perform Mobile_GetLeague to fetch team data
+                    EASportsAPI.logToFile(`[EA DEBUG] Entering Mobile_GetLeague loop for ${walResponse.length} leagues.`);
                     const leagueResults = [];
                     try {
                         for (const league of walResponse) {
@@ -641,6 +645,7 @@ class EASportsAPI {
             console.log('🔎 WAL/Blaze Raw Response:', JSON.stringify(processResponse.data, null, 2));
 
             // Parse WAL/Blaze response for teams
+            EASportsAPI.logToFile(`[EA DEBUG] Entering Mobile_GetLeague loop for leagueId: ${league.leagueId}`);
             const walData = processResponse.data;
             console.log('🔎 WAL/Blaze raw response:', JSON.stringify(walData, null, 2));
             let teams = [];
