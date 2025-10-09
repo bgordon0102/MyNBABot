@@ -269,7 +269,7 @@
 
                         <!-- Step 4: Complete -->
                         <div class="step" id="step-4">
-                            <h4>� Setup Complete!</h4>
+                            <h4>✅ Setup Complete!</h4>
                             <div class="alert alert-success">
                                 <h5>🎉 Your league is now connected to LEAGUEbuddy!</h5>
                                 <p>You can now use the following Discord commands:</p>
@@ -280,7 +280,19 @@
                                 </ul>
                             </div>
 
-                            <div class="text-center">
+                            <!-- Export Status Panel -->
+                            <div id="export-status-panel" class="mt-4">
+                                <h5>📦 EA Export Status</h5>
+                                <div id="export-status-loading" style="display:none;">
+                                    <div class="spinner-border" role="status">
+                                        <span class="visually-hidden">Loading export status...</span>
+                                    </div>
+                                    <span>Loading export status...</span>
+                                </div>
+                                <div id="export-status-content" style="display:none;"></div>
+                            </div>
+
+                            <div class="text-center mt-4">
                                 <button type="button" class="btn btn-primary btn-lg" onclick="location.reload()">🔄
                                     Setup
                                     Another League</button>
@@ -411,6 +423,7 @@
                 statusDiv.className = 'alert alert-info';
                 statusDiv.innerHTML = '<strong>🔄 Processing authorization code...</strong>';
 
+                const userId = document.getElementById('user-id').value;
                 const response = await fetch('/admin/sync/submit-code', {
                     method: 'POST',
                     headers: {
@@ -418,7 +431,7 @@
                     },
                     body: JSON.stringify({
                         code: code,
-                        userId: 'dashboard_user'
+                        userId: userId
                     })
                 });
 
@@ -441,7 +454,7 @@
 
         async function checkEAConnection() {
             try {
-                const tempUserId = 'dashboard_user';
+                const tempUserId = document.getElementById('user-id').value;
                 const statusDiv = document.getElementById('ea-status');
 
                 // Check if we have stored tokens by trying to get leagues
@@ -617,12 +630,68 @@
                 const result = await response.json();
 
                 if (result.success) {
-                    // Success handled by nextStep()
+                    // After setup, fetch and display export status
+                    showExportStatus();
                 } else {
                     throw new Error(result.error);
                 }
             } catch (error) {
                 alert(`Setup failed: ${error.message}`);
+            }
+        }
+
+        async function showExportStatus() {
+            document.getElementById('export-status-loading').style.display = 'block';
+            document.getElementById('export-status-content').style.display = 'none';
+            try {
+                const response = await fetch('/admin/sync/export-status');
+                const result = await response.json();
+                document.getElementById('export-status-loading').style.display = 'none';
+                if (result.success && result.exportStatus) {
+                    const status = result.exportStatus;
+                    let html = '<ul class="list-group">';
+                    html += `<li class="list-group-item"><strong>League Last Synced:</strong> ${status.league ? new Date(status.league).toLocaleString() : 'Never'}</li>`;
+                    html += `<li class="list-group-item"><strong>Teams Last Synced:</strong> ${status.teams ? new Date(status.teams).toLocaleString() : 'Never'}</li>`;
+                    html += `<li class="list-group-item"><strong>Schedule Last Synced:</strong> ${status.schedule ? new Date(status.schedule).toLocaleString() : 'Never'}</li>`;
+                    html += `<li class="list-group-item"><strong>Playoffs Last Synced:</strong> ${status.playoffs ? new Date(status.playoffs).toLocaleString() : 'Never'}</li>`;
+                    html += `<li class="list-group-item"><strong>Free Agents Last Synced:</strong> ${status.freeAgents ? new Date(status.freeAgents).toLocaleString() : 'Never'}</li>`;
+                    html += `<li class="list-group-item"><strong>Rosters Last Synced:</strong><ul>`;
+                    if (status.rosters && Object.keys(status.rosters).length > 0) {
+                        for (const [teamId, ts] of Object.entries(status.rosters)) {
+                            html += `<li>Team ${teamId}: ${ts ? new Date(ts).toLocaleString() : 'Never'}</li>`;
+                        }
+                    } else {
+                        html += '<li>No rosters synced yet.</li>';
+                    }
+                    html += '</ul></li>';
+                    // Stat types
+                    html += `<li class="list-group-item"><strong>Stats Last Synced:</strong><ul>`;
+                    if (status.stats) {
+                        for (const statType of Object.keys(status.stats)) {
+                            html += `<li><strong>${statType}:</strong> <ul>`;
+                            const statWeeks = status.stats[statType];
+                            if (statWeeks && Object.keys(statWeeks).length > 0) {
+                                for (const [week, ts] of Object.entries(statWeeks)) {
+                                    html += `<li>Week ${week}: ${ts ? new Date(ts).toLocaleString() : 'Never'}</li>`;
+                                }
+                            } else {
+                                html += '<li>No weeks synced yet.</li>';
+                            }
+                            html += '</ul></li>';
+                        }
+                    }
+                    html += '</ul></li>';
+                    html += '</ul>';
+                    document.getElementById('export-status-content').innerHTML = html;
+                    document.getElementById('export-status-content').style.display = 'block';
+                } else {
+                    document.getElementById('export-status-content').innerHTML = '<div class="alert alert-warning">No export status available.</div>';
+                    document.getElementById('export-status-content').style.display = 'block';
+                }
+            } catch (error) {
+                document.getElementById('export-status-loading').style.display = 'none';
+                document.getElementById('export-status-content').innerHTML = `<div class="alert alert-danger">Error loading export status: ${error.message}</div>`;
+                document.getElementById('export-status-content').style.display = 'block';
             }
         }
     </script>

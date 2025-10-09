@@ -1,3 +1,4 @@
+
 import axios from 'axios';
 import crypto from 'crypto';
 import express from 'express';
@@ -472,8 +473,10 @@ export class EASportsAPI {
                             console.log('[EA DEBUG] Full League Object:', leagueObjStr);
                             EASportsAPI.logToFile(`[EA DEBUG] Full League Object: ${leagueObjStr}`);
                             let teamNames = 'Unknown';
+                            let leagueInfo = null;
+                            let teamInfo = null;
                             try {
-                                // Mobile_GetLeague request for team data
+                                // Mobile_GetLeague request for team data (Madden 26 spec)
                                 const leaguePayload = {
                                     apiVersion: 2,
                                     clientDevice: 3,
@@ -513,21 +516,29 @@ export class EASportsAPI {
                                 const leagueRespStr = JSON.stringify(leagueResponse.data, null, 2);
                                 console.log(`[EA DEBUG] Mobile_GetLeague response for leagueId ${league.leagueId}:`, leagueRespStr);
                                 EASportsAPI.logToFile(`[EA DEBUG] Mobile_GetLeague response for leagueId ${league.leagueId}: ${leagueRespStr}`);
-                                // Parse teams array from response
-                                const teamsArr = leagueResponse.data?.responseInfo?.value?.teams || [];
-                                if (teamsArr.length > 0) {
-                                    teamNames = teamsArr.map(t => t.displayName || t.name || t.teamName).join(', ');
+                                // Parse leagueInfo and teamInfo from response
+                                leagueInfo = leagueResponse.data?.responseInfo?.value?.leagueInfo || null;
+                                teamInfo = leagueResponse.data?.responseInfo?.value?.teams || [];
+                                if (teamInfo.length > 0) {
+                                    teamNames = teamInfo.map(t => t.displayName || t.name || t.teamName).join(', ');
                                 }
                             } catch (err) {
                                 const errMsg = `[EA DEBUG] Mobile_GetLeague failed for leagueId ${league.leagueId}: ${err && err.stack ? err.stack : err}`;
                                 console.warn(errMsg);
                                 EASportsAPI.logToFile(errMsg);
+                                // Log raw EA response if available
+                                if (err.response) {
+                                    const rawEAResp = JSON.stringify(err.response.data, null, 2);
+                                    EASportsAPI.logToFile(`[EA DEBUG] Raw EA response for failed Mobile_GetLeague: ${rawEAResp}`);
+                                }
                             }
                             leagueResults.push({
                                 id: league.leagueId,
                                 name: league.leagueName,
                                 console: 'Cross-Platform',
                                 teams: teamNames,
+                                leagueInfo,
+                                teamInfo,
                                 week: league.seasonText || 'Unknown',
                                 season: league.calendarYear || (maddenVersion ? `Madden ${maddenVersion}` : '2025')
                             });
@@ -860,6 +871,235 @@ export class EASportsAPI {
             return token.default_league || null;
         }
         return null;
+    }
+
+    // WAL/Blaze: Fetch weekly stats for a given stat type and week
+    async fetchWeeklyStats(userId, leagueId, statType, week) {
+        const token = await this.getValidToken(userId);
+        if (!token) throw new Error('No valid EA Sports token found. Please authenticate first.');
+        // WAL authentication
+        const walAuthResponse = await axios.post(
+            'https://wal2.tools.gos.bio-iad.ea.com/wal/authentication/login',
+            { authCode: token.access_token },
+            {
+                headers: {
+                    'Accept': 'application/json',
+                    'X-BLAZE-VOID-RESP': 'XML',
+                    'X-Application-Key': 'MADDEN-MCA',
+                    'X-BLAZE-ID': 'madden-2025-ps5-gen5',
+                    'Content-Type': 'application/json',
+                    'User-Agent': 'Dalvik/2.1.0 (Linux; U; Android 13; sdk_gphone_x86_64 Build/TE1A.220922.031)'
+                }
+            }
+        );
+        const sessionKey = walAuthResponse.data.userLoginInfo.sessionKey;
+        // Stat type mapping
+        const statCommandMap = {
+            passing: { commandName: 'Mobile_GetWeeklyPassingStats', commandId: 803 },
+            rushing: { commandName: 'Mobile_GetWeeklyRushingStats', commandId: 804 },
+            receiving: { commandName: 'Mobile_GetWeeklyReceivingStats', commandId: 805 },
+            defense: { commandName: 'Mobile_GetWeeklyDefensiveStats', commandId: 806 },
+            punting: { commandName: 'Mobile_GetWeeklyPuntingStats', commandId: 807 },
+            kicking: { commandName: 'Mobile_GetWeeklyKickingStats', commandId: 808 },
+            teamStats: { commandName: 'Mobile_GetWeeklyTeamStats', commandId: 809 }
+        };
+        const statCmd = statCommandMap[statType];
+        if (!statCmd) throw new Error('Invalid stat type');
+        const statPayload = {
+            apiVersion: 2,
+            clientDevice: 3,
+            requestInfo: JSON.stringify({
+                messageExpirationTime: Math.floor(Date.now() / 1000) + 300,
+                deviceId: 'LEAGUEbuddy-MCA',
+                commandName: statCmd.commandName,
+                componentId: 2060,
+                commandId: statCmd.commandId,
+                ipAddress: '127.0.0.1',
+                requestPayload: { leagueId: leagueId, week },
+                componentName: 'careermode',
+                messageAuthData: {
+                    authCode: sessionKey,
+                    authData: token.access_token,
+                    authType: 17039362
+                }
+            })
+        };
+        const statHeaders = {
+            'Accept': 'application/json',
+            'X-BLAZE-ID': 'madden-2026-ps5-gen5',
+            'X-BLAZE-VOID-RESP': 'XML',
+            'X-Application-Key': 'MADDEN26-MCA',
+            'Content-Type': 'application/json',
+            'User-Agent': 'Dalvik/2.1.0 (Linux; U; Android 13; sdk_gphone_x86_64 Build/TE1A.220922.031)'
+        };
+        const statResponse = await axios.post(
+            `https://wal3.tools.gos.bio-iad.ea.com/wal/mca/Process/${sessionKey}`,
+            statPayload,
+            { headers: statHeaders }
+        );
+        return statResponse.data;
+    }
+
+    // WAL/Blaze: Fetch schedule
+    async fetchSchedule(userId, leagueId) {
+        const token = await this.getValidToken(userId);
+        if (!token) throw new Error('No valid EA Sports token found. Please authenticate first.');
+        const walAuthResponse = await axios.post(
+            'https://wal2.tools.gos.bio-iad.ea.com/wal/authentication/login',
+            { authCode: token.access_token },
+            {
+                headers: {
+                    'Accept': 'application/json',
+                    'X-BLAZE-VOID-RESP': 'XML',
+                    'X-Application-Key': 'MADDEN-MCA',
+                    'X-BLAZE-ID': 'madden-2025-ps5-gen5',
+                    'Content-Type': 'application/json',
+                    'User-Agent': 'Dalvik/2.1.0 (Linux; U; Android 13; sdk_gphone_x86_64 Build/TE1A.220922.031)'
+                }
+            }
+        );
+        const sessionKey = walAuthResponse.data.userLoginInfo.sessionKey;
+        const schedulePayload = {
+            apiVersion: 2,
+            clientDevice: 3,
+            requestInfo: JSON.stringify({
+                messageExpirationTime: Math.floor(Date.now() / 1000) + 300,
+                deviceId: 'LEAGUEbuddy-MCA',
+                commandName: 'Mobile_GetSchedule',
+                componentId: 2060,
+                commandId: 810,
+                ipAddress: '127.0.0.1',
+                requestPayload: { leagueId: leagueId },
+                componentName: 'careermode',
+                messageAuthData: {
+                    authCode: sessionKey,
+                    authData: token.access_token,
+                    authType: 17039362
+                }
+            })
+        };
+        const scheduleHeaders = {
+            'Accept': 'application/json',
+            'X-BLAZE-ID': 'madden-2026-ps5-gen5',
+            'X-BLAZE-VOID-RESP': 'XML',
+            'X-Application-Key': 'MADDEN26-MCA',
+            'Content-Type': 'application/json',
+            'User-Agent': 'Dalvik/2.1.0 (Linux; U; Android 13; sdk_gphone_x86_64 Build/TE1A.220922.031)'
+        };
+        const scheduleResponse = await axios.post(
+            `https://wal3.tools.gos.bio-iad.ea.com/wal/mca/Process/${sessionKey}`,
+            schedulePayload,
+            { headers: scheduleHeaders }
+        );
+        return scheduleResponse.data;
+    }
+
+    // WAL/Blaze: Fetch playoff bracket
+    async fetchPlayoffs(userId, leagueId) {
+        const token = await this.getValidToken(userId);
+        if (!token) throw new Error('No valid EA Sports token found. Please authenticate first.');
+        const walAuthResponse = await axios.post(
+            'https://wal2.tools.gos.bio-iad.ea.com/wal/authentication/login',
+            { authCode: token.access_token },
+            {
+                headers: {
+                    'Accept': 'application/json',
+                    'X-BLAZE-VOID-RESP': 'XML',
+                    'X-Application-Key': 'MADDEN-MCA',
+                    'X-BLAZE-ID': 'madden-2025-ps5-gen5',
+                    'Content-Type': 'application/json',
+                    'User-Agent': 'Dalvik/2.1.0 (Linux; U; Android 13; sdk_gphone_x86_64 Build/TE1A.220922.031)'
+                }
+            }
+        );
+        const sessionKey = walAuthResponse.data.userLoginInfo.sessionKey;
+        const playoffPayload = {
+            apiVersion: 2,
+            clientDevice: 3,
+            requestInfo: JSON.stringify({
+                messageExpirationTime: Math.floor(Date.now() / 1000) + 300,
+                deviceId: 'LEAGUEbuddy-MCA',
+                commandName: 'Mobile_GetPlayoffBracket',
+                componentId: 2060,
+                commandId: 811,
+                ipAddress: '127.0.0.1',
+                requestPayload: { leagueId: leagueId },
+                componentName: 'careermode',
+                messageAuthData: {
+                    authCode: sessionKey,
+                    authData: token.access_token,
+                    authType: 17039362
+                }
+            })
+        };
+        const playoffHeaders = {
+            'Accept': 'application/json',
+            'X-BLAZE-ID': 'madden-2026-ps5-gen5',
+            'X-BLAZE-VOID-RESP': 'XML',
+            'X-Application-Key': 'MADDEN26-MCA',
+            'Content-Type': 'application/json',
+            'User-Agent': 'Dalvik/2.1.0 (Linux; U; Android 13; sdk_gphone_x86_64 Build/TE1A.220922.031)'
+        };
+        const playoffResponse = await axios.post(
+            `https://wal3.tools.gos.bio-iad.ea.com/wal/mca/Process/${sessionKey}`,
+            playoffPayload,
+            { headers: playoffHeaders }
+        );
+        return playoffResponse.data;
+    }
+
+    // WAL/Blaze: Fetch free agent roster
+    async fetchFreeAgents(userId, leagueId) {
+        const token = await this.getValidToken(userId);
+        if (!token) throw new Error('No valid EA Sports token found. Please authenticate first.');
+        const walAuthResponse = await axios.post(
+            'https://wal2.tools.gos.bio-iad.ea.com/wal/authentication/login',
+            { authCode: token.access_token },
+            {
+                headers: {
+                    'Accept': 'application/json',
+                    'X-BLAZE-VOID-RESP': 'XML',
+                    'X-Application-Key': 'MADDEN-MCA',
+                    'X-BLAZE-ID': 'madden-2025-ps5-gen5',
+                    'Content-Type': 'application/json',
+                    'User-Agent': 'Dalvik/2.1.0 (Linux; U; Android 13; sdk_gphone_x86_64 Build/TE1A.220922.031)'
+                }
+            }
+        );
+        const sessionKey = walAuthResponse.data.userLoginInfo.sessionKey;
+        const faPayload = {
+            apiVersion: 2,
+            clientDevice: 3,
+            requestInfo: JSON.stringify({
+                messageExpirationTime: Math.floor(Date.now() / 1000) + 300,
+                deviceId: 'LEAGUEbuddy-MCA',
+                commandName: 'Mobile_GetFreeAgents',
+                componentId: 2060,
+                commandId: 812,
+                ipAddress: '127.0.0.1',
+                requestPayload: { leagueId: leagueId },
+                componentName: 'careermode',
+                messageAuthData: {
+                    authCode: sessionKey,
+                    authData: token.access_token,
+                    authType: 17039362
+                }
+            })
+        };
+        const faHeaders = {
+            'Accept': 'application/json',
+            'X-BLAZE-ID': 'madden-2026-ps5-gen5',
+            'X-BLAZE-VOID-RESP': 'XML',
+            'X-Application-Key': 'MADDEN26-MCA',
+            'Content-Type': 'application/json',
+            'User-Agent': 'Dalvik/2.1.0 (Linux; U; Android 13; sdk_gphone_x86_64 Build/TE1A.220922.031)'
+        };
+        const faResponse = await axios.post(
+            `https://wal3.tools.gos.bio-iad.ea.com/wal/mca/Process/${sessionKey}`,
+            faPayload,
+            { headers: faHeaders }
+        );
+        return faResponse.data;
     }
 }
 

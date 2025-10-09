@@ -3,15 +3,27 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import EASportsAPI from '../utils/eaSportsAPI.js';
 
+import eaExportManager from '../utils/eaExportManager.js';
+
+
+
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
+import session from 'express-session';
 const PORT = process.env.DASHBOARD_PORT || 3000;
 
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(session({
+    secret: process.env.SESSION_SECRET || 'leaguebuddy_secret',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false }
+}));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Set view engine
@@ -27,16 +39,27 @@ app.get('/', (req, res) => {
 });
 
 app.get('/admin/sync', async (req, res) => {
-    try {
-        // This would be the main sync page where users can:
-        // 1. Connect their EA Sports account
-        // 2. Select their league
-        // 3. Set console and Madden version
-        // 4. Sync league data
 
+    try {
+    const userId = req.body?.userId || req.session.discordUserId;
+        let leagues = [];
+        let tokenInfo = null;
+        // Debug logging: show userId and all token keys
+        console.log('🕵️‍♂️ /admin/sync userId:', userId);
+        console.log('🕵️‍♂️ All EA token keys:', Array.from(eaAPI.tokens.keys()));
+        if (userId && eaAPI.tokens.has(userId)) {
+            tokenInfo = eaAPI.tokens.get(userId);
+            console.log('🕵️‍♂️ Found token for userId:', userId, tokenInfo);
+            leagues = await eaAPI.getLeagues(tokenInfo.accessToken);
+        } else {
+            console.log('🕵️‍♂️ No token found for userId:', userId);
+        }
         res.render('admin_sync', {
             title: 'EA Sports League Sync',
-            message: 'Welcome to the EA Sports sync panel. This is the recommended way to connect your Madden 26 league since EA has not released a companion app for Madden 26 yet.'
+            message: 'Welcome to the EA Sports sync panel. This is the recommended way to connect your Madden 26 league since EA has not released a companion app for Madden 26 yet.',
+            leagues,
+            tokenInfo,
+            userId
         });
     } catch (error) {
         console.error('Admin sync error:', error);
@@ -47,21 +70,14 @@ app.get('/admin/sync', async (req, res) => {
 app.post('/admin/sync/connect', async (req, res) => {
     try {
         const { userId } = req.body;
-
-        // Use the exact same method as snallabot - startAuthFlow
-        // This creates the callback server on 127.0.0.1 and handles everything
-        const tempUserId = 'dashboard_user';
         console.log('🔄 Starting EA Sports authentication flow (snallabot method)...');
-
-        // Start the auth flow in the background and return immediately
-        eaAPI.startAuthFlow(tempUserId)
+        eaAPI.startAuthFlow(userId)
             .then(result => {
                 console.log('✅ EA Sports authentication completed successfully!');
             })
             .catch(error => {
                 console.error('❌ EA Sports authentication failed:', error);
             });
-
         res.json({
             success: true,
             message: 'EA Sports authentication started. Please complete the login in the browser window that opened.'
@@ -76,31 +92,32 @@ app.post('/admin/sync/connect', async (req, res) => {
 // Route to handle manual authorization code submission (snallabot method)
 app.post('/admin/sync/submit-code', async (req, res) => {
     try {
-        const { code, userId } = req.body;
-
+    const { code, userId } = req.body;
+        if (!userId) {
+            console.warn('⚠️ WARNING: discordUserId is undefined in session during token save!');
+        } else {
+            console.log('✅ discordUserId for token save:', userId);
+        }
         if (!code) {
             return res.status(400).json({ success: false, error: 'Authorization code is required' });
         }
-
         // Exchange the code for tokens
         const tokenResponse = await eaAPI.exchangeCodeForToken(code);
-
         if (tokenResponse && tokenResponse.access_token) {
-            // Store the token with dashboard user ID
-            const tempUserId = 'dashboard_user';
-            eaAPI.tokens.set(tempUserId, {
+            // Store the token with the real Discord user ID from session
+            eaAPI.tokens.set(userId, {
                 accessToken: tokenResponse.access_token,
                 refreshToken: tokenResponse.refresh_token,
                 expiresAt: Date.now() + (tokenResponse.expires_in * 1000)
             });
             eaAPI.saveTokens();
-
+            // Debug logging: show all token keys after save
+            console.log('🔑 EA token keys after save:', Array.from(eaAPI.tokens.keys()));
+            console.log('🔑 Token just saved for userId:', userId);
             res.json({
                 success: true,
                 message: 'EA Sports authentication completed successfully!'
             });
-        } else {
-            throw new Error('Failed to exchange code for tokens');
         }
     } catch (error) {
         console.error('Code submission error:', error);
