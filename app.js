@@ -6,6 +6,7 @@ import { refreshAllEaTokens } from './src/utils/eaTokenRefresher.js';
 import { dirname, join } from 'path';
 import { readdirSync } from 'fs';
 import dotenv from 'dotenv';
+import eaSyncCommand from './src/commands/staff/ea.js';
 
 // Load environment variables
 dotenv.config();
@@ -30,7 +31,7 @@ const __dirname = dirname(__filename);
 // Function to dynamically load all commands
 async function loadCommands() {
   const commandFolders = ['staff', 'coach'];
-
+  const registeredNames = new Set();
   for (const folder of commandFolders) {
     const commandsPath = join(__dirname, 'src', 'commands', folder);
     const commandFiles = readdirSync(commandsPath).filter(file => file.endsWith('.js'));
@@ -43,8 +44,14 @@ async function loadCommands() {
         const imported = await import(fileURL);
         const cmd = imported.default || imported; // Support both default and named exports
         if ('data' in cmd && 'execute' in cmd) {
-          client.commands.set(cmd.data.name, cmd);
-          console.log(`✅ Loaded ${folder} command: ${cmd.data.name}`);
+          const name = cmd.data.name;
+          if (registeredNames.has(name)) {
+            console.log(`⏭️ Skipping duplicate command: ${name} (${filePath})`);
+            continue;
+          }
+          client.commands.set(name, cmd);
+          registeredNames.add(name);
+          console.log(`✅ Registered command: ${name} (${filePath})`);
         } else {
           console.log(`⚠️  Command at ${filePath} is missing required "data" or "execute" property.`);
         }
@@ -53,6 +60,8 @@ async function loadCommands() {
       }
     }
   }
+  // Final log of all registered command names
+  console.log(`📝 All registered commands: ${Array.from(registeredNames).join(', ')}`);
 }
 
 // Function to dynamically load all interaction handlers

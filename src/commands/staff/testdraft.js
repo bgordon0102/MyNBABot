@@ -6,6 +6,7 @@ export default {
         .setDescription('Test draft class functionality'),
 
     async execute(interaction) {
+        await interaction.deferReply({ ephemeral: true });
         try {
             console.log('🧪 Testing draft class functionality...');
 
@@ -17,9 +18,8 @@ export default {
             console.log('📁 Checking path:', draftClassesPath);
 
             if (!fs.existsSync(draftClassesPath)) {
-                await interaction.reply({
-                    content: '❌ `data/draftClasses.json` file not found on server!',
-                    ephemeral: true
+                await interaction.editReply({
+                    content: '❌ `data/draftClasses.json` file not found on server!'
                 });
                 return;
             }
@@ -35,7 +35,7 @@ export default {
             // Test 4: Try to use DraftClassManager
             const currentClass = DraftClassManager.getCurrentClass();
 
-            await interaction.reply({
+            await interaction.editReply({
                 content: `✅ **Test Results:**
                 
 **File exists:** ✅ Yes
@@ -43,20 +43,18 @@ export default {
 **Current class:** ${currentClass?.id || 'None'}
 **Current class name:** ${currentClass?.name || 'None'}
 
-All systems working! The draftclass command should work now.`,
-                ephemeral: true
+All systems working! The draftclass command should work now.`
             });
 
         } catch (error) {
             console.error('❌ Test failed:', error);
-            await interaction.reply({
+            await interaction.editReply({
                 content: `❌ **Test Failed:**
                 
 **Error:** ${error.message}
 **Type:** ${error.constructor.name}
 
-Check Railway logs for full details.`,
-                ephemeral: true
+Check Railway logs for full details.`
             });
         }
     }

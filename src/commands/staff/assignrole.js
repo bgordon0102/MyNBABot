@@ -28,24 +28,28 @@ export const data = new SlashCommandBuilder()
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator);
 
 export async function execute(interaction) {
+    await interaction.deferReply({ ephemeral: true });
     const user = interaction.options.getUser('user');
     const roleName1 = interaction.options.getString('role1');
     const roleName2 = interaction.options.getString('role2');
     const member = interaction.guild.members.cache.get(user.id);
 
     if (!member) {
-        return interaction.reply({ content: 'User not found in this server.', ephemeral: true });
+        await interaction.editReply({ content: 'User not found in this server.' });
+        return;
     }
 
     const role1 = interaction.guild.roles.cache.find(r => r.name.toLowerCase() === roleName1.toLowerCase());
     if (!role1) {
-        return interaction.reply({ content: `Role "${roleName1}" not found.`, ephemeral: true });
+        await interaction.editReply({ content: `Role "${roleName1}" not found.` });
+        return;
     }
     let role2 = null;
     if (roleName2) {
         role2 = interaction.guild.roles.cache.find(r => r.name.toLowerCase() === roleName2.toLowerCase());
         if (!role2) {
-            return interaction.reply({ content: `Role "${roleName2}" not found.`, ephemeral: true });
+            await interaction.editReply({ content: `Role "${roleName2}" not found.` });
+            return;
         }
     }
 
@@ -56,10 +60,10 @@ export async function execute(interaction) {
             await member.roles.add(role2);
             msg = `Assigned roles "${role1.name}" and "${role2.name}" to ${user.tag}.`;
         }
-        await interaction.reply({ content: msg, ephemeral: false });
+        await interaction.editReply({ content: msg });
     } catch (err) {
         console.error(err);
-        await interaction.reply({ content: 'Error assigning role. Check bot permissions.', ephemeral: true });
+        await interaction.editReply({ content: 'Error assigning role. Check bot permissions.' });
     }
 }
 

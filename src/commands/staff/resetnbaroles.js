@@ -20,10 +20,9 @@ export const data = new SlashCommandBuilder()
 export async function execute(interaction) {
   console.log('🏀 Starting resetnbaroles command...');
 
-  try {
-    await interaction.reply({ content: '🏀 Resetting NBA roles...', flags: 64 });
-    console.log('✅ Initial reply sent');
+  await interaction.deferReply({ ephemeral: false });
 
+  try {
     const guild = interaction.guild;
 
     // Full list of roles to create
@@ -79,7 +78,8 @@ export async function execute(interaction) {
       } catch (err) {
         console.error(`❌ Create failed: ${roleName} - ${err.message}`);
       }
-    } await interaction.editReply({
+    }
+    await interaction.editReply({
       content: `✅ Complete! Created ${createdCount}/${allRoleNames.length} NBA roles`,
       flags: 64
     });

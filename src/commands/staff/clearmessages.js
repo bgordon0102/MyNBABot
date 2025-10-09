@@ -13,8 +13,11 @@ export async function execute(interaction) {
   const amountArg = interaction.options.getString('amount').toLowerCase();
   const channel = interaction.channel;
 
+  await interaction.deferReply({ ephemeral: true });
+
   if (!channel || !channel.isTextBased()) {
-    return interaction.reply({ content: 'This command can only be used in text channels.', ephemeral: true });
+    await interaction.editReply({ content: 'This command can only be used in text channels.' });
+    return;
   }
 
   try {
@@ -27,19 +30,20 @@ export async function execute(interaction) {
           await channel.bulkDelete(fetched, true).catch(err => console.error(err));
         }
       } while (fetched.size >= 2); // stop when fewer than 2 messages left
-      await interaction.reply({ content: 'All messages deleted in this channel.', ephemeral: false });
+      await interaction.editReply({ content: 'All messages deleted in this channel.' });
     } else {
       const amount = parseInt(amountArg);
       if (isNaN(amount) || amount < 1) {
-        return interaction.reply({ content: 'Please provide a valid number of messages to delete.', ephemeral: true });
+        await interaction.editReply({ content: 'Please provide a valid number of messages to delete.' });
+        return;
       }
 
       const deleteAmount = Math.min(amount, 100); // Discord bulkDelete limit
       await channel.bulkDelete(deleteAmount, true);
-      await interaction.reply({ content: `Deleted ${deleteAmount} messages.`, ephemeral: false });
+      await interaction.editReply({ content: `Deleted ${deleteAmount} messages.` });
     }
   } catch (err) {
     console.error(err);
-    await interaction.reply({ content: 'Error deleting messages.', ephemeral: true });
+    await interaction.editReply({ content: 'Error deleting messages.' });
   }
 }

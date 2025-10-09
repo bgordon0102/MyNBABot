@@ -24,11 +24,14 @@
     "@discordjs/builders": "^1.7.0",
     "axios": "^1.12.2",
     "discord.js": "^14.23.2",
-    "dotenv": "^16.4.5",
+    "dotenv": "^17.2.3",
     "ejs": "^3.1.9",
     "express": "^5.1.0",
+    "express-session": "^1.18.2",
+    "node-fetch": "^3.3.2",
     "open": "^10.2.0",
-    "uuid": "^13.0.0"
+    "uuid": "^13.0.0",
+    "winston": "^3.18.3"
   },
   "engines": {
     "node": ">=18.0.0"

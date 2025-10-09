@@ -2,6 +2,7 @@ import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import EASportsAPI from '../utils/eaSportsAPI.js';
+EASportsAPI.logToFile('Manual logger test from dashboard.js');
 
 import eaExportManager from '../utils/eaExportManager.js';
 
@@ -41,7 +42,7 @@ app.get('/', (req, res) => {
 app.get('/admin/sync', async (req, res) => {
 
     try {
-    const userId = req.body?.userId || req.session.discordUserId;
+        const userId = req.body?.userId || req.session.discordUserId;
         let leagues = [];
         let tokenInfo = null;
         // Debug logging: show userId and all token keys
@@ -92,7 +93,7 @@ app.post('/admin/sync/connect', async (req, res) => {
 // Route to handle manual authorization code submission (snallabot method)
 app.post('/admin/sync/submit-code', async (req, res) => {
     try {
-    const { code, userId } = req.body;
+        const { code, userId } = req.body;
         if (!userId) {
             console.warn('⚠️ WARNING: discordUserId is undefined in session during token save!');
         } else {
@@ -127,10 +128,13 @@ app.post('/admin/sync/submit-code', async (req, res) => {
 
 app.post('/admin/sync/leagues', async (req, res) => {
     try {
+        EASportsAPI.logToFile('[EA DEBUG] /admin/sync/leagues route called');
         const { userId, console, maddenVersion } = req.body;
+        EASportsAPI.logToFile(`[EA DEBUG] Request body: userId=${userId}, console=${console}, maddenVersion=${maddenVersion}`);
 
         // Get user's leagues based on console and version settings
         const leagues = await eaAPI.getUserLeagues(userId, console, maddenVersion);
+        EASportsAPI.logToFile(`[EA DEBUG] Leagues fetched: ${JSON.stringify(leagues)}`);
 
         res.json({
             success: true,
@@ -139,6 +143,7 @@ app.post('/admin/sync/leagues', async (req, res) => {
             maddenVersion: maddenVersion
         });
     } catch (error) {
+        EASportsAPI.logToFile(`[EA DEBUG] Get leagues error: ${error && error.stack ? error.stack : error}`);
         console.error('Get leagues error:', error);
         res.status(500).json({ success: false, error: error.message });
     }
