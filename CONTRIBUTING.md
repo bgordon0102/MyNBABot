@@ -2,6 +2,8 @@
 
 Yes, we can work on this project here! Thank you for your interest in contributing to LEAGUEbuddy. This guide will help you get started.
 
+> **New to the project?** Start with the [New Contributor Checklist](docs/NEW_CONTRIBUTOR_CHECKLIST.md)!
+
 ## Quick Start
 
 ### Prerequisites
@@ -166,6 +168,7 @@ Update files in `/data/` directory. JSON files store league state.
 - Check existing commands for examples
 - Review Discord.js documentation: https://discord.js.org/
 - Look at the README.md for project overview
+- See [docs/EXAMPLE_WORKFLOW.md](docs/EXAMPLE_WORKFLOW.md) for a complete example
 - Open an issue if you find bugs
 
 ## License
