@@ -3,6 +3,8 @@
 A Discord bot for managing basketball league operations, recruiting, and team management.
 
 > **Ready to contribute?** Check out [CONTRIBUTING.md](CONTRIBUTING.md) to get started!
+> 
+> **📚 Full documentation index:** [docs/INDEX.md](docs/INDEX.md)
 
 ## Features
 
