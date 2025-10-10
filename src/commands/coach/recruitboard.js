@@ -49,5 +49,5 @@ export async function execute(interaction) {
     const row1 = new ActionRowBuilder().addComponents(menu1);
     const row2 = new ActionRowBuilder().addComponents(menu2);
 
-    await interaction.reply({ embeds: [listEmbed], components: [row1, row2], ephemeral: true });
+    await interaction.reply({ embeds: [listEmbed], components: [row1, row2], flags: 64 });
 }

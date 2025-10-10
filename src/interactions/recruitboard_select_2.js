@@ -13,10 +13,10 @@ export async function execute(interaction) {
     const selected = players.find(p => p.national_rank.toString() === interaction.values[0]);
     if (!selected) {
         try {
-            await interaction.reply({ content: "Player not found.", ephemeral: true });
+            await interaction.reply({ content: "Player not found.", flags: 64 });
         } catch (err) {
             if (err.code === 40060) {
-                await interaction.followUp({ content: "Player not found.", ephemeral: true });
+                await interaction.followUp({ content: "Player not found.", flags: 64 });
             } else {
                 throw err;
             }
@@ -45,10 +45,10 @@ export async function execute(interaction) {
         .setColor("Green");
 
     try {
-        await interaction.reply({ embeds: [embed], ephemeral: true });
+        await interaction.reply({ embeds: [embed], flags: 64 });
     } catch (err) {
         if (err.code === 40060) {
-            await interaction.followUp({ embeds: [embed], ephemeral: true });
+            await interaction.followUp({ embeds: [embed], flags: 64 });
         } else {
             throw err;
         }
