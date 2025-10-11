@@ -1,6 +1,121 @@
 // Required for Discord interaction loader
 export const customId = 'submit_score';
 export const execute = handleButton;
+// Handler for Force Win button
+export async function handleForceWin(interaction) {
+    // Only staff/schedule tracker can use
+    const guild = interaction.guild;
+    const scheduleTrackerRole = guild.roles.cache.find(r => r.name.toLowerCase() === 'schedule tracker');
+    const commishRole = guild.roles.cache.find(r => r.name.toLowerCase() === 'commish');
+    const member = await guild.members.fetch(interaction.user.id);
+    if (!member.roles.cache.has(scheduleTrackerRole?.id) && !member.roles.cache.has(commishRole?.id)) {
+        await interaction.reply({ content: 'Only staff or schedule tracker can use Force Win.', ephemeral: true });
+        return;
+    }
+    // Auto-fill team names from channel name
+    const match = interaction.channel.name.match(/^(.*?)-vs-(.*?)$/);
+    const abbrToFull = {
+        ATL: 'Atlanta Hawks', BOS: 'Boston Celtics', BKN: 'Brooklyn Nets', CHA: 'Charlotte Hornets', CHI: 'Chicago Bulls', CLE: 'Cleveland Cavaliers', DAL: 'Dallas Mavericks', DEN: 'Denver Nuggets', DET: 'Detroit Pistons', GSW: 'Golden State Warriors', HOU: 'Houston Rockets', IND: 'Indiana Pacers', LAC: 'LA Clippers', LAL: 'Los Angeles Lakers', MEM: 'Memphis Grizzlies', MIA: 'Miami Heat', MIL: 'Milwaukee Bucks', MIN: 'Minnesota Timberwolves', NOP: 'New Orleans Pelicans', NYK: 'New York Knicks', OKC: 'Oklahoma City Thunder', ORL: 'Orlando Magic', PHI: 'Philadelphia 76ers', PHX: 'Phoenix Suns', POR: 'Portland Trail Blazers', SAC: 'Sacramento Kings', SAS: 'San Antonio Spurs', TOR: 'Toronto Raptors', UTA: 'Utah Jazz', WAS: 'Washington Wizards'
+    };
+    let teamAName = '';
+    let teamBName = '';
+    if (match) {
+        const abbr1 = match[1].toUpperCase();
+        const abbr2 = match[2].toUpperCase();
+        teamAName = abbrToFull[abbr1] || abbr1;
+        teamBName = abbrToFull[abbr2] || abbr2;
+    }
+    const modal = new ModalBuilder()
+        .setCustomId('force_win_modal')
+        .setTitle('Force Win: Enter Result');
+    const teamA = new TextInputBuilder()
+        .setCustomId('team_a')
+        .setLabel('Team A')
+        .setStyle(TextInputStyle.Short)
+        .setValue(teamAName)
+        .setRequired(true);
+    const teamB = new TextInputBuilder()
+        .setCustomId('team_b')
+        .setLabel('Team B')
+        .setStyle(TextInputStyle.Short)
+        .setValue(teamBName)
+        .setRequired(true);
+    const scoreA = new TextInputBuilder()
+        .setCustomId('score_a')
+        .setLabel('Team A Score')
+        .setStyle(TextInputStyle.Short)
+        .setRequired(true);
+    const scoreB = new TextInputBuilder()
+        .setCustomId('score_b')
+        .setLabel('Team B Score')
+        .setStyle(TextInputStyle.Short)
+        .setRequired(true);
+    modal.addComponents(
+        new ActionRowBuilder().addComponents(teamA),
+        new ActionRowBuilder().addComponents(teamB),
+        new ActionRowBuilder().addComponents(scoreA),
+        new ActionRowBuilder().addComponents(scoreB)
+    );
+    await interaction.showModal(modal);
+}
+
+// Handler for Sim Result button
+export async function handleSimResult(interaction) {
+    // Only staff/schedule tracker can use
+    const guild = interaction.guild;
+    const scheduleTrackerRole = guild.roles.cache.find(r => r.name.toLowerCase() === 'schedule tracker');
+    const commishRole = guild.roles.cache.find(r => r.name.toLowerCase() === 'commish');
+    const member = await guild.members.fetch(interaction.user.id);
+    if (!member.roles.cache.has(scheduleTrackerRole?.id) && !member.roles.cache.has(commishRole?.id)) {
+        await interaction.reply({ content: 'Only staff or schedule tracker can use Sim Result.', ephemeral: true });
+        return;
+    }
+    // Auto-fill team names from channel name
+    const match = interaction.channel.name.match(/^(.*?)-vs-(.*?)$/);
+    const abbrToFull = {
+        ATL: 'Atlanta Hawks', BOS: 'Boston Celtics', BKN: 'Brooklyn Nets', CHA: 'Charlotte Hornets', CHI: 'Chicago Bulls', CLE: 'Cleveland Cavaliers', DAL: 'Dallas Mavericks', DEN: 'Denver Nuggets', DET: 'Detroit Pistons', GSW: 'Golden State Warriors', HOU: 'Houston Rockets', IND: 'Indiana Pacers', LAC: 'LA Clippers', LAL: 'Los Angeles Lakers', MEM: 'Memphis Grizzlies', MIA: 'Miami Heat', MIL: 'Milwaukee Bucks', MIN: 'Minnesota Timberwolves', NOP: 'New Orleans Pelicans', NYK: 'New York Knicks', OKC: 'Oklahoma City Thunder', ORL: 'Orlando Magic', PHI: 'Philadelphia 76ers', PHX: 'Phoenix Suns', POR: 'Portland Trail Blazers', SAC: 'Sacramento Kings', SAS: 'San Antonio Spurs', TOR: 'Toronto Raptors', UTA: 'Utah Jazz', WAS: 'Washington Wizards'
+    };
+    let teamAName = '';
+    let teamBName = '';
+    if (match) {
+        const abbr1 = match[1].toUpperCase();
+        const abbr2 = match[2].toUpperCase();
+        teamAName = abbrToFull[abbr1] || abbr1;
+        teamBName = abbrToFull[abbr2] || abbr2;
+    }
+    const modal = new ModalBuilder()
+        .setCustomId('sim_result_modal')
+        .setTitle('Sim Result: Enter Result');
+    const teamA = new TextInputBuilder()
+        .setCustomId('team_a')
+        .setLabel('Team A')
+        .setStyle(TextInputStyle.Short)
+        .setValue(teamAName)
+        .setRequired(true);
+    const teamB = new TextInputBuilder()
+        .setCustomId('team_b')
+        .setLabel('Team B')
+        .setStyle(TextInputStyle.Short)
+        .setValue(teamBName)
+        .setRequired(true);
+    const scoreA = new TextInputBuilder()
+        .setCustomId('score_a')
+        .setLabel('Team A Score')
+        .setStyle(TextInputStyle.Short)
+        .setRequired(true);
+    const scoreB = new TextInputBuilder()
+        .setCustomId('score_b')
+        .setLabel('Team B Score')
+        .setStyle(TextInputStyle.Short)
+        .setRequired(true);
+    modal.addComponents(
+        new ActionRowBuilder().addComponents(teamA),
+        new ActionRowBuilder().addComponents(teamB),
+        new ActionRowBuilder().addComponents(scoreA),
+        new ActionRowBuilder().addComponents(scoreB)
+    );
+    await interaction.showModal(modal);
+}
 import { ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, PermissionFlagsBits, ChannelType, InteractionType } from 'discord.js';
 import fs from 'fs';
 
@@ -43,20 +158,40 @@ export async function sendWelcomeAndButton(channel, week, seasonNo) {
         .setCustomId('submit_score')
         .setLabel('Submit Score')
         .setStyle(ButtonStyle.Primary);
+    const forceWinBtn = new ButtonBuilder()
+        .setCustomId('force_win')
+        .setLabel('Force Win')
+        .setStyle(ButtonStyle.Success);
+    const simResultBtn = new ButtonBuilder()
+        .setCustomId('sim_result')
+        .setLabel('Sim Result')
+        .setStyle(ButtonStyle.Secondary);
     // 48-hour countdown from now
     const deadline = Math.floor(Date.now() / 1000) + 48 * 3600;
     let content = '';
+    // Tag coach roles if available, fallback otherwise
     if (team1RoleId && team2RoleId) {
         content += `Welcome <@&${team1RoleId}> & <@&${team2RoleId}>!\n`;
+    } else {
+        content += `Welcome coaches!\n`;
     }
-    content += 'Use this channel to coordinate your matchup. After your game, the winning coach should report the score using the button below.\n\n';
+    content += '**Sim Schedule & Game Results**\n';
+    content += '- Sims run daily at 8:00 PM EST.\n';
+    content += '- All games must be played before the next sim.\n';
+    content += '- If a game isn’t played:\n';
+    content += '  - **Force Win/Loss:** Awarded if one coach is active and the other is inactive.\n';
+    content += '  - **Sim Result:** Used if both teams fail to play or agree to a sim.\n';
+    content += '- No postponements or deferrals.\n';
+    content += '- Repeated inactivity may lead to removal.\n';
+    content += '- All force and sim results are final and logged.\n\n';
     content += `:alarm_clock: **Score must be submitted within <t:${deadline}:R> (<t:${deadline}:f>)**`;
     console.log('[sendWelcomeAndButton] Attempting to send welcome message to channel:', channel.name, 'ID:', channel.id);
     console.log('[sendWelcomeAndButton] Content:', content);
+    // Always show all three buttons
     try {
         await channel.send({
             content,
-            components: [new ActionRowBuilder().addComponents(submitBtn)]
+            components: [new ActionRowBuilder().addComponents(submitBtn, forceWinBtn, simResultBtn)]
         });
         console.log('[sendWelcomeAndButton] Successfully sent welcome message to channel:', channel.name, 'ID:', channel.id);
     } catch (err) {
@@ -97,28 +232,30 @@ export async function handleButton(interaction) {
         await interaction.reply({ content: 'Unable to verify coach role. Please contact an admin.', ephemeral: true });
         return;
     }
-    // Open modal for score submission
+    // Refactored: allow modal trigger from message/user
+    const guild = interaction.guild;
+    const channel = interaction.channel;
     const modal = new ModalBuilder()
         .setCustomId('submit_score_modal')
         .setTitle('Submit Game Score');
     const teamA = new TextInputBuilder()
         .setCustomId('team_a')
-        .setLabel('Team A')
+        .setLabel('Winning Team')
         .setStyle(TextInputStyle.Short)
         .setRequired(true);
     const teamB = new TextInputBuilder()
         .setCustomId('team_b')
-        .setLabel('Team B')
+        .setLabel('Losing Team')
         .setStyle(TextInputStyle.Short)
         .setRequired(true);
     const scoreA = new TextInputBuilder()
         .setCustomId('score_a')
-        .setLabel('Team A Score')
+        .setLabel('Winning Team Score')
         .setStyle(TextInputStyle.Short)
         .setRequired(true);
     const scoreB = new TextInputBuilder()
         .setCustomId('score_b')
-        .setLabel('Team B Score')
+        .setLabel('Losing Team Score')
         .setStyle(TextInputStyle.Short)
         .setRequired(true);
     modal.addComponents(
@@ -128,6 +265,8 @@ export async function handleButton(interaction) {
         new ActionRowBuilder().addComponents(scoreB)
     );
     await interaction.showModal(modal);
+    // NOTE: Discord.js does not support showing modals from message reactions directly.
+    // You must use a workaround, such as sending a DM or ephemeral message with a button that triggers the modal.
 }
 
 export async function handleModal(interaction) {
@@ -173,7 +312,7 @@ export async function handleModal(interaction) {
     await interaction.reply({
         content: scheduleTrackerRole ? `${scheduleTrackerRole}` : 'Schedule Tracker',
         embeds: [embed],
-        components: [[approveBtn, denyBtn]],
+        components: [new ActionRowBuilder().addComponents(approveBtn, denyBtn)],
         ephemeral: false
     });
 }

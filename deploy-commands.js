@@ -52,7 +52,7 @@ async function deployCommands() {
     console.log(`📊 Loaded ${commands.length} commands total`);
     console.log('🚀 Deploying commands to Discord...');
 
-    const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
+    const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN);
 
     const data = await rest.put(
       Routes.applicationGuildCommands(process.env.CLIENT_ID, process.env.GUILD_ID),

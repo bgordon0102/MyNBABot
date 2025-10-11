@@ -20,9 +20,9 @@
   "author": "bgordon0102",
   "license": "ISC",
   "dependencies": {
-    "discord.js": "^14.13.0",
     "@discordjs/builders": "^1.7.0",
-    "dotenv": "^16.4.5"
+    "discord.js": "^14.13.0",
+    "dotenv": "^16.6.1"
   },
   "engines": {
     "node": ">=18.0.0"

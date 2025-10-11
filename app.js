@@ -94,12 +94,75 @@ client.interactions.set('submit_score_modal', { execute: submitScore.handleModal
 client.interactions.set('approve_score', { execute: i => submitScore.handleApproval(i, true) });
 client.interactions.set('deny_score', { execute: i => submitScore.handleApproval(i, false) });
 
+// Register force_win and sim_result button handlers
+import * as submitScoreButtons from './src/interactions/submit_score.js';
+client.interactions.set('force_win', {
+  execute: async (interaction) => {
+    await submitScoreButtons.handleForceWin(interaction);
+  }
+});
+client.interactions.set('sim_result', {
+  execute: async (interaction) => {
+    await submitScoreButtons.handleSimResult(interaction);
+  }
+});
+
 // Bot clientReady event (Discord.js v15+)
 client.once('clientReady', (readyClient) => {
   console.log('🏀 LEAGUEbuddy is online!');
   console.log(`📊 Logged in as ${readyClient.user.tag}`);
   console.log(`🏟️  Serving ${readyClient.guilds.cache.size} server(s)`);
   console.log(`⚡ Loaded ${client.commands.size} commands`);
+});
+
+// Emoji reaction handling for game channel welcome messages
+client.on('messageReactionAdd', async (reaction, user) => {
+  // Ignore bot reactions
+  if (user.bot) return;
+  // Only handle reactions in game channels
+  const channel = reaction.message.channel;
+  if (!channel.name || !channel.name.includes('-vs-')) return;
+  // Only handle reactions on bot's welcome message
+  if (!reaction.message.author || reaction.message.author.id !== client.user.id) return;
+  // Emoji logic
+  let button, customId, label;
+  if (reaction.emoji.name === '📝') {
+    customId = 'submit_score_react';
+    label = 'Open Submit Score Modal';
+  } else if (reaction.emoji.name === '✅') {
+    customId = 'force_win_react';
+    label = 'Open Force Win Modal';
+  } else if (reaction.emoji.name === '🎲') {
+    customId = 'sim_result_react';
+    label = 'Open Sim Result Modal';
+  }
+  if (customId) {
+    button = new ButtonBuilder()
+      .setCustomId(customId)
+      .setLabel(label)
+      .setStyle(ButtonStyle.Primary);
+    await channel.send({
+      content: `<@${user.id}> Click the button below to continue.`,
+      components: [new ActionRowBuilder().addComponents(button)],
+      ephemeral: true
+    });
+  }
+});
+// Handle button clicks from ephemeral messages to open modals
+client.interactions.set('submit_score_react', {
+  execute: async (interaction) => {
+    await submitScore.handleButton(interaction);
+  }
+});
+client.interactions.set('force_win_react', {
+  execute: async (interaction) => {
+    await submitScore.handleForceWin(interaction);
+  }
+});
+client.interactions.set('sim_result_react', {
+  execute: async (interaction) => {
+    await submitScore.handleSimResult(interaction);
+  }
 });
 
 // Handle interactions (commands and autocomplete)
