@@ -166,7 +166,7 @@ export async function sendWelcomeAndButton(channel, week, seasonNo) {
         .setCustomId('sim_result')
         .setLabel('Sim Result')
         .setStyle(ButtonStyle.Secondary);
-    // 24-hour countdown from now
+    // 24-hour countdown from now (always from message send time)
     const deadline = Math.floor(Date.now() / 1000) + 24 * 3600;
     let content = '';
     // Tag coach roles if available, fallback otherwise
