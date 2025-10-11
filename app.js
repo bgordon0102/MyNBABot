@@ -91,6 +91,8 @@ client.interactions.set('bigboard_select_player', bigboardSelectPlayer);
 import * as submitScore from './src/interactions/submit_score_interaction.js';
 client.interactions.set('submit_score', submitScore);
 client.interactions.set('submit_score_modal', { execute: submitScore.handleModal });
+client.interactions.set('force_win_modal', { execute: (interaction) => submitScore.handleModal(interaction, 'Force Win') });
+client.interactions.set('sim_result_modal', { execute: (interaction) => submitScore.handleModal(interaction, 'Sim Result') });
 client.interactions.set('approve_score', { execute: i => submitScore.handleApproval(i, true) });
 client.interactions.set('deny_score', { execute: i => submitScore.handleApproval(i, false) });
 

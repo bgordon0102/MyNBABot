@@ -96,6 +96,15 @@ export async function handleModal(interaction) {
     const teamB = interaction.fields.getTextInputValue('team_b');
     const scoreA = parseInt(interaction.fields.getTextInputValue('score_a'));
     const scoreB = parseInt(interaction.fields.getTextInputValue('score_b'));
+    // Determine result type
+    let resultType = 'Submit Score';
+    if (arguments.length > 1 && typeof arguments[1] === 'string') {
+        resultType = arguments[1];
+    } else if (interaction.customId === 'force_win_modal') {
+        resultType = 'Force Win';
+    } else if (interaction.customId === 'sim_result_modal') {
+        resultType = 'Sim Result';
+    }
     if (isNaN(scoreA) || isNaN(scoreB)) {
         return interaction.reply({ content: 'Scores must be numbers.', ephemeral: true });
     }
@@ -133,13 +142,14 @@ export async function handleModal(interaction) {
         .setLabel('Deny')
         .setStyle(ButtonStyle.Danger);
     const embed = new EmbedBuilder()
-        .setTitle('Game Result Submitted')
+        .setTitle(`${resultType} Submitted`)
         .addFields(
             { name: teamA, value: scoreA.toString(), inline: true },
             { name: teamB, value: scoreB.toString(), inline: true },
             { name: 'Week', value: week ? week.toString() : 'Unknown', inline: true },
             { name: 'Season', value: seasonNo ? seasonNo.toString() : 'Unknown', inline: true },
-            { name: 'Submitted by', value: `<@${interaction.user.id}>`, inline: false }
+            { name: 'Submitted by', value: `<@${interaction.user.id}>`, inline: false },
+            { name: 'Result Type', value: resultType, inline: false }
         )
         .setColor(0x00AE86);
     await interaction.reply({
@@ -160,8 +170,9 @@ export async function handleApproval(interaction, approve) {
         const week = interaction.message.embeds[0].fields[2].value;
         const seasonNo = interaction.message.embeds[0].fields[3].value;
         const submittedBy = interaction.message.embeds[0].fields[4].value;
+        const resultType = interaction.message.embeds[0].fields[5]?.value || 'Submit Score';
         const scores = readScores();
-        scores.push({ teamA, scoreA, teamB, scoreB, week, seasonNo, submittedBy, approved: true, approvedBy: interaction.user.id, approvedAt: new Date().toISOString() });
+        scores.push({ teamA, scoreA, teamB, scoreB, week, seasonNo, submittedBy, resultType, approved: true, approvedBy: interaction.user.id, approvedAt: new Date().toISOString() });
         writeScores(scores);
 
         // --- Update persistent standings.json ---
